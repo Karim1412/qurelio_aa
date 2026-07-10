@@ -1,20 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { TagInput } from '@/components/company/TagInput';
-import { Plus } from '@/components/icons';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { cn } from '@/utils/cn';
+import { ReqDot, QwTagField, QwCheckGrid } from '@/components/company/qw-fields';
 
 const COUNTRIES = [
   'Tunisia', 'Morocco', 'Algeria', 'Egypt', 'France', 'Germany', 'Italy',
@@ -77,11 +64,7 @@ export function StepMarkets({ data, onChange }: StepMarketsProps) {
     updated[index] = { ...updated[index], [field]: value };
     onChange({ sites: updated });
   };
-
-  const addSite = () => {
-    onChange({ sites: [...data.sites, createEmptySite()] });
-  };
-
+  const addSite = () => onChange({ sites: [...data.sites, createEmptySite()] });
   const removeSite = (index: number) => {
     if (data.sites.length <= 1) return;
     onChange({ sites: data.sites.filter((_, i) => i !== index) });
@@ -92,311 +75,131 @@ export function StepMarkets({ data, onChange }: StepMarketsProps) {
     updated[index] = { ...updated[index], [field]: value };
     onChange({ certifications: updated });
   };
-
-  const addCert = () => {
-    onChange({ certifications: [...data.certifications, createEmptyCert()] });
-  };
-
-  const removeCert = (index: number) => {
+  const addCert = () => onChange({ certifications: [...data.certifications, createEmptyCert()] });
+  const removeCert = (index: number) =>
     onChange({ certifications: data.certifications.filter((_, i) => i !== index) });
-  };
-
-  const toggleMarket = (market: string) => {
-    const markets = data.targetMarkets.includes(market)
-      ? data.targetMarkets.filter((m) => m !== market)
-      : [...data.targetMarkets, market];
-    onChange({ targetMarkets: markets });
-  };
-
-  const toggleLabel = (label: string) => {
-    const labels = data.industryLabels.includes(label)
-      ? data.industryLabels.filter((l) => l !== label)
-      : [...data.industryLabels, label];
-    onChange({ industryLabels: labels });
-  };
 
   return (
-    <div className="space-y-10">
-      <div>
-        <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
-          Markets &amp; Compliance Landscape
-        </h2>
-        <p className="mt-1 text-sm text-[var(--muted)]">
-          Where you sell determines which regulations apply. Your certifications set the baseline for
-          AI evaluation.
-        </p>
+    <div className="wizard-panel">
+      <div className="panel-header">
+        <h2>Markets &amp; Compliance Landscape</h2>
+        <p>Where you sell determines which regulations apply. Your certifications set the baseline for AI evaluation.</p>
       </div>
 
       {/* Geographic Footprint */}
-      <div className="space-y-5">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">
-          Geographic Footprint
-        </p>
+      <div className="form-section">
+        <div className="section-title">Geographic Footprint</div>
 
-        {/* Sites */}
-        <div className="space-y-1.5">
-          <Label>
-            Production / Operation sites <span className="text-red-500">*</span>
-          </Label>
-          <p className="text-[11px] text-[var(--muted)]">
-            Add at least one site. Multi-site companies can scope compliance evaluations per site.
-          </p>
-        </div>
-
-        <div className="space-y-4">
-          {data.sites.map((site, index) => (
-            <div
-              key={index}
-              className="relative rounded-2xl border border-[var(--input-border)] bg-[var(--surface)] p-5"
-            >
-              <div className="mb-4 flex items-center justify-between">
-                <span className="text-sm font-semibold text-[var(--text-primary)]">
-                  Site {index + 1}
-                </span>
-                {data.sites.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeSite(index)}
-                    className="text-[var(--muted)] transition-hover hover:text-red-500"
-                  >
-                    Remove
-                  </button>
-                )}
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                <div className="space-y-1.5">
-                  <Label>
-                    Site name <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    value={site.siteName}
-                    onChange={(e) => updateSite(index, 'siteName', e.target.value)}
-                    placeholder="e.g. Monastir Plant"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label>
-                    Country <span className="text-red-500">*</span>
-                  </Label>
-                  <Select value={site.country} onValueChange={(v) => updateSite(index, 'country', v)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {COUNTRIES.map((c) => (
-                        <SelectItem key={c} value={c}>
-                          {c}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label>City</Label>
-                  <Input
-                    value={site.city}
-                    onChange={(e) => updateSite(index, 'city', e.target.value)}
-                    placeholder="e.g. Monastir"
-                  />
-                </div>
-              </div>
-
-              <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="space-y-1.5">
-                  <Label>
-                    Role <span className="text-red-500">*</span>
-                  </Label>
-                  <Select value={site.role} onValueChange={(v) => updateSite(index, 'role', v)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {SITE_ROLES.map((r) => (
-                        <SelectItem key={r} value={r}>
-                          {r}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-          ))}
-
-          <Button
-            type="button"
-            variant="outline"
-            onClick={addSite}
-            className="w-full gap-2 border-dashed"
-          >
-            <Plus className="h-4 w-4" />
-            Add another site
-          </Button>
-        </div>
-
-        {/* Target export markets */}
-        <div className="space-y-2.5">
-          <Label>
-            Target export markets <span className="text-red-500">*</span>
-          </Label>
-          <p className="text-[11px] text-[var(--muted)]">
-            Select all markets you currently sell to or are actively targeting.
-          </p>
-          <div className="flex flex-wrap gap-2.5">
-            {EXPORT_MARKETS.map((market) => {
-              const isChecked = data.targetMarkets.includes(market);
-              return (
-                <label
-                  key={market}
-                  className={cn(
-                    'inline-flex cursor-pointer items-center gap-2.5 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all duration-200',
-                    isChecked
-                      ? 'border-[var(--brand-primary)]/40 bg-[var(--brand-primary)]/8 text-[var(--brand-primary)]'
-                      : 'border-[var(--input-border)] bg-[var(--surface)] text-[var(--text-primary)] hover:border-[var(--brand-primary)]/25 hover:bg-[var(--nav-hover)]/50'
+        <div className="field" style={{ marginBottom: 16 }}>
+          <label>Production / Operation sites <ReqDot /></label>
+          <div className="field-hint" style={{ marginBottom: 4 }}>Add at least one site. Multi-site companies can scope compliance evaluations per site.</div>
+          <div className="repeatable-list">
+            {data.sites.map((site, index) => (
+              <div className="repeatable-block" key={index}>
+                <div className="block-header">
+                  <span className="block-label">Site {index + 1}</span>
+                  {data.sites.length > 1 && (
+                    <button type="button" className="block-remove" onClick={() => removeSite(index)}>Remove</button>
                   )}
-                >
-                  <Checkbox checked={isChecked} onCheckedChange={() => toggleMarket(market)} />
-                  {market}
-                </label>
-              );
-            })}
+                </div>
+                <div className="form-grid cols-3" style={{ gap: 12 }}>
+                  <div className="field">
+                    <label>Site name <ReqDot /></label>
+                    <input type="text" value={site.siteName} onChange={(e) => updateSite(index, 'siteName', e.target.value)} placeholder="e.g. Monastir Plant" />
+                  </div>
+                  <div className="field">
+                    <label>Country <ReqDot /></label>
+                    <select value={site.country} onChange={(e) => updateSite(index, 'country', e.target.value)}>
+                      <option value="">Select</option>
+                      {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label>City</label>
+                    <input type="text" value={site.city} onChange={(e) => updateSite(index, 'city', e.target.value)} placeholder="e.g. Monastir" />
+                  </div>
+                  <div className="field col-span-2" style={{ gridColumn: '1 / -1' }}>
+                    <label>Role <ReqDot /></label>
+                    <select value={site.role} onChange={(e) => updateSite(index, 'role', e.target.value)}>
+                      <option value="">Select role</option>
+                      {SITE_ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
+          <button type="button" className="add-block-btn" onClick={addSite}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+            Add another site
+          </button>
+        </div>
+
+        <div className="field">
+          <label>Target export markets <ReqDot /></label>
+          <div className="field-hint" style={{ marginBottom: 4 }}>Select all markets you currently sell to or are actively targeting.</div>
+          <QwCheckGrid options={EXPORT_MARKETS} selected={data.targetMarkets} onChange={(targetMarkets) => onChange({ targetMarkets })} />
         </div>
       </div>
 
       {/* Compliance Landscape */}
-      <div className="space-y-5">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">
-          Compliance Landscape
-        </p>
+      <div className="form-section">
+        <div className="section-title">Compliance Landscape</div>
 
-        {/* Certifications */}
-        <div className="space-y-1.5">
-          <Label>Current active certifications</Label>
-          <p className="text-[11px] text-[var(--muted)]">
-            Add your existing certifications. Expiry dates trigger automatic reminders.
-          </p>
-        </div>
-
-        <div className="space-y-4">
-          {data.certifications.map((cert, index) => (
-            <div
-              key={index}
-              className="relative rounded-2xl border border-[var(--input-border)] bg-[var(--surface)] p-5"
-            >
-              <div className="mb-4 flex items-center justify-between">
-                <span className="text-sm font-semibold text-[var(--text-primary)]">
-                  Certification {index + 1}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => removeCert(index)}
-                  className="text-[var(--muted)] transition-hover hover:text-red-500"
-                >
-                  Remove
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="space-y-1.5">
-                  <Label>
-                    Standard name <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    value={cert.standardName}
-                    onChange={(e) => updateCert(index, 'standardName', e.target.value)}
-                    placeholder="e.g. ISO 9001:2015"
-                  />
+        <div className="field" style={{ marginBottom: 16 }}>
+          <label>Current active certifications</label>
+          <div className="field-hint" style={{ marginBottom: 4 }}>Add your existing certifications. Expiry dates trigger automatic reminders.</div>
+          <div className="repeatable-list">
+            {data.certifications.map((cert, index) => (
+              <div className="repeatable-block" key={index}>
+                <div className="block-header">
+                  <span className="block-label">Certification {index + 1}</span>
+                  <button type="button" className="block-remove" onClick={() => removeCert(index)}>Remove</button>
                 </div>
-                <div className="space-y-1.5">
-                  <Label>Certifying body</Label>
-                  <Input
-                    value={cert.certifyingBody}
-                    onChange={(e) => updateCert(index, 'certifyingBody', e.target.value)}
-                    placeholder="e.g. Bureau Veritas"
-                  />
+                <div className="form-grid" style={{ gap: 12 }}>
+                  <div className="field">
+                    <label>Standard name <ReqDot /></label>
+                    <input type="text" value={cert.standardName} onChange={(e) => updateCert(index, 'standardName', e.target.value)} placeholder="e.g. ISO 9001:2015" />
+                  </div>
+                  <div className="field">
+                    <label>Certifying body</label>
+                    <input type="text" value={cert.certifyingBody} onChange={(e) => updateCert(index, 'certifyingBody', e.target.value)} placeholder="e.g. Bureau Veritas, TÜV, SGS" />
+                  </div>
+                  <div className="field">
+                    <label>Issue date</label>
+                    <input type="date" value={cert.issueDate} onChange={(e) => updateCert(index, 'issueDate', e.target.value)} />
+                  </div>
+                  <div className="field">
+                    <label>Expiry date</label>
+                    <input type="date" value={cert.expiryDate} onChange={(e) => updateCert(index, 'expiryDate', e.target.value)} />
+                  </div>
+                  <div className="field col-span-2">
+                    <label>Scope note</label>
+                    <input type="text" value={cert.scopeNote} onChange={(e) => updateCert(index, 'scopeNote', e.target.value)} placeholder="Optional — e.g. 'Manufacturing of denim fabrics, Monastir plant only'" />
+                  </div>
                 </div>
               </div>
-
-              <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="space-y-1.5">
-                  <Label>Issue date</Label>
-                  <Input
-                    type="date"
-                    value={cert.issueDate}
-                    onChange={(e) => updateCert(index, 'issueDate', e.target.value)}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Expiry date</Label>
-                  <Input
-                    type="date"
-                    value={cert.expiryDate}
-                    onChange={(e) => updateCert(index, 'expiryDate', e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="mt-4 space-y-1.5">
-                <Label>Scope note</Label>
-                <Input
-                  value={cert.scopeNote}
-                  onChange={(e) => updateCert(index, 'scopeNote', e.target.value)}
-                  placeholder="Optional — e.g. 'Manufacturing of denim fabrics, Monastir plant only'"
-                />
-              </div>
-            </div>
-          ))}
-
-          <Button
-            type="button"
-            variant="outline"
-            onClick={addCert}
-            className="w-full gap-2 border-dashed"
-          >
-            <Plus className="h-4 w-4" />
+            ))}
+          </div>
+          <button type="button" className="add-block-btn" onClick={addCert}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
             Add a certification
-          </Button>
+          </button>
         </div>
 
-        {/* Target certifications */}
-        <div className="space-y-1.5">
-          <Label>
-            Target certifications / standards <span className="text-red-500">*</span>
-          </Label>
-          <TagInput
+        <div className="field" style={{ marginBottom: 16 }}>
+          <label>Target certifications / standards <ReqDot /></label>
+          <QwTagField
             tags={data.targetCertifications}
             onChange={(targetCertifications) => onChange({ targetCertifications })}
-            placeholder="Add a target standard and press Enter..."
+            placeholder="Add a target standard and press Enter…"
           />
-          <p className="text-[11px] text-[var(--muted)]">
-            The monitoring engine watches all regulatory families related to these standards.
-          </p>
+          <div className="field-hint">The monitoring engine watches all regulatory families related to these standards.</div>
         </div>
 
-        {/* Industry labels */}
-        <div className="space-y-2.5">
-          <Label>Industry-specific labels / marks</Label>
-          <div className="flex flex-wrap gap-2.5">
-            {INDUSTRY_LABELS.map((label) => {
-              const isChecked = data.industryLabels.includes(label);
-              return (
-                <label
-                  key={label}
-                  className={cn(
-                    'inline-flex cursor-pointer items-center gap-2.5 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all duration-200',
-                    isChecked
-                      ? 'border-[var(--brand-primary)]/40 bg-[var(--brand-primary)]/8 text-[var(--brand-primary)]'
-                      : 'border-[var(--input-border)] bg-[var(--surface)] text-[var(--text-primary)] hover:border-[var(--brand-primary)]/25 hover:bg-[var(--nav-hover)]/50'
-                  )}
-                >
-                  <Checkbox checked={isChecked} onCheckedChange={() => toggleLabel(label)} />
-                  {label}
-                </label>
-              );
-            })}
-          </div>
+        <div className="field">
+          <label>Industry-specific labels / marks</label>
+          <QwCheckGrid options={INDUSTRY_LABELS} selected={data.industryLabels} onChange={(industryLabels) => onChange({ industryLabels })} />
         </div>
       </div>
     </div>

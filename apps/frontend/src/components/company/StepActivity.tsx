@@ -1,17 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import { TagInput } from '@/components/company/TagInput';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Info } from '@/components/icons';
+import { ReqDot, QwTagField, QwCheckGrid } from '@/components/company/qw-fields';
 
 const INDUSTRY_SECTORS = [
   'Textile & Apparel', 'Food & Beverage', 'Chemical & Pharmaceutical',
@@ -50,158 +40,79 @@ interface StepActivityProps {
   onChange: (data: Partial<ActivityProductsData>) => void;
 }
 
-function CheckboxGroup({
-  options,
-  selected,
-  onChange,
-}: {
-  options: string[];
-  selected: string[];
-  onChange: (value: string[]) => void;
-}) {
-  const toggle = (item: string) => {
-    if (selected.includes(item)) {
-      onChange(selected.filter((s) => s !== item));
-    } else {
-      onChange([...selected, item]);
-    }
-  };
-
-  return (
-    <div className="flex flex-wrap gap-2.5">
-      {options.map((option) => {
-        const isChecked = selected.includes(option);
-        return (
-          <label
-            key={option}
-            className={`
-              inline-flex cursor-pointer items-center gap-2.5 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all duration-200
-              ${
-                isChecked
-                  ? 'border-[var(--brand-primary)]/40 bg-[var(--brand-primary)]/8 text-[var(--brand-primary)]'
-                  : 'border-[var(--input-border)] bg-[var(--surface)] text-[var(--text-primary)] hover:border-[var(--brand-primary)]/25 hover:bg-[var(--nav-hover)]/50'
-              }
-            `}
-          >
-            <Checkbox checked={isChecked} onCheckedChange={() => toggle(option)} />
-            {option}
-          </label>
-        );
-      })}
-    </div>
-  );
-}
-
 export function StepActivity({ data, onChange }: StepActivityProps) {
   return (
-    <div className="space-y-8">
-      <div>
-        <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
-          Activity &amp; Products
-        </h2>
-        <p className="mt-1 text-sm text-[var(--muted)]">
-          Describe what your company makes and how — the AI uses this as its primary context filter.
-        </p>
+    <div className="wizard-panel">
+      <div className="panel-header">
+        <h2>Activity &amp; Products</h2>
+        <p>Describe what your company makes and how — the AI uses this as its primary context filter.</p>
       </div>
 
-      {/* Info callout */}
-      <div className="callout-info flex items-start gap-3 rounded-xl border border-[var(--callout-info-border)] bg-[var(--callout-info-bg)] p-4">
-        <Info className="mt-0.5 h-5 w-5 shrink-0 text-[var(--brand-primary)]" />
-        <p className="text-[13px] leading-relaxed text-[var(--callout-info-text)]">
-          <strong>Why this matters:</strong> the more specific you are here, the more accurate your
-          compliance evaluations will be. &ldquo;Stainless steel food-contact valves&rdquo; is far
-          more useful to the AI than &ldquo;industrial parts&rdquo;.
-        </p>
+      <div className="tip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+        <p><strong>Why this matters:</strong> the more specific you are here, the more accurate your compliance evaluations will be. &ldquo;Stainless steel food-contact valves&rdquo; is far more useful to the AI than &ldquo;industrial parts&rdquo;.</p>
       </div>
 
-      <div className="space-y-6">
-        {/* Primary sector */}
-        <div className="space-y-1.5">
-          <Label>
-            Primary industry sector <span className="text-red-500">*</span>
-          </Label>
-          <Select value={data.primarySector} onValueChange={(v) => onChange({ primarySector: v })}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select your industry" />
-            </SelectTrigger>
-            <SelectContent>
+      <div className="form-section">
+        <div className="form-grid cols-1">
+          <div className="field">
+            <label>Primary industry sector <ReqDot /></label>
+            <select value={data.primarySector} onChange={(e) => onChange({ primarySector: e.target.value })}>
+              <option value="">Select a sector…</option>
               {INDUSTRY_SECTORS.map((s) => (
-                <SelectItem key={s} value={s}>
-                  {s}
-                </SelectItem>
+                <option key={s} value={s}>{s}</option>
               ))}
-            </SelectContent>
-          </Select>
-        </div>
+            </select>
+          </div>
 
-        {/* Sub-sectors */}
-        <div className="space-y-1.5">
-          <Label>
-            Sub-sector / Specific activity <span className="text-red-500">*</span>
-          </Label>
-          <TagInput
-            tags={data.subSectors}
-            onChange={(subSectors) => onChange({ subSectors })}
-            placeholder='Type and press Enter... e.g. "Denim manufacturing", "Contract finishing"'
-          />
-          <p className="text-[11px] text-[var(--muted)]">
-            Be specific. E.g. &ldquo;Denim manufacturing&rdquo;, &ldquo;Contract finishing&rdquo;,
-            &ldquo;Technical textiles&rdquo;
-          </p>
-        </div>
+          <div className="field">
+            <label>Sub-sector / Specific activity <ReqDot /></label>
+            <QwTagField
+              tags={data.subSectors}
+              onChange={(subSectors) => onChange({ subSectors })}
+              placeholder="Type and press Enter…"
+            />
+            <div className="field-hint">Be specific. E.g. &ldquo;Denim manufacturing&rdquo;, &ldquo;Contract finishing&rdquo;, &ldquo;Technical textiles&rdquo;</div>
+          </div>
 
-        {/* Products */}
-        <div className="space-y-1.5">
-          <Label>
-            Products manufactured / sold <span className="text-red-500">*</span>
-          </Label>
-          <TagInput
-            tags={data.products}
-            onChange={(products) => onChange({ products })}
-            placeholder="Add a product and press Enter..."
-          />
-          <p className="text-[11px] text-[var(--muted)]">
-            List specific products — the AI matches these against the regulation landscape to detect
-            missing standards.
-          </p>
+          <div className="field">
+            <label>Products manufactured / sold <ReqDot /></label>
+            <QwTagField
+              tags={data.products}
+              onChange={(products) => onChange({ products })}
+              placeholder="Add a product and press Enter…"
+            />
+            <div className="field-hint">List specific products — the AI matches these against the regulation landscape to detect missing standards.</div>
+          </div>
         </div>
+      </div>
 
-        {/* Key Production Processes */}
-        <div className="space-y-2.5">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">
-            Key Production Processes <span className="text-red-500">*</span>
-          </p>
-          <CheckboxGroup
-            options={PRODUCTION_PROCESSES}
-            selected={data.productionProcesses}
-            onChange={(productionProcesses) => onChange({ productionProcesses })}
-          />
-        </div>
+      <div className="form-section">
+        <div className="section-title">Key Production Processes <ReqDot /></div>
+        <QwCheckGrid
+          options={PRODUCTION_PROCESSES}
+          selected={data.productionProcesses}
+          onChange={(productionProcesses) => onChange({ productionProcesses })}
+        />
+      </div>
 
-        {/* Raw Materials */}
-        <div className="space-y-1.5">
-          <Label>Raw Materials &amp; Key Inputs</Label>
-          <TagInput
-            tags={data.rawMaterials}
-            onChange={(rawMaterials) => onChange({ rawMaterials })}
-            placeholder="Add a material and press Enter..."
-          />
-          <p className="text-[11px] text-[var(--muted)]">
-            Optional — helps the AI flag relevant chemical/material regulations (REACH, OEKO-TEX, etc.).
-          </p>
-        </div>
+      <div className="form-section">
+        <div className="section-title">Raw Materials &amp; Key Inputs</div>
+        <QwTagField
+          tags={data.rawMaterials}
+          onChange={(rawMaterials) => onChange({ rawMaterials })}
+          placeholder="Add a material and press Enter…"
+        />
+        <div className="field-hint">Optional — helps the AI flag relevant chemical/material regulations (REACH, OEKO-TEX, etc.).</div>
+      </div>
 
-        {/* Asset Types */}
-        <div className="space-y-2.5">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">
-            Asset Types
-          </p>
-          <CheckboxGroup
-            options={ASSET_TYPES}
-            selected={data.assetTypes}
-            onChange={(assetTypes) => onChange({ assetTypes })}
-          />
-        </div>
+      <div className="form-section">
+        <div className="section-title">Asset Types</div>
+        <QwCheckGrid
+          options={ASSET_TYPES}
+          selected={data.assetTypes}
+          onChange={(assetTypes) => onChange({ assetTypes })}
+        />
       </div>
     </div>
   );
