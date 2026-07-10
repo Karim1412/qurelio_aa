@@ -26,8 +26,9 @@ export class DocumentController {
   }
 
   @Get('products')
-  async listProducts(@Req() req: any): Promise<any> {
-    return this.svc.listProducts(req.user.companyId);
+  async listProducts(@Req() req: any, @Query('archived') archived?: string): Promise<any> {
+    const archivedOnly = archived === '1' || archived === 'true';
+    return this.svc.listProducts(req.user.companyId, archivedOnly ? { archivedOnly: true } : {});
   }
 
   @Get('products/:productId')

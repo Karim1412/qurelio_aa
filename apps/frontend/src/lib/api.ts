@@ -297,6 +297,7 @@ export const folderApi = {
 // ─── Products (document folders) ─────────────────────────────────────────────
 export const productApi = {
   list:   ()                                                   => api.get('/api/documents/products'),
+  listArchived: ()                                             => api.get('/api/documents/products?archived=1'),
   get:    (id: string)                                         => api.get(`/api/documents/products/${id}`),
   create: (data: { name: string; description?: string; sku?: string }) => api.post('/api/documents/products', data),
   archive: (id: string)                                       => api.patch(`/api/documents/products/${id}/archive`),
