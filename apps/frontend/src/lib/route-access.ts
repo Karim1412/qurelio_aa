@@ -39,6 +39,7 @@ const SUPER_ADMIN_FORBIDDEN_PREFIXES = [
   '/calendar',
   '/training',
   '/analytics',
+  '/regulatory-monitoring',
 ] as const;
 
 /** True if this app route should redirect super admins to {@link SUPER_ADMIN_HOME_PATH}. */
