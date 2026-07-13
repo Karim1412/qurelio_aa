@@ -337,6 +337,40 @@ services:
       retries: 5
       start_period: 45s
 
+  # ────────────────────────────────────────────────────────────
+  # DEV SEED — one-shot demo data. Runs automatically on `up` (exits when done).
+  # Bootstraps a demo tenant (login director@althea-medtech.demo / Demo@2024!),
+  # then seeds 7 products + the AlphaFlow 3 document folder. Idempotent.
+  # Set SEED_COMPANY_ID=<uuid> to target an existing company instead of the demo one.
+  # Uses the document-service *builder* stage (has src + ts-node + seed-data).
+  # ────────────────────────────────────────────────────────────
+  seed:
+    build:
+      context: ../services/document-service
+      dockerfile: Dockerfile
+      target: builder
+    container_name: qurelio_seed
+    env_file:
+      - ../.env
+    environment:
+      # Docker-network hostnames — no host port overrides needed here.
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: "9000"
+      SEED_COMPANY_ID: ${SEED_COMPANY_ID:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      auth-service:
+        condition: service_healthy
+      document-service:
+        condition: service_healthy
+    restart: "no"
+    command: ["npm", "run", "seed"]
+
 # ────────────────────────────────────────────────────────────
 volumes:
   postgres_data:
