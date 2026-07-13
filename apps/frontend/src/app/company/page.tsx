@@ -2,16 +2,15 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
-import { Stepper, type Step } from '@/components/company/Stepper';
 import { StepIdentity, type CompanyIdentityData } from '@/components/company/StepIdentity';
 import { StepActivity, type ActivityProductsData } from '@/components/company/StepActivity';
 import { StepMarkets, type MarketsComplianceData } from '@/components/company/StepMarkets';
 import { StepQuality, type QualityTeamData } from '@/components/company/StepQuality';
-import { CompanyProfileView } from '@/components/company/CompanyProfileView';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Check, Download } from '@/components/icons';
 import { companyProfileApi } from '@/lib/api';
 import toast from 'react-hot-toast';
+import './company-wizard.css';
+
+type Step = { label: string; subtitle: string };
 
 const STEPS: Step[] = [
   { label: 'Company Identity', subtitle: 'Legal info & location' },
@@ -19,6 +18,8 @@ const STEPS: Step[] = [
   { label: 'Markets & Compliance', subtitle: 'Export scope & certifications' },
   { label: 'Quality Team', subtitle: 'Maturity & contacts' },
 ];
+
+const READINESS_CHIPS = ['Company identity', 'Activity & products', 'Markets & compliance', 'Quality team'];
 
 function createEmptyIdentity(): CompanyIdentityData {
   return {
@@ -160,7 +161,6 @@ export default function CompanyPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
 
   const [identity, setIdentity] = useState<CompanyIdentityData>(createEmptyIdentity());
   const [activity, setActivity] = useState<ActivityProductsData>(createEmptyActivity());
@@ -342,49 +342,6 @@ export default function CompanyPage() {
 
   const isLastStep = currentStep === STEPS.length - 1;
 
-  const handleSaveProfile = async (updatedIdentity: CompanyIdentityData) => {
-    setIsSaving(true);
-    try {
-      const payload = buildPayload(updatedIdentity, activity, markets, quality);
-      await companyProfileApi.saveProfile({
-        ...payload,
-        currentStep: STEPS.length - 1,
-        onboardingStatus: 'COMPLETED',
-      });
-      setIdentity(updatedIdentity);
-      setIsEditing(false);
-      toast.success('Profile updated successfully');
-    } catch {
-      toast.error('Failed to update profile');
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const handleSaveQuality = async (
-    updatedActivity: ActivityProductsData,
-    updatedMarkets: MarketsComplianceData,
-    updatedQuality: QualityTeamData,
-  ) => {
-    setIsSaving(true);
-    try {
-      const payload = buildPayload(identity, updatedActivity, updatedMarkets, updatedQuality);
-      await companyProfileApi.saveProfile({
-        ...payload,
-        currentStep: STEPS.length - 1,
-        onboardingStatus: 'COMPLETED',
-      });
-      setActivity(updatedActivity);
-      setMarkets(updatedMarkets);
-      setQuality(updatedQuality);
-      toast.success('Quality info updated successfully');
-    } catch {
-      toast.error('Failed to update quality info');
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
   const renderStep = () => {
     switch (currentStep) {
       case 0:
@@ -410,105 +367,110 @@ export default function CompanyPage() {
     );
   }
 
-  // Completed profile view
-  if (isCompleted) {
-    return (
-      <DashboardLayout pageTitle="My company" pageTagline="">
-        <div className="w-full">
-          <CompanyProfileView
-            identity={identity}
-            activity={activity}
-            markets={markets}
-            quality={quality}
-            isEditing={isEditing}
-            onEdit={() => setIsEditing(true)}
-            onSave={handleSaveProfile}
-            onSaveQuality={handleSaveQuality}
-            onCancel={() => setIsEditing(false)}
-            isSaving={isSaving}
-          />
-        </div>
-      </DashboardLayout>
-    );
-  }
+  // Per-step completion drives the readiness ring, chips, and step-bar checkmarks.
+  const stepDone = [
+    !!identity.legalName.trim() && !!identity.country,
+    !!activity.primarySector && activity.subSectors.length > 0 && activity.products.length > 0 && activity.productionProcesses.length > 0,
+    markets.sites.some((s) => s.siteName.trim() && s.country && s.role) && markets.targetMarkets.length > 0 && markets.targetCertifications.length > 0,
+    !!quality.maturityLevel && !!quality.employeeRange && !!quality.qualityManagerName.trim() && !!quality.qualityManagerEmail.trim(),
+  ];
+  const stepComplete = STEPS.map((_, i) => stepDone[i] || completedSteps.includes(i));
+  const doneCount = stepComplete.filter(Boolean).length;
+  const readinessPct = isCompleted ? 100 : Math.round((doneCount / STEPS.length) * 100);
+  const RING_C = 2 * Math.PI * 24;
+  const ringOffset = RING_C * (1 - readinessPct / 100);
 
   return (
     <DashboardLayout pageTitle="My company" pageTagline="">
-      <div className="mx-auto max-w-4xl">
-        {/* Stepper header */}
-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-6 py-6 shadow-sm">
-          <Stepper steps={STEPS} currentStep={currentStep} completedSteps={completedSteps} />
+      <div className="qw">
+        {/* Readiness banner */}
+        <div className="readiness-banner">
+          <div className="readiness-ring">
+            <svg width="58" height="58" viewBox="0 0 58 58">
+              <circle className="ring-track" cx="29" cy="29" r="24" />
+              <circle
+                className="ring-fill"
+                cx="29"
+                cy="29"
+                r="24"
+                style={{ strokeDasharray: RING_C, strokeDashoffset: ringOffset }}
+              />
+            </svg>
+            <div className="ring-label">{readinessPct}%</div>
+          </div>
+          <div className="readiness-info">
+            <div className="readiness-title">
+              {isCompleted
+                ? 'Readiness: Profile complete'
+                : 'Readiness: In Progress — AI features are locked'}
+            </div>
+            <div className="readiness-desc">
+              Complete your company profile and upload your product documents to unlock compliance
+              evaluation and regulatory monitoring.
+            </div>
+            <div className="readiness-items">
+              {READINESS_CHIPS.map((label, i) => (
+                <span key={label} className={`readiness-chip ${stepComplete[i] ? 'done' : 'todo'}`}>
+                  {stepComplete[i] ? (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                  ) : (
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                  )}
+                  {label}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* Step content */}
-        <div className="mt-6 rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-8 py-8 shadow-sm">
+        {/* Wizard card */}
+        <div className="wizard-card">
+          <div className="wizard-steps">
+            {STEPS.map((step, i) => {
+              const cls = i === currentStep ? 'active' : stepComplete[i] ? 'done' : '';
+              return (
+                <button
+                  type="button"
+                  key={step.label}
+                  className={`step-item ${cls}`}
+                  onClick={() => setCurrentStep(i)}
+                >
+                  <div className="step-circle">
+                    {stepComplete[i] && i !== currentStep ? '✓' : i + 1}
+                  </div>
+                  <div className="step-text">
+                    <div className="step-label">{step.label}</div>
+                    <div className="step-sub">{step.subtitle}</div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
           {renderStep()}
-        </div>
 
-        {/* Footer bar */}
-        <div className="sticky bottom-0 z-10 mt-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-6 py-4 shadow-lg">
-          <div className="flex items-center justify-between">
-            {/* Left: auto-save indicator */}
-            <div className="flex items-center gap-2 text-[13px] text-[var(--muted)]">
-              <Check className="h-4 w-4 text-emerald-500" />
+          <div className="wizard-footer">
+            <div className="footer-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
               Progress saved automatically
             </div>
-
-            {/* Right: action buttons */}
-            <div className="flex items-center gap-3">
+            <div className="footer-btns">
               {currentStep > 0 && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={handleBack}
-                  disabled={isSaving}
-                  className="gap-2"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  Back
-                </Button>
+                <button type="button" className="btn btn-text" onClick={handleBack} disabled={isSaving}>
+                  ← Back
+                </button>
               )}
-
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleSaveAndExit}
-                disabled={isSaving}
-                className="gap-2"
-              >
-                <Download className="h-4 w-4" />
+              <button type="button" className="btn btn-ghost" onClick={handleSaveAndExit} disabled={isSaving}>
                 Save &amp; exit
-              </Button>
-
+              </button>
               {isLastStep ? (
-                <Button
-                  type="button"
-                  onClick={handleComplete}
-                  disabled={isSaving}
-                  className="gap-2 bg-emerald-600 hover:bg-emerald-700"
-                >
-                  {isSaving ? (
-                    <>
-                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                      Completing...
-                    </>
-                  ) : (
-                    <>
-                      Complete profile
-                      <Check className="h-4 w-4" />
-                    </>
-                  )}
-                </Button>
+                <button type="button" className="btn btn-complete" onClick={handleComplete} disabled={isSaving}>
+                  {isSaving ? <><span className="btn-spinner" />Completing…</> : <>Complete profile&nbsp;✓</>}
+                </button>
               ) : (
-                <Button
-                  type="button"
-                  onClick={handleNext}
-                  disabled={isSaving}
-                  className="gap-2"
-                >
-                  Continue
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
+                <button type="button" className="btn btn-primary" onClick={handleNext} disabled={isSaving}>
+                  {isSaving ? <><span className="btn-spinner" />Saving…</> : <>Continue&nbsp;→</>}
+                </button>
               )}
             </div>
           </div>

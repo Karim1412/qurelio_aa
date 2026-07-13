@@ -1,18 +1,7 @@
 'use client';
 
 import React, { useRef } from 'react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Camera } from '@/components/icons';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { cn } from '@/utils/cn';
+import { ReqDot } from '@/components/company/qw-fields';
 
 const COUNTRIES = [
   'Tunisia', 'Morocco', 'Algeria', 'Egypt', 'France', 'Germany', 'Italy',
@@ -54,81 +43,62 @@ export function StepIdentity({ data, onChange }: StepIdentityProps) {
   };
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
-          Company Identity
-        </h2>
-        <p className="mt-1 text-sm text-[var(--muted)]">
-          Legal and administrative information about your organisation.
-        </p>
+    <div className="wizard-panel">
+      <div className="panel-header">
+        <h2>Company Identity</h2>
+        <p>Legal and administrative information about your organisation.</p>
       </div>
 
-      <div className="space-y-5">
-        {/* Row 1: Legal name + Trade name */}
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <div className="space-y-1.5">
-            <Label>
-              Legal company name <span className="text-red-500">*</span>
-            </Label>
-            <Input
+      <div className="form-section">
+        <div className="form-grid">
+          <div className="field">
+            <label>Legal company name <ReqDot /></label>
+            <input
+              type="text"
               value={data.legalName}
               onChange={(e) => onChange({ legalName: e.target.value })}
               placeholder="e.g. Textile Industrie Maghreb S.A."
             />
           </div>
-          <div className="space-y-1.5">
-            <Label>Trade name / Brand</Label>
-            <Input
+          <div className="field">
+            <label>Trade name / Brand</label>
+            <input
+              type="text"
               value={data.tradeName}
               onChange={(e) => onChange({ tradeName: e.target.value })}
               placeholder="e.g. TIM Group"
             />
           </div>
-        </div>
-
-        {/* Row 2: Country + Address */}
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <div className="space-y-1.5">
-            <Label>
-              Country of headquarters <span className="text-red-500">*</span>
-            </Label>
-            <Select value={data.country} onValueChange={(v) => onChange({ country: v })}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a country" />
-              </SelectTrigger>
-              <SelectContent>
-                {COUNTRIES.map((c) => (
-                  <SelectItem key={c} value={c}>
-                    {c}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="field">
+            <label>Country of headquarters <ReqDot /></label>
+            <select value={data.country} onChange={(e) => onChange({ country: e.target.value })}>
+              <option value="">Select a country…</option>
+              {COUNTRIES.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
           </div>
-          <div className="space-y-1.5">
-            <Label>Headquarters address</Label>
-            <Input
+          <div className="field">
+            <label>Headquarters address</label>
+            <input
+              type="text"
               value={data.address}
               onChange={(e) => onChange({ address: e.target.value })}
-              placeholder="e.g. Zone Industrielle Monastir, Monastir 5000"
+              placeholder="Street, city, postal code"
             />
           </div>
-        </div>
-
-        {/* Row 3: Registration + Year */}
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <div className="space-y-1.5">
-            <Label>Registration / Tax number</Label>
-            <Input
+          <div className="field">
+            <label>Registration / Tax number</label>
+            <input
+              type="text"
               value={data.registrationNumber}
               onChange={(e) => onChange({ registrationNumber: e.target.value })}
-              placeholder="e.g. 1234567/A/M/000"
+              placeholder="MF, SIRET, RCS…"
             />
           </div>
-          <div className="space-y-1.5">
-            <Label>Year founded</Label>
-            <Input
+          <div className="field">
+            <label>Year founded</label>
+            <input
               type="number"
               min={1800}
               max={new Date().getFullYear()}
@@ -137,65 +107,41 @@ export function StepIdentity({ data, onChange }: StepIdentityProps) {
               placeholder="e.g. 2004"
             />
           </div>
+          <div className="field col-span-2">
+            <label>Company website</label>
+            <input
+              type="url"
+              value={data.website}
+              onChange={(e) => onChange({ website: e.target.value })}
+              placeholder="https://www.example.com"
+            />
+          </div>
         </div>
+      </div>
 
-        {/* Row 4: Website */}
-        <div className="space-y-1.5">
-          <Label>Company website</Label>
-          <Input
-            type="url"
-            value={data.website}
-            onChange={(e) => onChange({ website: e.target.value })}
-            placeholder="https://www.example.com"
-          />
-        </div>
-
-        {/* Logo upload */}
-        <div className="space-y-3">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">
-            Company Logo
-          </p>
-          <div className="flex items-center gap-4">
-            <div
-              className={cn(
-                'flex h-[72px] w-[72px] items-center justify-center rounded-2xl border-2 border-dashed',
-                data.logoPreview
-                  ? 'border-[var(--brand-primary)]/30 bg-[var(--brand-primary)]/5'
-                  : 'border-[var(--input-border)] bg-[var(--surface-muted)]'
-              )}
-            >
-              {data.logoPreview ? (
-                <img
-                  src={data.logoPreview}
-                  alt="Logo preview"
-                  className="h-full w-full rounded-2xl object-cover"
-                />
-              ) : (
-                <Camera className="h-6 w-6 text-[var(--muted)]" />
-              )}
-            </div>
-            <div>
+      <div className="form-section">
+        <div className="section-title">Company Logo</div>
+        <div className="logo-upload">
+          <div className="logo-preview">
+            {data.logoPreview ? (
+              <img src={data.logoPreview} alt="Logo preview" />
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="3" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>
+            )}
+          </div>
+          <div>
+            <label className="logo-upload-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 16 12 12 8 16" /><line x1="12" y1="12" x2="12" y2="21" /><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3" /></svg>
+              Upload logo
               <input
                 ref={fileInputRef}
                 type="file"
                 accept=".png,.jpg,.jpeg,.svg"
                 onChange={handleLogoChange}
-                className="hidden"
+                style={{ display: 'none' }}
               />
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => fileInputRef.current?.click()}
-                className="gap-2"
-              >
-                <Camera className="h-4 w-4" />
-                Upload logo
-              </Button>
-              <p className="mt-1.5 text-[11px] text-[var(--muted)]">
-                PNG, JPG or SVG · Max 2 MB · Will be resized to 256×256
-              </p>
-            </div>
+            </label>
+            <div className="logo-upload-hint">PNG, JPG or SVG · Max 2 MB · Will be resized to 256×256</div>
           </div>
         </div>
       </div>

@@ -195,6 +195,43 @@ interface SubNavItem {
   href: string;
 }
 
+/** A collapsible menu module (a parent item that expands into sub-modules). */
+interface NavGroupConfig {
+  label: string;
+  icon: NavIconComponent;
+  /** Route prefix that marks the whole group active (e.g. '/training'). */
+  basePath: string;
+  /** Where the collapsed-rail tile links (usually the first sub-module). */
+  flyoutHref: string;
+  anim?: AnimKey;
+  subItems: SubNavItem[];
+}
+
+const TRAINING_GROUP: NavGroupConfig = {
+  label: 'Training',
+  icon: TrainingIllustration,
+  basePath: '/training',
+  flyoutHref: '/training/my',
+  anim: 'pulse',
+  subItems: [
+    { label: 'My training', icon: MyTrainingIllustration, href: '/training/my' },
+    { label: 'Organization training', icon: OrganizationTrainingIllustration, href: '/training/organization' },
+    { label: 'Training rules', icon: TrainingRulesIllustration, href: '/training/rules' },
+  ],
+};
+
+const REGULATORY_MONITORING_GROUP: NavGroupConfig = {
+  label: 'Regulatory Monitoring',
+  icon: ComplianceIllustration,
+  basePath: '/regulatory-monitoring',
+  flyoutHref: '/regulatory-monitoring/applicability',
+  anim: 'rise',
+  subItems: [
+    { label: 'Applicability', icon: StandardsIllustration, href: '/regulatory-monitoring/applicability' },
+    { label: 'Monitoring', icon: AnalyticsIllustration, href: '/regulatory-monitoring/monitoring' },
+  ],
+};
+
 /**
  * Single-stroke SVG file-tree connector.
  * Renders the entire trunk + branches as one continuous drawing so lines
@@ -332,19 +369,20 @@ function TreeSvg({
   );
 }
 
-function CollapsedTrainingFlyout({
-  subItems,
+function CollapsedNavFlyout({
+  config,
   pathname,
   onNavigate,
   groupActive,
   easing,
 }: {
-  subItems: SubNavItem[];
+  config: NavGroupConfig;
   pathname: string;
   onNavigate?: () => void;
   groupActive: boolean;
   easing: string;
 }) {
+  const subItems = config.subItems;
   const wrapRef = useRef<HTMLDivElement>(null);
   const [coords, setCoords] = useState<{ left: number; top: number } | null>(null);
   const [open, setOpen] = useState(false);
@@ -397,7 +435,7 @@ function CollapsedTrainingFlyout({
       className="relative"
     >
       <NavLink
-        item={{ label: 'Training', icon: TrainingIllustration, href: '/training/my', anim: 'pulse' }}
+        item={{ label: config.label, icon: config.icon, href: config.flyoutHref, anim: config.anim }}
         active={groupActive}
         onNavigate={onNavigate}
         collapsed
@@ -409,7 +447,7 @@ function CollapsedTrainingFlyout({
             onMouseEnter={handleEnter}
             onMouseLeave={handleLeave}
             role="menu"
-            aria-label="Training"
+            aria-label={config.label}
             className={cn(
               'fixed z-[60] min-w-[280px] overflow-hidden rounded-[20px] border border-[var(--border)]/80 bg-[var(--sidebar-bg)]/95 p-2.5',
               'shadow-[0_28px_64px_-20px_rgba(15,23,42,0.28),0_6px_18px_-8px_rgba(15,23,42,0.10),inset_0_1px_0_0_rgba(255,255,255,0.6)]',
@@ -511,25 +549,21 @@ function CollapsedTrainingFlyout({
   );
 }
 
-function TrainingGroup({
+function NavGroup({
+  config,
   pathname,
   onNavigate,
   collapsed,
 }: {
+  config: NavGroupConfig;
   pathname: string;
   onNavigate?: () => void;
   collapsed?: boolean;
 }) {
-  const subItems: SubNavItem[] = useMemo(
-    () => [
-      { label: 'My training', icon: MyTrainingIllustration, href: '/training/my' },
-      { label: 'Organization training', icon: OrganizationTrainingIllustration, href: '/training/organization' },
-      { label: 'Training rules', icon: TrainingRulesIllustration, href: '/training/rules' },
-    ],
-    [],
-  );
+  const subItems = config.subItems;
+  const GroupIcon = config.icon;
 
-  const groupActive = pathname === '/training' || pathname.startsWith('/training/');
+  const groupActive = pathname === config.basePath || pathname.startsWith(`${config.basePath}/`);
   const [open, setOpen] = useState<boolean>(groupActive);
 
   useEffect(() => {
@@ -541,8 +575,8 @@ function TrainingGroup({
   // Collapsed rail: tile + hover-flyout (portaled to escape scroll-clipping)
   if (collapsed) {
     return (
-      <CollapsedTrainingFlyout
-        subItems={subItems}
+      <CollapsedNavFlyout
+        config={config}
         pathname={pathname}
         onNavigate={onNavigate}
         groupActive={groupActive}
@@ -566,9 +600,9 @@ function TrainingGroup({
         )}
       >
         <span className="relative z-[1] flex h-10 w-10 shrink-0 items-center justify-center">
-          <TrainingIllustration className="sb-icon sb-anim-pulse" size={26} strokeWidth={1.6} />
+          <GroupIcon className={cn('sb-icon', ANIM_CLASS[config.anim ?? 'pulse'])} size={26} strokeWidth={1.6} />
         </span>
-        <span className="relative z-[1] flex-1 truncate whitespace-nowrap text-left">Training</span>
+        <span className="relative z-[1] flex-1 truncate whitespace-nowrap text-left">{config.label}</span>
         <ChevronDown
           size={15}
           strokeWidth={2}
@@ -891,7 +925,7 @@ function SidebarNav({ onNavigate, collapsed }: { onNavigate?: () => void; collap
           />
         )}
         {showKanbanCalendarTraining && (
-          <TrainingGroup pathname={pathname} onNavigate={onNavigate} collapsed={collapsed} />
+          <NavGroup config={TRAINING_GROUP} pathname={pathname} onNavigate={onNavigate} collapsed={collapsed} />
         )}
         {showAnalytics && (
           <NavLink
@@ -932,6 +966,9 @@ function SidebarNav({ onNavigate, collapsed }: { onNavigate?: () => void; collap
                     onNavigate={onNavigate}
                     collapsed={collapsed}
                   />
+                )}
+                {showComplianceEngine && (
+                  <NavGroup config={REGULATORY_MONITORING_GROUP} pathname={pathname} onNavigate={onNavigate} collapsed={collapsed} />
                 )}
               </div>
             </>

@@ -4,7 +4,8 @@
   "scripts": {
     "build": "nest build",
     "start:dev": "nest start --watch",
-    "start": "node dist/main"
+    "start": "node dist/main",
+    "seed": "ts-node --transpile-only seed.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.3.2",

@@ -87,6 +87,8 @@ interface Props {
   onExtractionStarted?: (ids: string[]) => void;
   companySites?: string[];
   companyProcesses?: string[];
+  /** When set, the wizard opens in edit mode pre-filled with this product's saved profile. */
+  editProduct?: any | null;
 }
 
 const IDENTITY_EMPTY: ProductIdentityData = {
@@ -127,11 +129,12 @@ function makeEmptyDraft(): DraftEntry {
   };
 }
 
-export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, companySites, companyProcesses }: Props) {
+export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, companySites, companyProcesses, editProduct }: Props) {
+  const isEditMode = !!editProduct;
   const [view, setView] = useState<'wizard' | 'drafts'>('wizard');
 
-  // Try to load autosave on open
-  const autosave = open && view === 'wizard' ? loadAutosave() : null;
+  // Try to load autosave on open (create flow only — edit mode hydrates from the product instead)
+  const autosave = open && view === 'wizard' && !isEditMode ? loadAutosave() : null;
 
   const [step, setStep] = useState(autosave?.step ?? 0);
   const [completedSteps, setCompletedSteps] = useState<number[]>(autosave?.completedSteps ?? []);
@@ -146,9 +149,9 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
   const [certifications, setCertifications] = useState<ProductCertificationsData>(autosave?.certifications ?? CERTIFICATIONS_EMPTY);
   const [documents, setDocuments] = useState<ProductDocumentsData>({ files: [] });
 
-  // Persist autosave whenever state changes
+  // Persist autosave whenever state changes (create flow only — never pollute the create draft with an edit)
   useEffect(() => {
-    if (!open || view !== 'wizard') return;
+    if (!open || view !== 'wizard' || isEditMode) return;
     saveAutosave({
       id: autosave?.id ?? generateId(),
       name: draftName,
@@ -156,7 +159,51 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
       identity, technical, markets, manufacturing, certifications,
       savedAt: Date.now(),
     });
-  }, [open, view, step, completedSteps, productId, identity, technical, markets, manufacturing, certifications, draftName]);
+  }, [open, view, isEditMode, step, completedSteps, productId, identity, technical, markets, manufacturing, certifications, draftName]);
+
+  // Edit mode: hydrate every step from the existing product when the dialog opens.
+  useEffect(() => {
+    if (!open || !editProduct) return;
+    setView('wizard');
+    setProductId(editProduct.id);
+    setDraftName(editProduct.name ?? '');
+    setStep(0);
+    setCompletedSteps([0, 1, 2, 3, 4, 5]);
+    setIdentity({
+      name: editProduct.name ?? '',
+      sku: editProduct.sku ?? '',
+      brandName: editProduct.brandName ?? '',
+      productFamily: editProduct.productFamily ?? '',
+      category: editProduct.categoryTags?.[0] ?? '',
+      productType: editProduct.productType ?? 'finished',
+      description: editProduct.description ?? '',
+      productStatus: editProduct.productStatus ?? 'active',
+    });
+    setTechnical({
+      intendedUse: editProduct.intendedUse ?? '',
+      targetUsers: editProduct.targetUsers ?? [],
+      keyMaterials: editProduct.keyMaterials ?? [],
+      physicalForm: editProduct.physicalForm ?? '',
+      hsTariffCode: editProduct.hsTariffCode ?? '',
+      countryOfOrigin: editProduct.countryOfOrigin ?? '',
+    });
+    setMarkets({
+      targetMarkets: editProduct.targetMarkets ?? [],
+      requiredCertifications: editProduct.requiredCertifications ?? [],
+      applicableRegulations: editProduct.applicableRegulations ?? [],
+      industryLabels: editProduct.industryLabels ?? [],
+    });
+    setManufacturing({
+      productionSites: editProduct.productionSites ?? [],
+      productionProcesses: editProduct.productionProcesses ?? [],
+      criticalSuppliers: editProduct.criticalSuppliers ?? [],
+    });
+    setCertifications({
+      productCertifications: editProduct.productCertifications ?? [],
+    });
+    setDocuments({ files: [] });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, editProduct?.id]);
 
   const validateStep = useCallback((s: number): boolean => {
     switch (s) {
@@ -328,8 +375,8 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
       }
 
       toast.success(uploadedIds.length > 0
-        ? `Product activated — ${uploadedIds.length} file${uploadedIds.length > 1 ? 's' : ''} sent for AI extraction`
-        : 'Product activated successfully!');
+        ? `Product ${isEditMode ? 'updated' : 'activated'} — ${uploadedIds.length} file${uploadedIds.length > 1 ? 's' : ''} sent for AI extraction`
+        : isEditMode ? 'Product updated successfully!' : 'Product activated successfully!');
       handleClose();
       onCreated?.();
     } catch { toast.error('Failed to complete'); }
@@ -375,7 +422,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
         <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-3">
           <DialogHeader className="flex-1">
             <DialogTitle className="text-lg font-bold">
-              {view === 'drafts' ? 'Product Drafts' : productId ? 'Edit Product' : 'Add Product'}
+              {view === 'drafts' ? 'Product Drafts' : isEditMode ? 'Edit Product' : productId ? 'Edit Product' : 'Add Product'}
             </DialogTitle>
             <DialogDescription className="text-[13px]">
               {view === 'drafts' ? 'Resume a saved draft or start fresh' : 'Fill in product details across all steps'}
@@ -384,12 +431,16 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
           <div className="flex items-center gap-2">
             {view === 'wizard' && (
               <>
-                <Button variant="ghost" size="sm" onClick={() => setView('drafts')} className="gap-2">
-                  <FileText className="h-3.5 w-3.5" />
-                  Drafts
-                </Button>
+                {!isEditMode && (
+                  <Button variant="ghost" size="sm" onClick={() => setView('drafts')} className="gap-2">
+                    <FileText className="h-3.5 w-3.5" />
+                    Drafts
+                  </Button>
+                )}
                 <Button variant="outline" size="sm" onClick={handleClose} disabled={isSaving}>Cancel</Button>
-                <Button variant="outline" size="sm" onClick={handleSaveAndDraft} disabled={isSaving}>Save as draft</Button>
+                {!isEditMode && (
+                  <Button variant="outline" size="sm" onClick={handleSaveAndDraft} disabled={isSaving}>Save as draft</Button>
+                )}
               </>
             )}
             {view === 'drafts' && (
@@ -422,7 +473,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
                   </Button>
                 )}
                 <Button size="sm" onClick={isLast ? handleComplete : handleNext} disabled={isSaving} className="gap-2">
-                  {isLast ? <><Check className="h-4 w-4" />Save & activate</> : <>Next<ArrowRight className="h-4 w-4" /></>}
+                  {isLast ? <><Check className="h-4 w-4" />{isEditMode ? 'Save changes' : 'Save & activate'}</> : <>Next<ArrowRight className="h-4 w-4" /></>}
                 </Button>
               </div>
             </div>

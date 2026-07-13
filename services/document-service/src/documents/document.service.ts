@@ -117,13 +117,18 @@ export class DocumentService {
     return { id: product.id, name: product.name, sku: product.sku, createdAt: product.createdAt };
   }
 
-  async listProducts(companyId: string, includeArchived = false) {
+  async listProducts(
+    companyId: string,
+    opts: { includeArchived?: boolean; archivedOnly?: boolean } = {},
+  ) {
     const qb = this.productRepo
       .createQueryBuilder('p')
       .leftJoinAndSelect('p.documents', 'd')
       .where('p.companyId = :companyId', { companyId })
       .orderBy('p.createdAt', 'DESC');
-    if (!includeArchived) qb.andWhere('p.archivedAt IS NULL');
+    // archivedOnly → the Archived list; default → active library only (archivedAt IS NULL).
+    if (opts.archivedOnly) qb.andWhere('p.archivedAt IS NOT NULL');
+    else if (!opts.includeArchived) qb.andWhere('p.archivedAt IS NULL');
     return qb.getMany();
   }
 

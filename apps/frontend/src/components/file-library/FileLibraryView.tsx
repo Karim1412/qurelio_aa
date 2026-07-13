@@ -1632,11 +1632,11 @@ function groupDocs(docs: any[], products: any[] = []) {
   const unfiled: any[] = [];
   const folderMap = new Map<string, { product: any; docs: any[] }>();
 
-  // Seed with all products so empty ones still appear as folders
+  // Seed with the passed products so empty ones still appear as folders. The caller passes the
+  // set that matches the current view (active vs archived); folder visibility is filtered by the
+  // product's real archivedAt downstream, so seed every product here regardless of archived state.
   for (const p of products) {
-    if (!p.archivedAt) {
-      folderMap.set(p.id, { product: p, docs: [] });
-    }
+    folderMap.set(p.id, { product: p, docs: [] });
   }
 
   for (const doc of docs) {
@@ -1670,6 +1670,7 @@ function ViewProductModal({
   onDownloadFile,
   onArchiveFile,
   onUploaded,
+  readOnly = false,
   nameMap,
   userAvatarKeyById,
 }: {
@@ -1682,6 +1683,8 @@ function ViewProductModal({
   onArchiveFile?: (id: string) => void;
   /** Called after a file is uploaded so parent can refresh */
   onUploaded?: () => void;
+  /** View-only: hides the product profile edit affordance (editing happens via the row wizard action). */
+  readOnly?: boolean;
   nameMap: Map<string, string>;
   userAvatarKeyById: Map<string, string | null>;
 }) {
@@ -1701,7 +1704,7 @@ function ViewProductModal({
 
   if (!open || !folder) return null;
   const { product, docs } = folder;
-  const showFileDelete = typeof onArchiveFile === 'function';
+  const showFileDelete = !readOnly && typeof onArchiveFile === 'function';
 
   const startEdit = () => {
     setEditData({
@@ -1867,7 +1870,7 @@ function ViewProductModal({
                     Save
                   </Button>
                 </>
-              ) : (
+              ) : readOnly ? null : (
                 <Button variant="outline" size="sm" onClick={startEdit} className="gap-2">
                   <Edit className="h-3.5 w-3.5" />Edit
                 </Button>
@@ -2056,30 +2059,32 @@ function ViewProductModal({
             <TabsContent value="files" className="mt-0 focus-visible:outline-none">
               <div className="mb-3 flex items-center justify-between">
                 <p className="text-sm font-semibold text-[var(--text-primary)]">Product files</p>
-                <div className="flex items-center gap-2">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    multiple
-                    accept=".pdf,.docx,.xlsx,.jpg,.jpeg,.png,.tiff,.tif"
-                    className="hidden"
-                    onChange={handleFileUpload}
-                  />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-1.5"
-                    disabled={uploading}
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    {uploading ? (
-                      <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[var(--brand-primary)] border-t-transparent" />
-                    ) : (
-                      <Upload className="h-3.5 w-3.5" />
-                    )}
-                    {uploading ? 'Uploading...' : 'Upload file'}
-                  </Button>
-                </div>
+                {!readOnly && (
+                  <div className="flex items-center gap-2">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      multiple
+                      accept=".pdf,.docx,.xlsx,.jpg,.jpeg,.png,.tiff,.tif"
+                      className="hidden"
+                      onChange={handleFileUpload}
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-1.5"
+                      disabled={uploading}
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      {uploading ? (
+                        <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[var(--brand-primary)] border-t-transparent" />
+                      ) : (
+                        <Upload className="h-3.5 w-3.5" />
+                      )}
+                      {uploading ? 'Uploading...' : 'Upload file'}
+                    </Button>
+                  </div>
+                )}
               </div>
               {docs.length === 0 && !uploading ? (
                 <p className="py-8 text-center text-sm text-[var(--muted)]">No files for this product</p>
@@ -2833,6 +2838,7 @@ function DocSection({
   focusProductId = null,
   onFocusProductHandled,
   products = [],
+  onEditProductInWizard,
 }: {
   docs: any[];
   onDownload: (id: string, fileName?: string) => void;
@@ -2859,6 +2865,8 @@ function DocSection({
   onFocusProductHandled?: () => void;
   /** All products (including empty ones) so product folders appear even without docs */
   products?: any[];
+  /** Open the full 6-step wizard pre-filled with a product for editing */
+  onEditProductInWizard?: (product: any) => void;
 }) {
   const [productModal, setProductModal] = useState<{ product: any; docs: any[] } | null>(null);
   const [productSectionPage, setProductSectionPage] = useState(1);
@@ -2872,7 +2880,13 @@ function DocSection({
   const { user } = useAuthStore();
   const canDeleteProduct = user?.role === 'DIRECTOR' || user?.role === 'QUALITY_MANAGER';
   const canManageWorkspace = user?.role === 'DIRECTOR' || user?.role === 'QUALITY_MANAGER';
-  const { standards, folders, unfiled } = groupDocs(docs, products);
+  const { standards, folders: allFolders, unfiled } = groupDocs(docs, products);
+  // Active library shows only non-archived products; the Archived view shows only archived ones.
+  // Status is driven by the product's real archivedAt, so a freshly-created (active) product never
+  // leaks into the Archived list, and vice versa.
+  const folders = allFolders.filter((f) =>
+    archiveScope === 'product' ? !!f.product?.archivedAt : !f.product?.archivedAt,
+  );
 
   useEffect(() => {
     if (!focusProductId) return;
@@ -2967,39 +2981,6 @@ function DocSection({
     }
   };
 
-  const handleRestoreProduct = async (productId: string) => {
-    try {
-      await productApi.restore(productId);
-      toast.success('Product restored to the active library');
-      setProductModal(null);
-      onDelete('__reload__');
-    } catch {
-      toast.error('Restore failed');
-    }
-  };
-
-  const handleDeleteProduct = async (productId: string) => {
-    const ok =
-      confirmAction != null
-        ? await confirmAction({
-            title: 'Delete this product?',
-            description:
-              'This permanently removes the product and deletes all associated files from storage. This cannot be undone.',
-            confirmLabel: 'Delete product',
-            variant: 'destructive',
-          })
-        : typeof window !== 'undefined' && window.confirm('Delete this product and all its files?');
-    if (!ok) return;
-    try {
-      await productApi.delete(productId);
-      toast.success('Product deleted');
-      setProductModal(null);
-      onDelete('__reload__');
-    } catch (e: unknown) {
-      const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
-      toast.error(typeof msg === 'string' ? msg : 'Delete failed — Company Admin or Quality Manager required');
-    }
-  };
 
   const showProduct = viewFilter !== 'standard';
   const showStandard = viewFilter !== 'product';
@@ -3046,7 +3027,7 @@ function DocSection({
                   {folderPage.map((folder) => {
                     const extracted = getBestProductCategoryFromDocs(folder.docs);
                     const showCat = extracted !== '—' ? extracted : folder.product.categoryTags?.[0] || '—';
-                    const isArchived = archiveScope === 'product';
+                    const isArchived = !!folder.product.archivedAt;
                     return (
                       <TableRow
                         key={folder.product.id}
@@ -3081,19 +3062,19 @@ function DocSection({
                         </TableCell>
                         <TableCell className="text-right align-middle">
                           <div className="flex w-full items-center justify-end gap-0.5" dir="ltr">
-                            {archiveScope === 'none' && canDeleteProduct && (
+                            {archiveScope === 'none' && canDeleteProduct && onEditProductInWizard && (
                               <Button
                                 type="button"
                                 variant="ghost"
                                 size="icon"
-                                className={DOC_ROW_ARCHIVE_BTN}
-                                title="Archive product folder (restorable from Archived products)"
+                                className={DOC_ROW_NEUTRAL_BTN}
+                                title="Edit product (opens the wizard)"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  void handleArchiveProduct(folder.product.id);
+                                  onEditProductInWizard(folder.product);
                                 }}
                               >
-                                <Archive className="h-4 w-4" strokeWidth={2.25} />
+                                <Edit className="h-4 w-4" />
                               </Button>
                             )}
                             {archiveScope === 'none' && canDeleteProduct && (
@@ -3102,7 +3083,7 @@ function DocSection({
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8 rounded-md border border-red-500/30 bg-red-500/8 text-red-700 hover:bg-red-500/15 dark:text-red-400"
-                                title="Move product folder to Trash (restorable)"
+                                title="Delete product (moves it to Archived products)"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   void handleArchiveProduct(folder.product.id);
@@ -3111,42 +3092,13 @@ function DocSection({
                                 <Trash2 className="h-4 w-4" strokeWidth={2.25} />
                               </Button>
                             )}
-                            {archiveScope === 'product' && canDeleteProduct && (
-                              <>
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 rounded-md border border-emerald-500/40 bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/18 dark:text-emerald-400"
-                                  title="Restore product to active library"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    void handleRestoreProduct(folder.product.id);
-                                  }}
-                                >
-                                  <ArchiveRestore className="h-4 w-4" strokeWidth={2.25} />
-                                </Button>
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 rounded-md border border-red-500/40 bg-red-500/8 text-red-700 hover:bg-red-500/15 dark:text-red-400"
-                                  title="Delete product permanently"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    void handleDeleteProduct(folder.product.id);
-                                  }}
-                                >
-                                  <Trash2 className="h-4 w-4" strokeWidth={2.25} />
-                                </Button>
-                              </>
-                            )}
+                            {/* Archived product folders are view-only — no restore / permanent-delete actions. */}
                             <Button
                               type="button"
                               variant="ghost"
                               size="icon"
                               className={DOC_ROW_NEUTRAL_BTN}
-                              title="View product"
+                              title="View product (read-only)"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setProductModal(folder);
@@ -3182,6 +3134,7 @@ function DocSection({
             folder={productModal}
             onViewFile={(doc, siblings) => onViewDocument(doc, siblings)}
             onDownloadFile={onDownload}
+            readOnly
             onArchiveFile={user?.role === 'DIRECTOR' ? (id) => onDelete(id) : undefined}
             onUploaded={async () => {
               if (!productModal?.product?.id) return;
@@ -4319,12 +4272,16 @@ function DocumentsPageContent({
   const [sharedDocs, setSharedDocs] = useState<any[]>([]);
   const [archivedStandards, setArchivedStandards] = useState<any[]>([]);
   const [archivedProducts, setArchivedProducts] = useState<any[]>([]);
+  // Archived product *entities* (not their docs) — powers the view-only Archived product folders list.
+  const [archivedProductList, setArchivedProductList] = useState<any[]>([]);
   const [allProducts, setAllProducts] = useState<any[]>([]);
   // Start false: loadDocs only runs when user?.id exists; otherwise we'd stay "loading" forever
   // (persist hydration delay or missing id on user).
   const [loading, setLoading] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [productWizardOpen, setProductWizardOpen] = useState(false);
+  // When set, the wizard opens in edit mode for this product; null = create flow.
+  const [wizardEditProduct, setWizardEditProduct] = useState<any | null>(null);
   const [newFolderOpen, setNewFolderOpen] = useState(false);
   // Global extraction progress (persists across navigation, rendered in DashboardLayout)
   const extraction = useExtractionProgress();
@@ -4364,7 +4321,7 @@ function DocumentsPageContent({
     }
     setLoading(true);
     try {
-      const [myRes, sharedRes, archStdRes, archProdRes, productsRes] = await Promise.all([
+      const [myRes, sharedRes, archStdRes, archProdRes, productsRes, archProdListRes] = await Promise.all([
         documentApi.list({ uploadedBy: user.id }),
         documentApi.list(),
         documentApi.list({ type: 'ISO_NORM', includeArchived: true, libraryStatus: 'ARCHIVED' }),
@@ -4375,12 +4332,14 @@ function DocumentsPageContent({
           hasProduct: true,
         }),
         productApi.list().catch(() => ({ data: [] })),
+        productApi.listArchived().catch(() => ({ data: [] })),
       ]);
       setMyDocs(myRes.data);
       setSharedDocs(sharedRes.data);
       setArchivedStandards(archStdRes.data ?? []);
       setArchivedProducts(archProdRes.data ?? []);
       setAllProducts(Array.isArray(productsRes.data) ? productsRes.data : []);
+      setArchivedProductList(Array.isArray(archProdListRes.data) ? archProdListRes.data : []);
     } catch {
       toast.error('Failed to load documents');
     } finally {
@@ -4828,7 +4787,7 @@ function DocumentsPageContent({
                 </Link>
               </Button>
               {docView === 'product' ? (
-                <Button type="button" className="gap-2" onClick={() => setProductWizardOpen(true)}>
+                <Button type="button" className="gap-2" onClick={() => { setWizardEditProduct(null); setProductWizardOpen(true); }}>
                   <Package className="h-4 w-4" />
                   Add Products
                 </Button>
@@ -4867,9 +4826,9 @@ function DocumentsPageContent({
         </p>
       )}
 
-{archiveScope === 'product' && archivedProducts.length === 0 && !loading && (
+{archiveScope === 'product' && archivedProducts.length === 0 && archivedProductList.length === 0 && !loading && (
           <p className="mb-6 rounded-xl border border-dashed border-[var(--border)] py-12 text-center text-sm text-[var(--muted)]">
-            No archived product documents. Archive files from a product folder to see them here.
+            No archived products. Archive a product folder to see it here.
           </p>
         )}
 
@@ -4949,7 +4908,7 @@ function DocumentsPageContent({
         >
           <DocSection
             docs={listDocsForSection}
-            products={allProducts}
+            products={archiveScope === 'product' ? archivedProductList : allProducts}
             viewFilter={docView}
             archiveScope={archiveScope}
             customFolder={
@@ -4973,6 +4932,7 @@ function DocumentsPageContent({
             onPurgeArchived={handlePurgeArchived}
             onViewDocument={openDocumentView}
             onDocsMutated={() => void loadDocs()}
+            onEditProductInWizard={(product) => { setWizardEditProduct(product); setProductWizardOpen(true); }}
           />
         </motion.div>
       </AnimatePresence>
@@ -5008,7 +4968,8 @@ function DocumentsPageContent({
 
       <ProductWizard
         open={productWizardOpen}
-        onClose={() => setProductWizardOpen(false)}
+        editProduct={wizardEditProduct}
+        onClose={() => { setProductWizardOpen(false); setWizardEditProduct(null); }}
         onCreated={loadDocs}
         onExtractionStarted={(ids) => extraction.start(ids, 'product')}
       />

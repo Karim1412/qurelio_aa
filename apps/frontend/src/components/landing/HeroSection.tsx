@@ -255,7 +255,7 @@ export function HeroSection() {
           <br />
           <span className="inline-flex items-baseline justify-center">
             <AnimatedWords
-              text="for smarter quality management"
+              text="the legally-safe AI compliance OS"
               className="text-[var(--text-primary)]"
               delayBase={0.6}
             />
@@ -269,9 +269,10 @@ export function HeroSection() {
           transition={{ duration: 0.7, delay: 1.0, ease: EASE_OUT }}
           className="mx-auto max-w-2xl text-base leading-relaxed text-[var(--muted)] sm:text-lg"
         >
-          One place to align teams with ISO requirements: documents, audits,
-          evaluations, and non-conformities—so you improve the quality
-          experience every day, not just at certification time.
+          Qurelio builds a private Compliance Memory from your own documents,
+          evaluates you against public regulations, monitors regulatory change,
+          and runs your full quality-operations lifecycle—with every AI output
+          human-approved before it becomes executable.
         </motion.p>
 
         {/* CTAs */}

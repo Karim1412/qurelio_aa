@@ -1059,8 +1059,9 @@ export function WhyQurelio() {
             What makes Qurelio the <em>powerful</em> quality solution
           </h2>
           <p className="qurelio-sub">
-            Built from the ground up for quality teams who need more than spreadsheets — Qurelio combines AI,
-            automation, and deep ISO expertise into one unified platform.
+            Built as a legally-safe compliance OS: Qurelio turns your own documents into a private Compliance
+            Memory, then grounds every evaluation, regulatory-monitoring alert, and quality workflow in it —
+            with AI you review and approve, never auto-executed.
           </p>
 
           <div className="spotlight-wrap">
