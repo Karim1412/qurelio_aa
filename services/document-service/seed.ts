@@ -142,12 +142,246 @@ const FLAGSHIP: SeedProduct = {
 };
 
 const OTHER_PRODUCTS: SeedProduct[] = [
-  { name: 'AlphaFlow 2 Volumetric Infusion Pump', reference: 'ALT-AF2-1900', sku: 'ALT-AF2-1900', categoryTags: ['Infusion pump (legacy)'], productType: 'finished', targetMarkets: marketLabels(['EU', 'GCC']) },
-  { name: 'AlphaFlow SD Ambulatory Syringe Driver', reference: 'ALT-SD-3100', sku: 'ALT-SD-3100', categoryTags: ['Syringe driver'], productType: 'finished', targetMarkets: marketLabels(['EU', 'UK']) },
-  { name: 'AlphaLine Standard IV Giving Set (sterile, single-use)', reference: 'ALT-GS-0450', sku: 'ALT-GS-0450', categoryTags: ['IV administration set'], productType: 'finished', targetMarkets: marketLabels(['EU', 'GCC', 'MAGHREB']) },
-  { name: 'AlphaDock Charging & Docking Station', reference: 'ALT-DK-0075', sku: 'ALT-DK-0075', categoryTags: ['Accessory (electrical)'], productType: 'component', targetMarkets: marketLabels(['EU']) },
-  { name: 'AF3 Control-Board Assembly (PCBA)', reference: 'ALT-PCB-2201', sku: 'ALT-PCB-2201', categoryTags: ['Electronic component'], productType: 'component', targetMarkets: marketLabels(['EU']) },
-  { name: 'AF3 Li-Ion Battery Pack (replacement)', reference: 'ALT-BAT-2202', sku: 'ALT-BAT-2202', categoryTags: ['Spare part'], productType: 'raw_material', targetMarkets: marketLabels(['EU']) },
+  {
+    name: 'AlphaFlow 2 Volumetric Infusion Pump',
+    reference: 'ALT-AF2-1900',
+    sku: 'ALT-AF2-1900',
+    description:
+      'Second-generation reusable volumetric infusion pump — the predecessor to the AlphaFlow 3. Maintained for the installed base of hospitals still running the AF2 platform.',
+    brandName: 'AlphaFlow',
+    productFamily: 'AlphaFlow Infusion Platform',
+    productType: 'finished',
+    productStatus: 'active',
+    categoryTags: ['Infusion pump (legacy)'],
+    intendedUse:
+      'Controlled intravenous administration of fluids and medications to adult and pediatric patients in hospital settings. Delivery range 1–999 mL/h with ±5% flow accuracy. Operated by trained healthcare professionals.',
+    targetUsers: ['Medical professionals', 'B2B — Commercial / Distribution (hospital procurement)'],
+    keyMaterials: ['Polycarbonate housing', 'Silicone pumping segment', 'NiMH battery pack', 'PCBA / embedded microcontroller'],
+    physicalForm: 'Solid',
+    hsTariffCode: '9018.90',
+    countryOfOrigin: 'France',
+    targetMarkets: marketLabels(['EU', 'GCC']),
+    requiredCertifications: [
+      'CE marking under EU MDR 2017/745 (Class IIb)',
+      'EN ISO 13485:2016 — QMS',
+      'EN ISO 14971:2019 — risk management',
+      'IEC 60601-1 — general electrical safety',
+      'IEC 60601-2-24 — infusion pumps',
+      'IEC 62304 — medical device software',
+    ],
+    applicableRegulations: ['EU MDR — Regulation (EU) 2017/745', 'GDPR — Regulation (EU) 2016/679'],
+    industryLabels: ['CE Marking'],
+    productionSites: ['Lyon Manufacturing & R&D Centre', 'Sfax Assembly & Packaging Plant'],
+    productionProcesses: ['Production / Assembly', 'Quality Control', 'Packaging'],
+    criticalSuppliers: ['PolySil Medical (silicone pump segments)', 'Rhône PCBA Contract Manufacturing (electronics)'],
+    productCertifications: [
+      {
+        standardName: 'CE Certificate — EU MDR 2017/745, Class IIb',
+        certifyingBody: 'TÜV SÜD Product Service (Notified Body 0123)',
+        certificateNumber: 'G2-21-0091-MDR',
+        marketScope: 'European Union / EEA',
+        issueDate: '2021-05-10',
+        expiryDate: '2026-05-09',
+      },
+    ],
+    onboardingStatus: 'COMPLETED',
+    currentStep: 6,
+  },
+  {
+    name: 'AlphaFlow SD Ambulatory Syringe Driver',
+    reference: 'ALT-SD-3100',
+    sku: 'ALT-SD-3100',
+    description:
+      'Compact, battery-powered ambulatory syringe driver for continuous subcutaneous and intravenous medication delivery, including palliative and home-care therapy under clinical supervision.',
+    brandName: 'AlphaFlow',
+    productFamily: 'AlphaFlow Infusion Platform',
+    productType: 'finished',
+    productStatus: 'active',
+    categoryTags: ['Syringe driver'],
+    intendedUse:
+      'Continuous, programmable delivery of medication from a syringe to adult and pediatric patients in hospital, clinic and supervised home-care settings. Delivery range 0.1–99 mL/h. Operated by trained healthcare professionals.',
+    targetUsers: ['Medical professionals', 'B2B — Commercial / Distribution (hospital procurement)'],
+    keyMaterials: ['ABS / polycarbonate housing', 'Stepper-motor drive', 'Rechargeable lithium-ion battery', 'PCBA / embedded microcontroller'],
+    physicalForm: 'Solid',
+    hsTariffCode: '9018.31',
+    countryOfOrigin: 'France',
+    targetMarkets: marketLabels(['EU', 'UK']),
+    requiredCertifications: [
+      'CE marking under EU MDR 2017/745 (Class IIb)',
+      'EN ISO 13485:2016 — QMS',
+      'EN ISO 14971:2019 — risk management',
+      'IEC 60601-1 — general electrical safety',
+      'IEC 60601-2-24 — infusion pumps',
+      'IEC 62304 — medical device software',
+      'IEC 62366-1 — usability engineering',
+    ],
+    applicableRegulations: ['EU MDR — Regulation (EU) 2017/745', 'UK MDR 2002 (post-Brexit)', 'GDPR — Regulation (EU) 2016/679'],
+    industryLabels: ['CE Marking'],
+    productionSites: ['Lyon Manufacturing & R&D Centre', 'Sfax Assembly & Packaging Plant'],
+    productionProcesses: ['Production / Assembly', 'Electronics / PCBA Assembly', 'Quality Control', 'Software Development', 'Packaging'],
+    criticalSuppliers: ['Nordcell GmbH (lithium-ion cells)', 'Rhône PCBA Contract Manufacturing (electronics)'],
+    productCertifications: [
+      {
+        standardName: 'CE Certificate — EU MDR 2017/745, Class IIb',
+        certifyingBody: 'TÜV SÜD Product Service (Notified Body 0123)',
+        certificateNumber: 'G2-23-0210-MDR',
+        marketScope: 'European Union / EEA / United Kingdom',
+        issueDate: '2023-03-01',
+        expiryDate: '2028-02-29',
+      },
+    ],
+    onboardingStatus: 'COMPLETED',
+    currentStep: 6,
+  },
+  {
+    name: 'AlphaLine Standard IV Giving Set (sterile, single-use)',
+    reference: 'ALT-GS-0450',
+    sku: 'ALT-GS-0450',
+    description:
+      'Sterile, single-use gravity/pump IV administration set with drip chamber, roller clamp and luer-lock connector. Compatible with the AlphaFlow pump range.',
+    brandName: 'AlphaLine',
+    productFamily: 'AlphaLine Disposables',
+    productType: 'finished',
+    productStatus: 'active',
+    categoryTags: ['IV administration set'],
+    intendedUse:
+      'Single-use administration of intravenous fluids and medications to patients under the care of healthcare professionals. Sterile (ethylene-oxide), non-pyrogenic, DEHP-free fluid path.',
+    targetUsers: ['Medical professionals', 'B2B — Commercial / Distribution (hospital procurement)'],
+    keyMaterials: ['DEHP-free PVC tubing', 'ABS spike & drip chamber', 'Latex-free components', 'Polycarbonate luer-lock connector'],
+    physicalForm: 'Solid',
+    hsTariffCode: '9018.39',
+    countryOfOrigin: 'Tunisia',
+    targetMarkets: marketLabels(['EU', 'GCC', 'MAGHREB']),
+    requiredCertifications: [
+      'CE marking under EU MDR 2017/745 (Class IIa)',
+      'EN ISO 13485:2016 — QMS',
+      'EN ISO 8536-4 — infusion equipment',
+      'EN ISO 11135 — ethylene-oxide sterilization',
+      'EN ISO 10993-1 — biological evaluation',
+    ],
+    applicableRegulations: ['EU MDR — Regulation (EU) 2017/745', 'REACH — Regulation (EU) 1907/2006'],
+    industryLabels: ['CE Marking'],
+    productionSites: ['Sfax Assembly & Packaging Plant'],
+    productionProcesses: ['Extrusion / Moulding', 'Production / Assembly', 'Sterilization', 'Quality Control', 'Packaging'],
+    criticalSuppliers: ['PolyMed Tubing (DEHP-free PVC)', 'SteriPack (contract EO sterilization)'],
+    productCertifications: [
+      {
+        standardName: 'CE Certificate — EU MDR 2017/745, Class IIa',
+        certifyingBody: 'TÜV SÜD Product Service (Notified Body 0123)',
+        certificateNumber: 'G1-24-0332-MDR',
+        marketScope: 'European Union / EEA',
+        issueDate: '2024-04-18',
+        expiryDate: '2029-04-17',
+      },
+    ],
+    onboardingStatus: 'COMPLETED',
+    currentStep: 6,
+  },
+  {
+    name: 'AlphaDock Charging & Docking Station',
+    reference: 'ALT-DK-0075',
+    sku: 'ALT-DK-0075',
+    description:
+      'Mains-powered multi-bay charging and docking station for the AlphaFlow pump range. Accessory to an active medical device.',
+    brandName: 'AlphaFlow',
+    productFamily: 'AlphaFlow Accessories',
+    productType: 'component',
+    productStatus: 'active',
+    categoryTags: ['Accessory (electrical)'],
+    intendedUse:
+      'Charging, storage and data-sync docking for AlphaFlow infusion devices in clinical environments. Accessory intended to be used together with an active medical device.',
+    targetUsers: ['Medical professionals', 'B2B — Commercial / Distribution (hospital procurement)'],
+    keyMaterials: ['ABS / polycarbonate housing', 'Medical-grade power supply', 'PCBA / charge controller'],
+    physicalForm: 'Solid',
+    hsTariffCode: '8504.40',
+    countryOfOrigin: 'France',
+    targetMarkets: marketLabels(['EU']),
+    requiredCertifications: [
+      'IEC 60601-1 — general electrical safety',
+      'IEC 60601-1-2 — electromagnetic compatibility',
+      'CE marking (accessory to EU MDR device)',
+    ],
+    applicableRegulations: [
+      'EU MDR — Regulation (EU) 2017/745 (accessory)',
+      'RoHS — Directive 2011/65/EU',
+      'WEEE — Directive 2012/19/EU',
+    ],
+    industryLabels: ['CE Marking'],
+    productionSites: ['Lyon Manufacturing & R&D Centre'],
+    productionProcesses: ['Electronics / PCBA Assembly', 'Production / Assembly', 'Quality Control'],
+    criticalSuppliers: ['Rhône PCBA Contract Manufacturing (electronics)'],
+    productCertifications: [],
+    onboardingStatus: 'COMPLETED',
+    currentStep: 6,
+  },
+  {
+    name: 'AF3 Control-Board Assembly (PCBA)',
+    reference: 'ALT-PCB-2201',
+    sku: 'ALT-PCB-2201',
+    description:
+      'Populated printed-circuit-board assembly (main control board) for the AlphaFlow 3 pump. Internal electronic component / sub-assembly.',
+    brandName: 'AlphaFlow',
+    productFamily: 'AlphaFlow Components',
+    productType: 'component',
+    productStatus: 'active',
+    categoryTags: ['Electronic component'],
+    intendedUse:
+      'Embedded control, motor drive and alarm handling for the AlphaFlow 3 infusion pump. Not placed on the market as a standalone device — integrated into a finished medical device.',
+    targetUsers: ['B2B — OEM / Internal manufacturing'],
+    keyMaterials: ['FR-4 printed circuit board', 'Embedded microcontroller', 'Passive & active SMD components', 'Lead-free solder'],
+    physicalForm: 'Solid',
+    hsTariffCode: '8534.00',
+    countryOfOrigin: 'France',
+    targetMarkets: marketLabels(['EU']),
+    requiredCertifications: [
+      'IPC-A-610 — acceptability of electronic assemblies',
+      'IEC 62304 — medical device software (as integrated)',
+    ],
+    applicableRegulations: ['RoHS — Directive 2011/65/EU', 'REACH — Regulation (EU) 1907/2006'],
+    industryLabels: [],
+    productionSites: ['Lyon Manufacturing & R&D Centre'],
+    productionProcesses: ['Electronics / PCBA Assembly', 'Quality Control'],
+    criticalSuppliers: ['Rhône PCBA Contract Manufacturing (electronics)'],
+    productCertifications: [],
+    onboardingStatus: 'COMPLETED',
+    currentStep: 6,
+  },
+  {
+    name: 'AF3 Li-Ion Battery Pack (replacement)',
+    reference: 'ALT-BAT-2202',
+    sku: 'ALT-BAT-2202',
+    description:
+      'Rechargeable lithium-ion battery pack (replacement spare) for the AlphaFlow 3 pump, with integrated battery-management system.',
+    brandName: 'AlphaFlow',
+    productFamily: 'AlphaFlow Components',
+    productType: 'raw_material',
+    productStatus: 'active',
+    categoryTags: ['Spare part'],
+    intendedUse:
+      'Field-replaceable power source for the AlphaFlow 3 infusion pump, providing ≥ 6 h runtime. Replaced by trained service technicians.',
+    targetUsers: ['Medical professionals', 'B2B — OEM / Internal manufacturing'],
+    keyMaterials: ['Lithium-ion cells', 'Battery-management PCBA', 'Polycarbonate enclosure'],
+    physicalForm: 'Solid',
+    hsTariffCode: '8507.60',
+    countryOfOrigin: 'France',
+    targetMarkets: marketLabels(['EU']),
+    requiredCertifications: [
+      'IEC 62133-2 — secondary lithium cell/battery safety',
+      'UN 38.3 — lithium battery transport testing',
+    ],
+    applicableRegulations: [
+      'EU Batteries Regulation (EU) 2023/1542',
+      'REACH — Regulation (EU) 1907/2006',
+      'RoHS — Directive 2011/65/EU',
+    ],
+    industryLabels: [],
+    productionSites: ['Lyon Manufacturing & R&D Centre'],
+    productionProcesses: ['Production / Assembly', 'Quality Control'],
+    criticalSuppliers: ['Nordcell GmbH (lithium-ion cells)'],
+    productCertifications: [],
+    onboardingStatus: 'COMPLETED',
+    currentStep: 6,
+  },
 ];
 
 // ── Flagship document folder (./seed-data/AlphaFlow3) → category ───────────
@@ -234,9 +468,12 @@ async function seed() {
   const all: SeedProduct[] = [FLAGSHIP, ...OTHER_PRODUCTS];
   let flagshipId = '';
   for (const p of all) {
-    let product = await productRepo.findOne({ where: { companyId, name: p.name } });
-    if (product) {
-      console.log(`= product exists: ${p.name}`);
+    const existing = await productRepo.findOne({ where: { companyId, name: p.name } });
+    let product: Product;
+    if (existing) {
+      // Upsert: refresh the full profile so re-running enriches older minimal rows.
+      product = await productRepo.save(productRepo.merge(existing, { ...p, companyId }));
+      console.log(`~ product updated: ${p.name}`);
     } else {
       product = await productRepo.save(productRepo.create({ ...p, companyId }));
       console.log(`+ product created: ${p.name}`);
