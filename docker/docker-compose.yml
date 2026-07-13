@@ -42,9 +42,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
     ports:
-      # Host 5433 → container 5432 (host already runs PostgreSQL 18 on 5432).
-      # Internal services still connect via the Docker network on postgres:5432.
-      - "5433:5432"
+      - "${POSTGRES_HOST_PORT:-5432}:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
@@ -349,7 +347,7 @@ services:
       context: ../services/document-service
       dockerfile: Dockerfile
       target: builder
-    container_name: qurelio_seed
+    container_name: ${COMPOSE_PROJECT_NAME:-qurelio}_seed
     env_file:
       - ../.env
     environment:
