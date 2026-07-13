@@ -33,14 +33,14 @@ interface Benefit {
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-const CONTACT_EMAIL_PRIMARY = 'contact@yoursaas.ai';
-const CONTACT_PHONE = '+1 (800) 123 XX21';
-const CONTACT_EMAIL_SUPPORT = 'support@yoursaas.ai';
+const CONTACT_EMAIL_PRIMARY = 'hello@qurelio.com';
+const CONTACT_PHONE = '+216 XX XXX XXX';
+const CONTACT_EMAIL_SUPPORT = 'support@qurelio.com';
 
 const STATS: Stat[] = [
-  { icon: <TrendingUp className="h-5 w-5" />, value: '40%', label: 'Faster audits' },
-  { icon: <Shield className="h-5 w-5" />, value: '100%', label: 'ISO compliance' },
-  { icon: <Users className="h-5 w-5" />, value: '10K+', label: 'Active users' },
+  { icon: <TrendingUp className="h-5 w-5" />, value: '70%', label: 'Less compliance prep' },
+  { icon: <Shield className="h-5 w-5" />, value: '100%', label: 'Human-approved AI' },
+  { icon: <Users className="h-5 w-5" />, value: '24/7', label: 'Regulatory monitoring' },
 ];
 
 const BENEFITS: Benefit[] = [
@@ -554,9 +554,9 @@ export function AboutSection() {
             variants={fadeInUp}
             className="mt-6 max-w-2xl mx-auto text-base leading-relaxed text-[var(--muted)] sm:text-lg"
           >
-            Qurelio helps organizations implement and maintain ISO-aligned quality management
-            systems with clarity. From document control to audits and non-conformities, teams get a
-            single workspace that stays audit-ready.
+            Qurelio helps organizations prove their products meet the public laws and regulations
+            of every market they sell to. From document control to audits and non-conformities,
+            teams get a single workspace that stays audit-ready.
           </motion.p>
 
           <motion.div
@@ -632,8 +632,8 @@ export function ContactSection() {
               variants={fadeInUp}
               className="mt-4 mx-auto max-w-md text-center text-base leading-relaxed text-neutral-500 sm:text-lg"
             >
-              We are always looking for ways to improve our products and services.
-              Contact us and let us know how we can help you.
+              Tell us about your products, your markets and your compliance challenges —
+              we&apos;ll show you what Qurelio can do with them.
             </motion.p>
 
             <motion.div
@@ -717,7 +717,7 @@ export function ContactSection() {
                   <Field
                     id="cf-name"
                     label="Full name"
-                    placeholder="Manu Arora"
+                    placeholder="Jane Doe"
                     value={form.name}
                     onChange={updateField('name')}
                     required
@@ -725,7 +725,7 @@ export function ContactSection() {
                   <Field
                     id="cf-email"
                     label="Email Address"
-                    placeholder="support@aceternity.com"
+                    placeholder="you@company.com"
                     type="email"
                     value={form.email}
                     onChange={updateField('email')}
@@ -734,7 +734,7 @@ export function ContactSection() {
                   <Field
                     id="cf-company"
                     label="Company"
-                    placeholder="Aceternity Labs LLC"
+                    placeholder="Your company"
                     value={form.company}
                     onChange={updateField('company')}
                   />

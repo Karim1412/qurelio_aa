@@ -39,7 +39,7 @@ const LIVE_EVENTS: LiveEvent[] = [
   { id: 'a1', Icon: CheckCircle,   tone: 'success', title: 'Audit AUD-214 closed', meta: '2 findings · 0 majors' },
   { id: 'a2', Icon: AlertTriangle, tone: 'warn',    title: 'NC-117 opened',         meta: 'Severity: minor' },
   { id: 'a3', Icon: FileText,      tone: 'info',    title: 'SOP-052 approved',      meta: 'rev. 04 · QA lead' },
-  { id: 'a4', Icon: ShieldCheck,   tone: 'success', title: 'ISO 27001 ready',       meta: 'Stage 2 in 12 days' },
+  { id: 'a4', Icon: ShieldCheck,   tone: 'success', title: 'Regulation update flagged', meta: '3 products affected' },
 ];
 
 /* ─── Word-stagger animator ──────────────────────────────────────────────── */
@@ -243,23 +243,21 @@ export function HeroSection() {
         {/* Headline */}
         <h1 className="relative mb-6 text-4xl font-semibold leading-[1.06] tracking-tight text-[var(--text-primary)] sm:text-5xl md:text-6xl">
           <AnimatedWords
-            text="Elevate your"
+            text="Prove your"
             className="text-[var(--muted)]"
             delayBase={0.15}
+          />{' '}
+          <AnimatedWords
+            text="compliance."
+            className="text-[var(--brand-primary)]"
+            delayBase={0.3}
           />
           <br />
-          <span className="inline-flex flex-wrap items-baseline justify-center">
-            <ShimmerWord text="Qureli" color="var(--brand-primary)" delay={0.35} />
-            <ShimmerWord text="o" color="var(--brand-accent)" delay={0.45} rotateIn />
-          </span>
-          <br />
-          <span className="inline-flex items-baseline justify-center">
-            <AnimatedWords
-              text="the legally-safe AI compliance OS"
-              className="text-[var(--text-primary)]"
-              delayBase={0.6}
-            />
-          </span>
+          <AnimatedWords
+            text="Every product, every market, every day."
+            className="text-[var(--text-primary)]"
+            delayBase={0.5}
+          />
         </h1>
 
         {/* Sub-headline */}
@@ -269,10 +267,9 @@ export function HeroSection() {
           transition={{ duration: 0.7, delay: 1.0, ease: EASE_OUT }}
           className="mx-auto max-w-2xl text-base leading-relaxed text-[var(--muted)] sm:text-lg"
         >
-          Qurelio builds a private Compliance Memory from your own documents,
-          evaluates you against public regulations, monitors regulatory change,
-          and runs your full quality-operations lifecycle—with every AI output
-          human-approved before it becomes executable.
+          One platform to show your products meet the laws and regulations of every
+          market you sell to. Documents, audits, non-conformities and evidence —
+          organised, scored, and audit-ready every day, not just at certification time.
         </motion.p>
 
         {/* CTAs */}
@@ -335,82 +332,26 @@ export function HeroSection() {
           className="mt-9 flex items-center justify-center"
         >
           <div
-            className="inline-flex items-center gap-0 backdrop-blur-md"
+            className="inline-flex items-center gap-2.5 backdrop-blur-md"
             style={{
               background: 'color-mix(in srgb, var(--surface) 80%, transparent)',
               border: '1px solid color-mix(in srgb, var(--brand-primary) 14%, transparent)',
               borderRadius: 999,
-              padding: '6px 18px 6px 10px',
+              padding: '7px 18px',
               boxShadow: '0 1px 8px color-mix(in srgb, var(--brand-primary) 8%, transparent)',
             }}
           >
+            <BreathingAvatar />
             <span
-              className="inline-flex items-center"
               style={{
-                gap: 5,
-                paddingRight: 14,
-                marginRight: 14,
-                borderRight: '1px solid color-mix(in srgb, var(--brand-primary) 14%, transparent)',
+                fontSize: 12.5,
+                fontWeight: 500,
+                color: 'var(--text-primary)',
+                lineHeight: 1.3,
+                letterSpacing: '-0.01em',
               }}
             >
-              <span className="inline-flex items-center gap-0.5" aria-hidden>
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <motion.svg
-                    key={i}
-                    width="13"
-                    height="13"
-                    viewBox="0 0 24 24"
-                    fill="#F59E0B"
-                    initial={{ opacity: 0, scale: 0.6, rotate: -20 }}
-                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                    transition={{ duration: 0.4, delay: 1.35 + i * 0.08, ease: EASE_OUT }}
-                  >
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                  </motion.svg>
-                ))}
-              </span>
-              <span
-                style={{
-                  fontSize: 12.5,
-                  fontWeight: 600,
-                  color: 'var(--text-primary)',
-                  lineHeight: 1,
-                  letterSpacing: '-0.01em',
-                  fontVariantNumeric: 'tabular-nums',
-                  display: 'inline-block',
-                }}
-              >
-                {mounted ? <NumberTicker value={4.9} decimals={1} delay={1.4} /> : '0.0'}
-              </span>
-              <span style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 400, lineHeight: 1 }}>
-                / 5 rating
-              </span>
-            </span>
-
-            <span className="inline-flex items-center" style={{ gap: 8 }}>
-              <BreathingAvatar />
-              <span
-                style={{
-                  fontSize: 12.5,
-                  fontWeight: 600,
-                  color: 'var(--text-primary)',
-                  lineHeight: 1,
-                  letterSpacing: '-0.01em',
-                  fontVariantNumeric: 'tabular-nums',
-                  display: 'inline-block',
-                }}
-              >
-                {mounted ? (
-                  <>
-                    <NumberTicker value={500} decimals={0} delay={1.5} />+
-                  </>
-                ) : (
-                  '0+'
-                )}
-              </span>
-              <span style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 400, lineHeight: 1 }}>
-                companies
-              </span>
+              Built with quality managers from Tunisia&apos;s export industry.
             </span>
           </div>
         </motion.div>

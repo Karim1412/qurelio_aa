@@ -35,7 +35,7 @@ const plans: Plan[] = [
     popular: true,
     highlighted: true,
     features: [
-      { label: 'All modules + AI Compliance Engine' },
+      { label: 'All modules + AI Compliance Engine & Regulatory Monitoring' },
       { label: 'Priority support' },
       { label: 'Training included' },
     ],

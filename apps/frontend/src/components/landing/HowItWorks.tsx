@@ -172,17 +172,17 @@ const AnalyzeIllustration = () => (
       <g className="hiw-chip c1">
         <rect x="154" y="98" width="46" height="11" rx="5.5" fill="#FFFFFF" stroke="#E5DDF3" strokeWidth="0.8" />
         <circle cx="160" cy="103.5" r="1.6" fill="#82C9B0" />
-        <text x="166" y="106" fontSize="5.6" fill="#57534E" fontFamily="Poppins, sans-serif" fontWeight="500">ISO 9001</text>
+        <text x="166" y="106" fontSize="5.6" fill="#57534E" fontFamily="Poppins, sans-serif" fontWeight="500">Decree</text>
       </g>
       <g className="hiw-chip c2">
         <rect x="154" y="114" width="46" height="11" rx="5.5" fill="#FFFFFF" stroke="#E5DDF3" strokeWidth="0.8" />
         <circle cx="160" cy="119.5" r="1.6" fill="#F0CE85" />
-        <text x="166" y="122" fontSize="5.6" fill="#57534E" fontFamily="Poppins, sans-serif" fontWeight="500">ISO 14001</text>
+        <text x="166" y="122" fontSize="5.6" fill="#57534E" fontFamily="Poppins, sans-serif" fontWeight="500">Regulation</text>
       </g>
       <g className="hiw-chip c3">
         <rect x="154" y="130" width="46" height="11" rx="5.5" fill="#FFFFFF" stroke="#E5DDF3" strokeWidth="0.8" />
         <circle cx="160" cy="135.5" r="1.6" fill="#F0A4A4" />
-        <text x="166" y="138" fontSize="5.6" fill="#57534E" fontFamily="Poppins, sans-serif" fontWeight="500">ISO 45001</text>
+        <text x="166" y="138" fontSize="5.6" fill="#57534E" fontFamily="Poppins, sans-serif" fontWeight="500">Law</text>
       </g>
 
       {/* Gap counter at bottom */}
@@ -314,15 +314,15 @@ const steps: Step[] = [
   {
     number: '01',
     action: 'Onboard',
-    title: 'Upload your documents',
+    title: 'Teach Qurelio your organization',
     lead: 'Start where you are.',
     description:
-      'Bring procedures, work instructions, audits and training records into one calm, organised home — no spreadsheet gymnastics required.',
+      'Describe your company, products and markets, then bring your product folders and quality documents into one organised home. Qurelio builds a private compliance memory of your organization — so every answer is about your reality.',
     detailsLabel: 'What happens here',
     details: [
-      'Drag-and-drop bulk import from your existing drives',
-      'Automatic version capture, no manual tagging',
-      'Private by default — only your team can see them',
+      'Guided onboarding captures your activity, markets and quality context',
+      'Drag-and-drop bulk import of product folders and records',
+      'Private by default — your memory is yours alone, never shared',
     ],
     accent: '#7DAFD6',
     accentSoft: '#EAF3FA',
@@ -330,16 +330,16 @@ const steps: Step[] = [
   },
   {
     number: '02',
-    action: 'Discover',
-    title: 'Let the AI read between the lines',
+    action: 'Assess',
+    title: 'Upload a regulation, get your verdict',
     lead: 'See the gaps clearly.',
     description:
-      "Qurelio quietly maps every page to ISO 9001, 14001 and 45001 — surfacing the small, hidden gaps you didn't know were there.",
+      'Add any public law, decree or regulation that applies to you. Qurelio evaluates your products against it, clause by clause, and returns a compliance score and maturity level — with every gap explained in plain language.',
     detailsLabel: 'What you receive',
     details: [
-      'Clause-by-clause coverage analysis',
-      'Plain-language summaries of every gap',
-      'Suggested fixes, each with an owner and a date',
+      'Clause-by-clause compliance and maturity assessment',
+      'Plain-language explanation of every gap',
+      'Suggested fixes, each with an owner and a date — pending your approval',
     ],
     accent: '#B89FE5',
     accentSoft: '#F4EEFC',
@@ -347,16 +347,16 @@ const steps: Step[] = [
   },
   {
     number: '03',
-    action: 'Improve',
-    title: 'Watch your compliance grow',
+    action: 'Monitor & improve',
+    title: 'Never be surprised by a regulation again',
     lead: 'Keep the momentum.',
     description:
-      'Every closed gap becomes a visible milestone. Your dashboard tells the story — in real time, audit-ready, and a quiet reassurance for everyone.',
+      'Qurelio keeps watching. When a regulation changes, or a relevant one you never mentioned appears, you get an alert that says exactly which products are affected and what to do. Every closed gap becomes a visible milestone.',
     detailsLabel: 'What stays with you',
     details: [
-      'Live KPIs for every site, team and standard',
-      'One-click evidence trail, ready for any auditor',
-      'Gentle reminders that keep the rhythm going',
+      'Alerts when regulatory changes affect your compliance',
+      'Detection of applicable regulations you didn’t know about',
+      'Live KPIs and a one-click evidence trail, ready for any auditor',
     ],
     accent: '#82C9B0',
     accentSoft: '#EAF8F2',
@@ -1157,13 +1157,13 @@ export function HowItWorks() {
         aria-label="How Qurelio works"
       >
         <div className="hiw-inner">
-          <p className="hiw-eyebrow">Process</p>
+          <p className="hiw-eyebrow">How it works</p>
           <h2 className="hiw-heading">
             How it <em>works</em>
           </h2>
           <p className="hiw-sub">
-            Three calm steps. From the first document you upload to the day-to-day rhythm of staying
-            audit-ready — Qurelio guides every move with a soft, steady hand.
+            Three calm steps. From the day you describe your organization to the daily rhythm of staying
+            compliant — Qurelio guides every move, and you approve every decision.
           </p>
 
           <div className="hiw-track" ref={trackRef}>

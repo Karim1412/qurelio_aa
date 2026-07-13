@@ -10,7 +10,7 @@ import { LanguageToggle } from './LanguageToggle';
 const NAV_LINKS = [
   { label: 'Home',        href: '#home' },
   { label: 'Why Qurelio', href: '#why-qurelio' },
-  { label: 'Process',     href: '#how-it-works' },
+  { label: 'How it works', href: '#how-it-works' },
   { label: 'Pricing',     href: '#pricing' },
   { label: 'Contact',     href: '#contact' },
 ];

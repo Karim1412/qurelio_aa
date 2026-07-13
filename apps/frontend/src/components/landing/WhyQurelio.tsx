@@ -81,7 +81,7 @@ const SoftDefs = ({ id }: { id: string }) => (
   </defs>
 );
 
-/* ─────────── 1. Compliance — KPI scorecard with gauge + ISO chips ─────────── */
+/* ─────────── 1. Compliance — KPI scorecard with gauge + compliance chips ─────────── */
 const ComplianceCharacter = () => (
   <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
     <SoftDefs id="cmp" />
@@ -120,7 +120,7 @@ const ComplianceCharacter = () => (
         <text x="0" y="14" textAnchor="middle" fontSize="6" fontWeight="600" fill="currentColor" fillOpacity="0.5" stroke="none" letterSpacing="0.5">SCORE</text>
       </g>
 
-      {/* ISO chips */}
+      {/* Compliance chips */}
       <g className="illu-fade-2" transform="translate(100 80)">
         <rect width="62" height="14" rx="7" fill="currentColor" fillOpacity="0.10" stroke="none" />
         <circle cx="10" cy="7" r="3.4" fill="currentColor" stroke="none" />
@@ -446,17 +446,43 @@ const features: Feature[] = [
     Illustration: ComplianceCharacter,
     accent: '#2563EB',
     headline: 'Stay audit-ready, every day of the year',
-    cta: 'Explore Compliance',
+    cta: 'Explore the Compliance Engine',
     blocks: [
       {
         title: 'Cut compliance prep by 70%',
         description:
-          'Continuous AI gap analysis against ISO 9001, 14001, 45001 — turning a 3-month exercise into a daily, automated check.',
+          'Continuous AI assessment of your products against the public laws, decrees and regulations of your target markets — turning a 3-month exercise into a same-day, repeatable check.',
       },
       {
         title: 'Actionable, not abstract',
         description:
-          'Every gap comes with a recommended fix, an owner, and a deadline. No more 80-page audit reports nobody opens.',
+          'Every gap comes with a plain-language explanation, a recommended fix, an owner, and a deadline. No more 80-page audit reports nobody opens.',
+      },
+      {
+        title: 'You stay in control',
+        description:
+          'Every AI-generated result — reports, action plans, detected gaps — lands in a review queue first. Nothing becomes an official record or an executable action until your Quality Manager approves it.',
+      },
+    ],
+  },
+  {
+    id: 'monitoring',
+    tag: 'AI-powered',
+    label: 'Regulatory Monitoring',
+    Illustration: AIAssistantCharacter,
+    accent: '#0891B2',
+    headline: 'Never be surprised by a regulation again',
+    cta: 'Explore Regulatory Monitoring',
+    blocks: [
+      {
+        title: 'Watches the laws that apply to you',
+        description:
+          'Qurelio tracks the public regulations relevant to your products and markets. When a law changes, you are the first to know exactly what it means for you.',
+      },
+      {
+        title: 'Finds what you did not know to look for',
+        description:
+          'When a relevant regulation you never mentioned appears, Qurelio surfaces it and tells you precisely which products are affected — pending your review.',
       },
     ],
   },
@@ -465,19 +491,19 @@ const features: Feature[] = [
     tag: 'Automated',
     label: 'Audit Automation',
     Illustration: AuditCharacter,
-    accent: '#0891B2',
+    accent: '#7C3AED',
     headline: 'Run audits without chasing a single email',
     cta: 'Explore Audit Automation',
     blocks: [
       {
-        title: 'Schedule once, run forever',
+        title: 'AI-drafted checklists and findings',
         description:
-          'Define audit programs, assign auditors, and let the platform send reminders, collect responses, and compile findings automatically.',
+          'Define audit programs and assign auditors, then let AI draft checklists while the platform sends reminders, collects responses, and compiles findings automatically.',
       },
       {
         title: 'From audit to action in one click',
         description:
-          'Convert findings into corrective actions instantly — with full traceability from observation to closure.',
+          'Findings flow straight into your action plans — with full traceability from observation to closure.',
       },
     ],
   },
@@ -486,61 +512,40 @@ const features: Feature[] = [
     tag: 'Tracking',
     label: 'Non-Conformities & CAPA',
     Illustration: NonConformityCharacter,
-    accent: '#7C3AED',
+    accent: '#059669',
     headline: 'Solve issues at the root, not at the symptom',
     cta: 'Explore CAPA',
     blocks: [
       {
-        title: 'Built-in 5 Whys & Ishikawa',
+        title: 'Built-in 5 Whys, Ishikawa & 8D',
         description:
-          'Capture issues from any source — audits, QC, customer complaints — and run structured root cause analysis without leaving the platform.',
+          'Capture non-conformities from any source — audits, QC, customer complaints — and run structured root cause analysis without leaving the platform.',
       },
       {
         title: 'Verified effectiveness',
         description:
-          'Track corrective and preventive actions through implementation, then automatically verify they worked. Close the loop, every time.',
+          'Drive corrective and preventive actions through implementation, then automatically verify they worked. Close the loop, every time.',
       },
     ],
   },
   {
     id: 'documents',
     tag: 'Documents',
-    label: 'Controlled Documents',
+    label: 'Controlled Documents & File Library',
     Illustration: DocumentsCharacter,
-    accent: '#059669',
+    accent: '#D97706',
     headline: 'One source of truth — versioned, signed, distributed',
     cta: 'Explore Documents',
     blocks: [
       {
         title: 'Approval workflows that actually work',
         description:
-          'Multi-stage review, e-signatures, and automatic distribution to the right people — fully ISO-compliant audit trail included.',
+          'Multi-stage review, e-signatures, and automatic distribution to the right people — with a complete, audit-ready trail. Private by default.',
       },
       {
         title: 'No more rogue versions',
         description:
           'Old versions are archived automatically. Anyone can find the current procedure in seconds, not in a shared drive labyrinth.',
-      },
-    ],
-  },
-  {
-    id: 'assistant',
-    tag: 'AI-powered',
-    label: 'AI Assistant',
-    Illustration: AIAssistantCharacter,
-    accent: '#D97706',
-    headline: 'Your QMS expert, available 24/7',
-    cta: 'Explore AI Assistant',
-    blocks: [
-      {
-        title: 'Grounded in your documents',
-        description:
-          'Answers cite your actual procedures, work instructions, and standards — not generic web content. Zero hallucinations.',
-      },
-      {
-        title: 'From question to procedure draft',
-        description:
-          'Ask a question, get an answer. Ask for a procedure, get a structured first draft ready for your review.',
       },
     ],
   },
@@ -556,7 +561,7 @@ const features: Feature[] = [
       {
         title: 'Real-time, role-based views',
         description:
-          'Executives see compliance trends. Quality leads see open findings. Auditors see CAPA status. Same data, right level.',
+          'Compliance scores, open actions, audit status and quality KPIs for every site, team and regulation — live, not end-of-month.',
       },
       {
         title: 'Drill from KPI to evidence',
@@ -647,8 +652,35 @@ export function WhyQurelio() {
           line-height: 1.65;
           text-align: center;
           max-width: 560px;
-          margin: 0 auto 48px;
+          margin: 0 auto 28px;
           font-weight: 400;
+        }
+
+        /* ─── Trust strip (legal-by-design) ─── */
+        .qurelio-trust {
+          display: flex;
+          align-items: flex-start;
+          gap: 10px;
+          max-width: 720px;
+          margin: 0 auto 48px;
+          padding: 14px 20px;
+          border-radius: 14px;
+          background: color-mix(in srgb, var(--brand-primary) 5%, var(--surface));
+          border: 1px solid color-mix(in srgb, var(--brand-primary) 12%, var(--border));
+          font-size: 13.5px;
+          line-height: 1.6;
+          color: var(--muted);
+          text-align: left;
+        }
+        .qurelio-trust strong { color: var(--text-primary); font-weight: 600; }
+        .qurelio-trust-dot {
+          flex-shrink: 0;
+          width: 8px;
+          height: 8px;
+          margin-top: 7px;
+          border-radius: 50%;
+          background: var(--brand-accent);
+          box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand-accent) 18%, transparent);
         }
 
         /* ─── Spotlight frame ─── */
@@ -1056,12 +1088,21 @@ export function WhyQurelio() {
         <div className="qurelio-inner">
           <p className="qurelio-eyebrow">Why Qurelio</p>
           <h2 className="qurelio-heading">
-            What makes Qurelio the <em>powerful</em> quality solution
+            What makes Qurelio the <em>intelligent</em> compliance platform
           </h2>
           <p className="qurelio-sub">
-            Built as a legally-safe compliance OS: Qurelio turns your own documents into a private Compliance
-            Memory, then grounds every evaluation, regulatory-monitoring alert, and quality workflow in it —
-            with AI you review and approve, never auto-executed.
+            Built from the ground up for quality teams who need more than spreadsheets — Qurelio combines
+            AI, automation, and deep regulatory intelligence into one unified platform. And because compliance
+            is too important to leave to a machine, every AI result waits for your approval before it becomes real.
+          </p>
+
+          <p className="qurelio-trust">
+            <span className="qurelio-trust-dot" aria-hidden />
+            <span>
+              <strong>100% legal by design.</strong> Qurelio works exclusively with public, legally free
+              regulatory texts — laws, decrees and official regulations. Licensed standards such as ISO/IEC
+              are automatically detected and are never stored or analyzed.
+            </span>
           </p>
 
           <div className="spotlight-wrap">

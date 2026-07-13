@@ -206,8 +206,8 @@ export function Footer() {
               />
               <div className="flex flex-col gap-3">
                 <p className="max-w-md text-[15px] leading-relaxed text-[var(--text-primary)]/85">
-                  Quality compliance, audits, and document management — calm, clear,
-                  AI-assisted.
+                  Regulatory compliance, audits and quality operations — calm, clear,
+                  AI-assisted, and always under your control.
                 </p>
                 
               </div>
@@ -409,7 +409,7 @@ export function Footer() {
           />
 
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-[var(--muted)] sm:justify-start">
-            <p>© {new Date().getFullYear()} Qurelio Inc. Powered by Pura Solutions.</p>
+            <p>© {new Date().getFullYear()} Qurelio. Powered by Pura Solutions.</p>
             <span aria-hidden className="hidden h-3 w-px bg-[var(--border)]/60 sm:inline" />
             <a
               href="/terms"
