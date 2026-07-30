@@ -12,6 +12,11 @@ ARG API_PROXY_TARGET=http://gateway:3000
 ENV API_PROXY_TARGET=$API_PROXY_TARGET
 ARG NEXT_PUBLIC_API_URL=
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+# Browser-reachable gateway URL for direct multipart uploads (see src/lib/api.ts).
+# NEXT_PUBLIC_* is inlined into the client bundle at build time, so it must be an
+# ARG here — setting it only at runtime has no effect on the browser code.
+ARG NEXT_PUBLIC_GATEWAY_URL=
+ENV NEXT_PUBLIC_GATEWAY_URL=$NEXT_PUBLIC_GATEWAY_URL
 RUN npm run build
 
 FROM node:22-alpine AS runner

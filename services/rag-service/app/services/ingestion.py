@@ -1,6 +1,7 @@
 import copy
 import io
 import logging
+import re
 from typing import Tuple, List, Any
 
 import httpx
@@ -19,6 +20,86 @@ settings = get_settings()
 
 _MAX_STORED_SECTIONS = 150
 _MAX_STORED_SECTION_CONTENT = 12_000
+# Vector width of the configured embedding model. text-embedding-3-small (and ada-002)
+# emit 1536; the Pinecone index must match or every upsert is rejected.
+EMBEDDING_DIMENSION = 1536
+# Upper bound on the extracted text persisted on the document row. Must comfortably
+# hold a full standard: this text is what a standard is re-indexed from.
+_MAX_EXTRACTED_TEXT = 2_000_000
+
+
+def _clean_clause_ref(ref: str) -> str:
+    """Collapse a clause id the heading regex captured more than once.
+
+    PDF annex pages repeat their header on consecutive lines, and the greedy
+    heading pattern swallows every copy — "ANNEX X ANNEX X ANNEX X ANNEX X".
+    Handles any repeat count, not just doubling.
+    """
+    r = " ".join((ref or "").split())
+    if not r:
+        return ""
+    words = r.split(" ")
+    n = len(words)
+    # Smallest repeating unit that tiles the whole sequence wins.
+    for size in range(1, n // 2 + 1):
+        if n % size:
+            continue
+        unit = [w.lower() for w in words[:size]]
+        if all(
+            [w.lower() for w in words[i : i + size]] == unit for i in range(0, n, size)
+        ):
+            return " ".join(words[:size])
+    return r
+
+
+# A numbered point inside a section: "1.", "2)", "3.1", "3.1." — these carry the
+# actual requirements, and their numbers are the clause versions an auditor cites.
+_NUMBERED_POINT = re.compile(r"^\s*(\d{1,2}(?:\.\d{1,3}){0,3})\s*[.)]?\s+(?=\S)")
+# Lettered sub-item: "(a) …" / "a) …"
+_LETTER_POINT = re.compile(r"^\s*\(?([a-z])\)\s+(?=\S)")
+
+
+def _split_numbered_points(body: str) -> List[Tuple[str, str]]:
+    """Split a section body into its numbered points.
+
+    Returns [(ref, text)] where ref is "1", "3.1", "3.1 (a)" … Empty when the body
+    carries no numbering, in which case the caller indexes the section whole.
+    """
+    lines = (body or "").splitlines()
+    points: List[Tuple[str, List[str]]] = []
+    for line in lines:
+        m = _NUMBERED_POINT.match(line)
+        if m:
+            points.append((m.group(1), [line[m.end() :].strip()]))
+            continue
+        lm = _LETTER_POINT.match(line)
+        if lm and points:
+            parent = points[-1][0].split(" ")[0]
+            points.append((f"{parent} ({lm.group(1)})", [line[lm.end() :].strip()]))
+            continue
+        if points:
+            points[-1][1].append(line)
+    out: List[Tuple[str, str]] = []
+    for ref, chunk in points:
+        text = "\n".join(chunk).strip()
+        if len(text) >= 40:  # skip stray numbering with no requirement behind it
+            out.append((ref, text))
+    return out
+
+
+def _clean_clause_title(ref: str, heading: str) -> str:
+    """Heading text with its own clause number stripped off.
+
+    The segmenter returns the whole header line when a heading carries no text
+    after the number, which rendered as "ANNEX II ANNEX II" in the worksheet.
+    """
+    t = (heading or "").strip()
+    r = (ref or "").strip()
+    if not t or not r:
+        return t[:300]
+    if t.lower().startswith(r.lower()):
+        t = t[len(r):].strip(" .:-—–\t")
+    return "" if t.lower() == r.lower() else t[:300]
 
 
 def _trim_structured_for_storage(structured: dict) -> dict:
@@ -55,6 +136,9 @@ class IngestionService:
         self.storage = StorageService()
         embedding_api_key = (settings.EMBEDDING_API_KEY or "").strip() or settings.OPENAI_API_KEY
         embedding_base_url = (settings.EMBEDDING_BASE_URL or "").strip() or settings.OPENAI_BASE_URL
+        # Kept for log messages: an embedding 401 is almost always a key/base-url
+        # mismatch, and naming the endpoint in the error saves the whole diagnosis.
+        self._embedding_base_url = embedding_base_url
         self.embeddings = OpenAIEmbeddings(
             api_key=embedding_api_key,
             openai_api_base=embedding_base_url,
@@ -86,19 +170,69 @@ class IngestionService:
             )
 
     def _ensure_pinecone_index(self):
-        """Lazily attach the Pinecone index. Safe to call repeatedly."""
+        """Lazily attach the Pinecone index. Safe to call repeatedly.
+
+        The dimension is only applied when this process CREATES the index. An index
+        that already exists keeps whatever dimension it was created with, so it is
+        checked here: attaching to a mismatched index made every upsert fail while
+        ingestion still reported success, and the whole corpus stayed unsearchable
+        with nothing in the logs pointing at the cause.
+        """
         if self.index is not None:
             return self.index
-        existing = [i.name for i in self._pc.list_indexes()]
+        existing = {i.name: i for i in self._pc.list_indexes()}
         if settings.PINECONE_INDEX_NAME not in existing:
             self._pc.create_index(
                 name=settings.PINECONE_INDEX_NAME,
-                dimension=1536,
+                dimension=EMBEDDING_DIMENSION,
                 metric="cosine",
                 spec=ServerlessSpec(cloud="aws", region="us-east-1"),
             )
+        else:
+            found = getattr(existing[settings.PINECONE_INDEX_NAME], "dimension", None)
+            if found and int(found) != EMBEDDING_DIMENSION:
+                raise RuntimeError(
+                    f"Pinecone index '{settings.PINECONE_INDEX_NAME}' has dimension "
+                    f"{found}, but embedding model '{settings.EMBEDDING_MODEL}' emits "
+                    f"{EMBEDDING_DIMENSION}. Every upsert would be rejected. Point "
+                    "PINECONE_INDEX_NAME at an index of the right dimension (or delete "
+                    "the mismatched one so it can be recreated)."
+                )
         self.index = self._pc.Index(settings.PINECONE_INDEX_NAME)
         return self.index
+
+    def _extract_page_texts(self, data: bytes, mime: str) -> list[str] | None:
+        """Per-page text for PDFs, so each vector can carry the page it came from.
+
+        Audit justifications must cite evidence as "<file>, p. N"; without a page on
+        the chunk the model can only name the file. Returns None for formats with no
+        meaningful pagination (docx, plain text), where chunking stays whole-document.
+        """
+        if "pdf" not in mime:
+            return None
+        try:
+            from pypdf import PdfReader
+
+            try:
+                from app.services.pdf_text_normalize import (
+                    normalize_pdf_extracted_text,
+                    pick_best_pypdf_page_text,
+                )
+            except Exception:  # pragma: no cover
+                pick_best_pypdf_page_text = None  # type: ignore[assignment]
+                normalize_pdf_extracted_text = None  # type: ignore[assignment]
+
+            reader = PdfReader(io.BytesIO(data))
+            pages: list[str] = []
+            for p in reader.pages:
+                if pick_best_pypdf_page_text and normalize_pdf_extracted_text:
+                    pages.append(normalize_pdf_extracted_text(pick_best_pypdf_page_text(p)))
+                else:
+                    pages.append(p.extract_text() or "")
+            return pages
+        except Exception as e:
+            logger.warning("Per-page PDF extraction failed (%s) — indexing without pages", e)
+            return None
 
     def _extract(self, data: bytes, mime: str) -> Tuple[str, int]:
         if "pdf" in mime:
@@ -213,17 +347,35 @@ class IngestionService:
             try:
                 vecs = await self.embeddings.aembed_documents(batch)
             except (TypeError, ValueError) as e:
-                logger.warning("Embedding API error (batch %s-%s): %s", i, i + len(batch), e)
+                # error(), not warning(): nothing downstream can work without vectors,
+                # and this was previously easy to miss in a healthy-looking log.
+                logger.error(
+                    "Embedding API error (batch %s-%s) with base_url=%s model=%s: %s",
+                    i, i + len(batch), self._embedding_base_url, settings.EMBEDDING_MODEL, e,
+                )
                 return None
             except Exception as e:
-                logger.warning("Embedding failed (batch %s-%s): %s", i, i + len(batch), e)
+                logger.error(
+                    "Embedding failed (batch %s-%s) with base_url=%s model=%s: %s — a 401 here "
+                    "usually means EMBEDDING_BASE_URL and EMBEDDING_API_KEY belong to different "
+                    "providers; leave both blank to inherit the working OPENAI_* pair.",
+                    i, i + len(batch), self._embedding_base_url, settings.EMBEDDING_MODEL, e,
+                )
                 return None
             if not vecs or len(vecs) != len(batch):
-                logger.warning(
+                logger.error(
                     "Embedding response invalid: got %s vectors for %s chunks — check EMBEDDING_MODEL "
                     "(OpenRouter: use openai/text-embedding-3-small)",
                     len(vecs or []),
                     len(batch),
+                )
+                return None
+            width = len(vecs[0]) if vecs and vecs[0] else 0
+            if width != EMBEDDING_DIMENSION:
+                logger.error(
+                    "Embedding model '%s' returned %d-dimension vectors but the index expects "
+                    "%d — refusing to upsert vectors Pinecone would reject.",
+                    settings.EMBEDDING_MODEL, width, EMBEDDING_DIMENSION,
                 )
                 return None
             out.extend(vecs)
@@ -236,13 +388,75 @@ class IngestionService:
         text: str,
         doc_type: str,
         iso_standard: str | None,
+        file_name: str | None = None,
+        page_texts: list[str] | None = None,
+        clause_aware: bool = False,
     ) -> int:
         text = (text or "").strip()
-        if not text:
+        if not text and not page_texts:
             logger.info("Skipping Pinecone upsert: no text for doc %s", document_id)
             return 0
 
-        chunks = self.splitter.split_text(text)
+        chunks: list[str] = []
+        chunk_pages: list[int] = []
+        chunk_refs: list[str] = []
+        chunk_titles: list[str] = []
+
+        # Standards are indexed clause-by-clause so a clause's own text can be
+        # fetched by exact reference. Retrieving it by semantic similarity pulls in
+        # cross-references from neighbouring clauses, which made the auditor title
+        # clauses after whatever number appeared in the noise.
+        if clause_aware and text:
+            for sec in segment_by_numbered_headings(text) or []:
+                ref = _clean_clause_ref(sec.get("clauseNumber") or "")
+                # A real clause id is short; long "refs" are cross-reference
+                # sentences the heading regex mistook for a heading.
+                if not ref or len(ref) > 24:
+                    continue
+                title = _clean_clause_title(ref, _clean_clause_ref(sec.get("heading") or ""))
+                body = (sec.get("content") or "").strip()
+
+                # Prefer the numbered points inside the section: those are the
+                # auditable requirements, and their numbers ("3.1", "3.1 (a)") are
+                # the clause versions an auditor cites — not the section header.
+                points = _split_numbered_points(body)
+                if points:
+                    section_title = title or _clean_clause_ref(ref)
+                    for point_ref, point_text in points:
+                        for c in self.splitter.split_text(
+                            f"{point_ref} {section_title}\n{point_text}".strip()
+                        ):
+                            chunks.append(c)
+                            chunk_pages.append(0)
+                            chunk_refs.append(point_ref)
+                            chunk_titles.append(section_title[:300])
+                    continue
+
+                # Heading-only section: keep it so the worksheet still shows the
+                # non-normative title row.
+                for c in self.splitter.split_text(f"{ref} {title}\n{body}".strip()):
+                    chunks.append(c)
+                    chunk_pages.append(0)
+                    chunk_refs.append(ref)
+                    chunk_titles.append(title[:300])
+            if chunks:
+                logger.info(
+                    "Clause-aligned index for doc %s: %d clause chunk(s)", document_id, len(chunks)
+                )
+
+        # Chunk page-by-page when pagination is known, so every chunk keeps its page.
+        if not chunks and page_texts:
+            for page_no, page_text in enumerate(page_texts, start=1):
+                for c in self.splitter.split_text((page_text or "").strip()):
+                    chunks.append(c)
+                    chunk_pages.append(page_no)
+                    chunk_refs.append("")
+                    chunk_titles.append("")
+        if not chunks:
+            chunks = self.splitter.split_text(text)
+            chunk_pages = [0] * len(chunks)
+            chunk_refs = [""] * len(chunks)
+            chunk_titles = [""] * len(chunks)
         if not chunks:
             return 0
 
@@ -265,6 +479,13 @@ class IngestionService:
                     "doc_type": doc_type,
                     "iso_standard": iso_standard or "",
                     "chunk_index": i,
+                    # Carried so audit justifications can cite the source document by
+                    # name and page rather than by opaque UUID. page 0 = unpaginated.
+                    "file_name": file_name or "",
+                    "page": chunk_pages[i] if i < len(chunk_pages) else 0,
+                    # Exact clause this chunk belongs to (standards only).
+                    "clause_ref": chunk_refs[i] if i < len(chunk_refs) else "",
+                    "clause_title": chunk_titles[i] if i < len(chunk_titles) else "",
                     "text": chunks[i][:800],
                 },
             }
@@ -362,7 +583,19 @@ class IngestionService:
 
         structured = _trim_structured_for_storage(structured)
         flattened = flatten_for_search(raw_text, structured)
-        extracted_text = flattened[:65000] if flattened else None
+        # Standards are re-indexed from this stored text on activation, so a tight
+        # cap silently truncated them to the preamble — the normative clauses and
+        # annexes never reached the vector store and evaluations found no clauses.
+        # extracted_text is a Postgres `text` column and the callback body limit is
+        # 25 MB, so this bound only guards against pathological files.
+        extracted_text = flattened[:_MAX_EXTRACTED_TEXT] if flattened else None
+        if flattened and len(flattened) > _MAX_EXTRACTED_TEXT:
+            logger.warning(
+                "Extracted text for %s truncated from %d to %d characters",
+                doc_id,
+                len(flattened),
+                _MAX_EXTRACTED_TEXT,
+            )
 
         try:
             await self._patch_document_extraction(
@@ -385,6 +618,10 @@ class IngestionService:
                     flattened or raw_text,
                     doc_type,
                     req.iso_standard,
+                    file_name=file_name,
+                    # PDFs index page-by-page so evidence can be cited as "<file>, p. N".
+                    page_texts=self._extract_page_texts(raw, mime),
+                    clause_aware=(doc_type == "ISO_NORM"),
                 )
             except Exception as e:
                 logger.exception("Vector indexing failed for %s (document already READY): %s", doc_id, e)
@@ -401,7 +638,15 @@ class IngestionService:
     ) -> int:
         """Replace vectors for a standard with clause-aligned text (activation)."""
         await self.delete(document_id, company_id)
-        return await self._index_vectors(document_id, company_id, text, doc_type, iso_standard)
+        return await self._index_vectors(
+            document_id,
+            company_id,
+            text,
+            doc_type,
+            iso_standard,
+            file_name=file_name,
+            clause_aware=True,
+        )
 
     async def search(
         self,
@@ -432,12 +677,32 @@ class IngestionService:
         return results.matches or []
 
     async def delete(self, document_id: str, company_id: str):
+        """Remove every vector of a document.
+
+        Serverless Pinecone indexes do NOT support delete-by-metadata-filter, so
+        the old filter call silently left the vectors in place and each re-index
+        stacked a fresh copy on top of the previous one. Vector ids are
+        deterministic (``{company}::{document}::c{n}``), so delete by id prefix and
+        keep the filter form only as a fallback for pod-based indexes.
+        """
+        index = self._ensure_pinecone_index()
+        prefix = f"{company_id}::{document_id}::"
+        deleted = 0
         try:
-            index = self._ensure_pinecone_index()
-            index.delete(
-                filter={"document_id": {"$eq": document_id}},
-                namespace=company_id,
-            )
-            logger.info("Vectors deleted for doc %s", document_id)
+            ids: list[str] = []
+            for page in index.list(prefix=prefix, namespace=company_id):
+                ids.extend(page if isinstance(page, list) else [page])
+            for start in range(0, len(ids), 1000):
+                index.delete(ids=ids[start : start + 1000], namespace=company_id)
+                deleted += len(ids[start : start + 1000])
+            if deleted:
+                logger.info("Deleted %d vector(s) for doc %s", deleted, document_id)
+                return
+        except Exception as e:
+            logger.warning("Prefix delete unavailable for %s (%s) — trying filter", document_id, e)
+
+        try:
+            index.delete(filter={"document_id": {"$eq": document_id}}, namespace=company_id)
+            logger.info("Vectors deleted by filter for doc %s", document_id)
         except Exception as e:
             logger.warning("Vector delete failed for %s: %s", document_id, e)

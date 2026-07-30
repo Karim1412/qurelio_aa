@@ -50,14 +50,25 @@ function normalizeEvalRow(r: any) {
   const eff = (r.override?.verdict ?? r.verdict ?? '').toString().toUpperCase();
   const legacy = (r.status || '').toString().toUpperCase();
 
-  let statusKey = 'N/A';
-  if (eff === 'SATISFIED') statusKey = 'CONFORMANT';
-  else if (eff === 'PARTIALLY_SATISFIED') statusKey = 'MINOR_NC';
-  else if (eff === 'NOT_SATISFIED') statusKey = 'MAJOR_NC';
-  else if (['CONFORMANT', 'MINOR_NC', 'MAJOR_NC', 'CRITICAL_NC', 'N/A'].includes(legacy)) statusKey = legacy;
-  else if (['SATISFIED', 'PARTIALLY_SATISFIED', 'NOT_SATISFIED'].includes(legacy)) {
-    statusKey = legacy === 'SATISFIED' ? 'CONFORMANT' : legacy === 'PARTIALLY_SATISFIED' ? 'MINOR_NC' : 'MAJOR_NC';
+  // Worksheet status as produced by the engine (PASS | FAIL | N/A | MISSING_INFO).
+  // Kept verbatim for display; statusKey below only drives colour/tone.
+  let worksheetStatus = ['PASS', 'FAIL', 'N/A', 'MISSING_INFO', 'INCONCLUSIVE'].includes(legacy)
+    ? legacy
+    : '';
+  if (!worksheetStatus) {
+    worksheetStatus =
+      eff === 'SATISFIED' ? 'PASS'
+      : eff === 'NOT_SATISFIED' ? 'FAIL'
+      : eff === 'PARTIALLY_SATISFIED' ? 'MISSING_INFO'
+      : eff === 'INCONCLUSIVE' ? 'INCONCLUSIVE'
+      : 'N/A';
   }
+
+  let statusKey = 'N/A';
+  if (worksheetStatus === 'PASS') statusKey = 'CONFORMANT';
+  else if (worksheetStatus === 'FAIL') statusKey = 'MAJOR_NC';
+  else if (worksheetStatus === 'MISSING_INFO') statusKey = 'MINOR_NC';
+  else if (['CONFORMANT', 'MINOR_NC', 'MAJOR_NC', 'CRITICAL_NC', 'N/A'].includes(legacy)) statusKey = legacy;
 
   let conf = typeof r.confidence === 'number' ? r.confidence : parseFloat(r.confidence) || 0;
   if (conf > 1) conf /= 100;
@@ -75,11 +86,19 @@ function normalizeEvalRow(r: any) {
   return {
     ...r,
     clause_id: ref,
-    clause_title: r.clause_title || `Clause ${ref}`,
-    clause_summary: r.clause_summary ?? r.clauseTextExcerpt ?? r.clause_text_excerpt ?? '',
+    // camelCase first — that is what evaluation-service returns; the snake_case
+    // spellings are the raw RAG shape. Reading only snake_case made every title
+    // fall back to "Clause <ref>" and every summary to the standard excerpt.
+    clause_title: r.clauseTitle || r.clause_title || '',
+    clause_summary: r.clauseSummary ?? r.clause_summary ?? '',
+    applicable_if: r.applicableIf ?? r.applicable_if ?? '',
+    conditional_clauses: r.conditionalClauses ?? r.conditional_clauses ?? '',
+    references: r.references ?? '',
+    note: r.note ?? '',
     gaps,
     suggestions,
     status: statusKey,
+    worksheet_status: worksheetStatus,
     confidence: conf,
     justification:
       (r.justification ??
@@ -194,46 +213,37 @@ function ClauseRow({
         onClick={() => setOpen(!open)}
       >
         <TableCell className="whitespace-nowrap font-bold text-[var(--text-primary)]">{row.clause_id || '—'}</TableCell>
+        <TableCell className="max-w-[180px]">
+          <p className="text-sm font-semibold text-[var(--text-primary)]">{row.clause_title || '—'}</p>
+        </TableCell>
+        <TableCell className="max-w-[320px]">
+          <p className="line-clamp-3 text-xs text-[var(--muted)]">{row.clause_summary || '—'}</p>
+        </TableCell>
         <TableCell className="max-w-[200px]">
-          <p className="text-sm font-semibold text-[var(--text-primary)]">{row.clause_title}</p>
-          <p className="line-clamp-2 text-xs text-[var(--muted)]">{row.clause_summary}</p>
+          <p className="line-clamp-3 text-xs text-[var(--muted)]">{row.applicable_if || ''}</p>
         </TableCell>
-        <TableCell className="text-center">
-          <Badge variant="default" className="text-[10px]">
-            {row.applicable ? 'YES' : 'NO'}
-          </Badge>
+        <TableCell className="max-w-[140px]">
+          <p className="line-clamp-2 text-xs text-[var(--muted)]">{row.conditional_clauses || ''}</p>
         </TableCell>
-        <TableCell className="text-center">
-          <span className="eval-status-chip">{evalStatusLabel(statusKey)}</span>
+        <TableCell className="max-w-[140px]">
+          <p className="line-clamp-2 text-xs text-[var(--muted)]">{row.references || ''}</p>
+        </TableCell>
+        <TableCell className="whitespace-nowrap text-center">
+          <span className="eval-status-chip">{row.worksheet_status || evalStatusLabel(statusKey)}</span>
           {row.override?.verdict && (
             <p className="mt-0.5 text-[9px] font-semibold text-[var(--muted)]">Override</p>
           )}
-        </TableCell>
-        <TableCell className="w-[100px] text-center">
-          {row.status !== 'N/A' ? (
-            <div>
-              <p
-                className="text-xs font-bold"
-                style={{ color: `var(--eval-${evalStatusTone(statusKey)}-color)` }}
-              >
-                {(row.confidence * 100).toFixed(0)}%
-              </p>
-              <div className="mt-1 h-1 overflow-hidden rounded-full bg-[var(--gauge-track)]">
-                <div
-                  className="h-full rounded-full"
-                  style={{
-                    width: `${row.confidence * 100}%`,
-                    background: `var(--eval-${evalStatusTone(statusKey)}-color)`,
-                  }}
-                />
-              </div>
-            </div>
-          ) : (
-            <span className="text-xs text-[var(--muted)]">—</span>
+          {row.worksheet_status !== 'N/A' && row.confidence > 0 && (
+            <p className="mt-0.5 text-[9px] text-[var(--muted)]">
+              {(row.confidence * 100).toFixed(0)}%
+            </p>
           )}
         </TableCell>
-        <TableCell className="max-w-[320px]">
-          <p className="line-clamp-2 text-xs text-[var(--muted)]">{row.justification}</p>
+        <TableCell className="max-w-[380px]">
+          <p className="line-clamp-3 text-xs text-[var(--muted)]">{row.justification}</p>
+        </TableCell>
+        <TableCell className="max-w-[160px]">
+          <p className="line-clamp-2 text-xs text-[var(--muted)]">{row.note || ''}</p>
         </TableCell>
         <TableCell className="w-12 text-center">
           <button type="button" className="rounded p-1" onClick={(e) => { e.stopPropagation(); setOpen(!open); }}>
@@ -243,7 +253,7 @@ function ClauseRow({
       </TableRow>
       {open && (
         <TableRow>
-          <TableCell colSpan={7} className="border-0 p-0">
+          <TableCell colSpan={10} className="border-0 p-0">
             <div
               className={cn('eval-status-detail p-6', `eval-status-row--${evalStatusTone(statusKey)}`)}
               onClick={(e) => e.stopPropagation()}
@@ -746,7 +756,18 @@ export default function EvaluationReportPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  {['Clause #', 'Title & summary', 'Applicable', 'Status', 'Confidence', 'Justification', ''].map((h) => (
+                  {[
+                    'Clause #',
+                    'Clause Title',
+                    'Clause Summary',
+                    'Applicable If',
+                    'Conditional Clauses',
+                    'References',
+                    'STATUS',
+                    'JUSTIFICATION',
+                    'Note',
+                    '',
+                  ].map((h) => (
                     <TableHead key={h}>{h}</TableHead>
                   ))}
                 </TableRow>
@@ -754,7 +775,7 @@ export default function EvaluationReportPage() {
               <TableBody>
                 {results.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="py-10 text-center text-[var(--muted)]">
+                    <TableCell colSpan={10} className="py-10 text-center text-[var(--muted)]">
                       {running ? 'Results will appear here when the job completes.' : 'No clause results available'}
                     </TableCell>
                   </TableRow>

@@ -10,7 +10,9 @@ import { getPageMeta } from '@/lib/page-meta';
 import { AuthUserSync } from '@/components/auth/auth-user-sync';
 import { RouteTransitionLoader } from '@/components/loading/RouteTransitionLoader';
 import { SwipeTabNavigator } from '@/components/layout/SwipeTabNavigator';
-import { TrashFabGlobal } from '@/components/dashboard/TrashFabGlobal';
+// TrashFabGlobal (drag-to-delete floating button) intentionally not rendered —
+// removed from the UI. The module is kept for `attachDocDragGlobal`, which the
+// dashboard and file library still import.
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -153,7 +155,6 @@ function DashboardLayoutInner({ children, pageTitle, pageTagline, showRouteHeade
           </RouteTransitionLoader>
         </main>
       </div>
-      <TrashFabGlobal />
     </div>
   );
 }

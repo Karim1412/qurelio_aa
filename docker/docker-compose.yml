@@ -19,9 +19,17 @@ x-common-env: &common-env
   MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
   MINIO_BUCKET: ${MINIO_BUCKET}
   MINIO_USE_SSL: false
-  SENDGRID_API_KEY: ${SENDGRID_API_KEY}
-  SENDGRID_SENDER_EMAIL: ${SENDGRID_SENDER_EMAIL}
-  SENDGRID_TEMPLATE_ID: ${SENDGRID_TEMPLATE_ID}
+  # Mail goes out over SMTP via Nodemailer. The previous SENDGRID_* trio was read
+  # by no service and undefined in .env, so it only produced compose warnings —
+  # while notification-service logged "SMTP_HOST or SMTP_SENDER_EMAIL missing"
+  # because the variables it actually reads were never injected.
+  SMTP_HOST: ${SMTP_HOST}
+  SMTP_PORT: ${SMTP_PORT}
+  SMTP_SECURE: ${SMTP_SECURE}
+  SMTP_USER: ${SMTP_USER}
+  SMTP_PASSWORD: ${SMTP_PASSWORD}
+  SMTP_SENDER_EMAIL: ${SMTP_SENDER_EMAIL}
+  SMTP_SENDER_NAME: ${SMTP_SENDER_NAME}
   FRONTEND_URL: ${FRONTEND_URL}
 
 services:
@@ -314,6 +322,11 @@ services:
       dockerfile: Dockerfile
       args:
         API_PROXY_TARGET: http://gateway:3000
+        # Browser-reachable gateway URL, baked in at build time (NEXT_PUBLIC_*).
+        # Only used to send multipart uploads straight to the gateway, past the
+        # Next proxy's 10 MB body cap. Must match the host port the gateway is
+        # actually published on; leave blank to route uploads through the proxy.
+        NEXT_PUBLIC_GATEWAY_URL: ${NEXT_PUBLIC_GATEWAY_URL-http://localhost:${GATEWAY_HOST_PORT:-3000}}
     container_name: ${COMPOSE_PROJECT_NAME:-qurelio}_frontend
     restart: unless-stopped
     environment:

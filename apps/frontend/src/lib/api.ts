@@ -17,14 +17,22 @@ function apiBaseURL(): string {
 }
 
 /**
- * Direct gateway URL that bypasses the Next.js rewrite proxy.
- * Next.js rewrites cap the body at 10 MB which breaks large file uploads.
- * The gateway is exposed on port 3100 so the browser can reach it directly.
+ * Base URL for multipart uploads.
+ *
+ * Uploads may bypass the Next.js rewrite proxy, which caps the body at 10 MB.
+ * Set NEXT_PUBLIC_GATEWAY_URL (build-time) to a gateway URL the BROWSER can
+ * reach and large files go straight there.
+ *
+ * Without it we fall back to the same origin, i.e. the ordinary /api/* rewrite
+ * every other call already uses. The previous fallback guessed `<host>:3100`,
+ * which silently broke every upload on any deployment whose gateway is not
+ * published on 3100 — the request never reached a listener at all.
  */
 function gatewayUploadURL(): string {
   if (typeof window !== 'undefined') {
-    // Browser: hit gateway directly to avoid Next.js 10 MB body limit
-    return process.env.NEXT_PUBLIC_GATEWAY_URL || window.location.protocol + '//' + window.location.hostname + ':3100';
+    const configured = (process.env.NEXT_PUBLIC_GATEWAY_URL || '').trim();
+    // Same-origin '' keeps the request on the Next proxy, which always works.
+    return configured.replace(/\/$/, '');
   }
   // SSR fallback
   return process.env.INTERNAL_API_URL || 'http://127.0.0.1:3000';

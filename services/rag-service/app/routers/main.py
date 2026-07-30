@@ -79,7 +79,19 @@ async def index_standard(req: IndexStandardRequest):
             req.file_name,
             req.version,
         )
+        if n == 0 and (req.text or "").strip():
+            # Reporting OK for zero vectors let document-service mark the standard
+            # ACTIVE with nothing indexed; every later evaluation then failed with
+            # "no indexed text". Fail here so activation reverts to PROCESSING.
+            raise HTTPException(
+                502,
+                "No vectors were written for this standard — embedding or Pinecone "
+                "upsert failed. Check the rag-service log for the embedding endpoint "
+                "and index dimension.",
+            )
         return {"document_id": req.document_id, "chunks_indexed": n, "status": "OK"}
+    except HTTPException:
+        raise
     except Exception as e:
         logger.exception("index_standard failed")
         raise HTTPException(500, str(e))

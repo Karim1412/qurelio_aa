@@ -25,6 +25,16 @@ type ClauseRow = {
   clauseTitle: string;
   clauseSummary: string;
   clauseTextExcerpt: string;
+  /** Condition gating the requirement ("IF: the machine is mobile"); empty when unconditional. */
+  applicableIf?: string;
+  /** Other clauses whose conditions gate this requirement. */
+  conditionalClauses?: string;
+  /** Cross-references cited by the requirement ("7.2.10", "IEC 60364-5-52:2009, 524"). */
+  references?: string;
+  /** Auditor-facing outcome: PASS | FAIL | N/A | MISSING_INFO (| INCONCLUSIVE on engine error). */
+  status?: string;
+  /** Status-prefixed rationale citing source document and page. */
+  justification?: string;
   verdict: string;
   confidence: number;
   supportingEvidence: { documentId: string; excerpt: string; similarityScore: number; sourceLabel?: string }[];
@@ -859,20 +869,55 @@ export class EvaluationService {
     return best >= 0 ? w : 1;
   }
 
+  /**
+   * Weighted conformity over *assessable* requirements only.
+   *
+   * Excluded from numerator and denominator: `N/A` (the requirement does not apply
+   * to this product) and `INCONCLUSIVE` (the engine failed). MISSING_INFO is scored
+   * as 0 — the requirement applies and the file does not demonstrate conformity.
+   *
+   * Falls back to the legacy verdict vocabulary for evaluations stored before the
+   * conformity-matrix statuses existed.
+   */
   computeWeightedScore(rows: ClauseRow[], clauseWeights: Record<string, number> | null): number {
-    if (!rows?.length) return 0;
+    const unscored = new Set(['N/A', 'INCONCLUSIVE']);
+    const scored = (rows || []).filter((r) => !unscored.has(this.effectiveStatus(r)));
+    if (!scored.length) return 0;
     if (clauseWeights && Object.keys(clauseWeights).length) {
       let tw = 0;
       let acc = 0;
-      for (const r of rows) {
+      for (const r of scored) {
         const w = this.resolveClauseWeight(r.clauseReference, clauseWeights);
         tw += w;
-        acc += w * this.verdictWeight(this.effectiveVerdict(r));
+        acc += w * this.statusWeight(r);
       }
       return tw ? Math.round((100 * acc) / tw * 100) / 100 : 0;
     }
-    const acc = rows.reduce((s, r) => s + this.verdictWeight(this.effectiveVerdict(r)), 0);
-    return Math.round((100 * acc) / rows.length * 100) / 100;
+    const acc = scored.reduce((s, r) => s + this.statusWeight(r), 0);
+    return Math.round((100 * acc) / scored.length * 100) / 100;
+  }
+
+  /** Worksheet status, honouring a manual override and tolerating legacy rows. */
+  private effectiveStatus(row: ClauseRow): string {
+    const overridden = row.override?.verdict;
+    if (overridden) return this.verdictToStatus(overridden);
+    const s = (row.status || '').toUpperCase();
+    if (s) return s === 'NA' ? 'N/A' : s;
+    return this.verdictToStatus(row.verdict);
+  }
+
+  private verdictToStatus(verdict: string): string {
+    const v = (verdict || '').toUpperCase();
+    if (v === 'SATISFIED') return 'PASS';
+    if (v === 'NOT_SATISFIED') return 'FAIL';
+    if (v === 'PARTIALLY_SATISFIED') return 'MISSING_INFO';
+    if (v === 'INCONCLUSIVE') return 'INCONCLUSIVE';
+    return 'MISSING_INFO';
+  }
+
+  /** PASS counts fully; FAIL and MISSING_INFO count as zero (undemonstrated). */
+  private statusWeight(row: ClauseRow): number {
+    return this.effectiveStatus(row) === 'PASS' ? 1 : 0;
   }
 
   private normalizeResults(raw: any[]): ClauseRow[] {
@@ -881,6 +926,12 @@ export class EvaluationService {
       clauseTitle: r.clause_title ?? r.clauseTitle ?? '',
       clauseSummary: r.clause_summary ?? r.clauseSummary ?? '',
       clauseTextExcerpt: r.clause_text_excerpt ?? r.clauseTextExcerpt ?? '',
+      // Conformity-matrix columns (PASS / FAIL / N/A / MISSING_INFO worksheet).
+      applicableIf: r.applicable_if ?? r.applicableIf ?? '',
+      conditionalClauses: r.conditional_clauses ?? r.conditionalClauses ?? '',
+      references: r.references ?? '',
+      status: r.status ?? '',
+      justification: r.justification ?? '',
       verdict: r.verdict,
       confidence: typeof r.confidence === 'number' ? r.confidence : parseFloat(r.confidence) || 0,
       supportingEvidence: (r.supporting_evidence ?? r.supportingEvidence ?? []).map((e: any) => ({
@@ -900,13 +951,21 @@ export class EvaluationService {
     }));
   }
 
+  /**
+   * NC drafts come from FAIL rows only. MISSING_INFO is a documentation gap to
+   * chase, not a demonstrated non-conformity, and N/A rows are out of scope —
+   * raising NCs for either would flood the register with false findings.
+   */
   private buildNcDrafts(rows: ClauseRow[], ev: Evaluation): Record<string, unknown>[] {
     return rows
-      .filter((r) => this.effectiveVerdict(r) === 'NOT_SATISFIED')
+      .filter((r) => this.effectiveStatus(r) === 'FAIL')
       .map((r) => ({
         clauseReference: r.clauseReference,
         title: `NC draft — ${r.clauseReference}`,
-        description: (r.gaps && r.gaps.length ? r.gaps : ['Gap vs standard requirement']).join('; '),
+        description: (r.gaps && r.gaps.length
+          ? r.gaps
+          : [r.justification || 'Gap vs standard requirement']
+        ).join('; '),
         classification: NCClassification.MAJOR,
         isoClause: r.clauseReference,
         isoStandard: ev.isoStandard,
@@ -1028,7 +1087,10 @@ export class EvaluationService {
           scoring_method: ev.scoringMethod,
           clause_weights: ev.clauseWeights ?? undefined,
         },
-        { timeout: 300_000 },
+        // A full run is one LLM call per clause (plus clause discovery on the
+        // standard), so it scales with clause count and evidence volume. 300s was
+        // tight enough that ordinary runs failed with "timeout exceeded".
+        { timeout: Number(this.cfg.get('EVALUATION_TIMEOUT_MS', 900_000)) || 900_000 },
       );
 
       const { conformity_score, summary, results } = res.data;

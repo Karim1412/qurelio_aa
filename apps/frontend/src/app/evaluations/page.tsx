@@ -29,6 +29,10 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import {
+  ACTIVE_EVALUATION_STATUSES,
+  EvaluationProgress,
+} from '@/components/evaluations/EvaluationProgress';
 const STATUS_CONFIG: Record<string, { color: string; bg: string }> = {
   QUEUED: { color: '#637381', bg: 'rgba(145,158,171,0.12)' },
   PROCESSING: { color: '#ffab00', bg: 'rgba(255,171,0,0.12)' },
@@ -36,8 +40,26 @@ const STATUS_CONFIG: Record<string, { color: string; bg: string }> = {
   FAILED: { color: '#ff5630', bg: 'rgba(255,86,48,0.12)' },
 };
 
-function ScoreGauge({ score }: { score: number | null }) {
-  if (score === null) return <span className="text-sm text-[#919eab]">Pending</span>;
+function ScoreGauge({
+  score,
+  status,
+  evaluationId,
+  startedAt,
+}: {
+  score: number | null;
+  status?: string;
+  evaluationId?: string;
+  startedAt?: string | null;
+}) {
+  if (score === null) {
+    // A queued/running evaluation gets a live 0→100% bar instead of a static label.
+    if (status && evaluationId && ACTIVE_EVALUATION_STATUSES.has(status)) {
+      return (
+        <EvaluationProgress evaluationId={evaluationId} status={status} startedAt={startedAt} />
+      );
+    }
+    return <span className="text-sm text-[#919eab]">Pending</span>;
+  }
   const color = score >= 90 ? '#118d57' : score >= 70 ? '#b76e00' : '#b71d18';
   return (
     <div className="text-center">
@@ -321,7 +343,12 @@ export default function EvaluationsPage() {
                         {ev.status}
                       </Badge>
                     </div>
-                    <ScoreGauge score={ev.conformityScore} />
+                    <ScoreGauge
+                      score={ev.conformityScore}
+                      status={ev.status}
+                      evaluationId={ev.id}
+                      startedAt={ev.startedAt ?? ev.createdAt}
+                    />
                     <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
                       <span className="text-xs text-[var(--muted)]">{ev._count?.nonConformities || 0} non-conformities</span>
                       <div className="flex items-center gap-1">
@@ -404,7 +431,18 @@ export default function EvaluationsPage() {
                         {ev.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right font-mono text-sm">{score}</TableCell>
+                    <TableCell className="text-right font-mono text-sm">
+                      {ev.conformityScore == null && ACTIVE_EVALUATION_STATUSES.has(ev.status) ? (
+                        <EvaluationProgress
+                          evaluationId={ev.id}
+                          status={ev.status}
+                          startedAt={ev.startedAt ?? ev.createdAt}
+                          compact
+                        />
+                      ) : (
+                        score
+                      )}
+                    </TableCell>
                     <TableCell className="whitespace-nowrap text-xs text-[var(--muted)]">
                       {format(new Date(ev.createdAt), 'MMM d, yyyy HH:mm')}
                     </TableCell>

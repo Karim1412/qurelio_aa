@@ -2982,6 +2982,36 @@ function DocSection({
   };
 
 
+  /**
+   * Permanent delete from the Archived products view. Irreversible and it takes
+   * the product's documents with it, so the confirmation is explicit and typed
+   * red rather than the amber used for archiving.
+   */
+  const handleDeleteArchivedProduct = async (product: any) => {
+    const label = String(product?.name ?? 'this product').trim() || 'this product';
+    const ok =
+      confirmAction != null
+        ? await confirmAction({
+            title: `Delete ${label} permanently?`,
+            description:
+              'This removes the archived product and its documents for good. ' +
+              'It cannot be undone — use Restore instead if you may still need it.',
+            confirmLabel: 'Delete permanently',
+            variant: 'destructive',
+          })
+        : typeof window !== 'undefined' &&
+          window.confirm(`Delete ${label} permanently? This cannot be undone.`);
+    if (!ok) return;
+    try {
+      await productApi.delete(product.id);
+      toast.success('Product deleted permanently');
+      setProductModal(null);
+      onDelete('__reload__');
+    } catch {
+      toast.error('Delete failed — Company Admin or Quality Manager may be required');
+    }
+  };
+
   const showProduct = viewFilter !== 'standard';
   const showStandard = viewFilter !== 'product';
   const isEmpty =
@@ -3092,7 +3122,23 @@ function DocSection({
                                 <Trash2 className="h-4 w-4" strokeWidth={2.25} />
                               </Button>
                             )}
-                            {/* Archived product folders are view-only — no restore / permanent-delete actions. */}
+                            {/* Archived products can be deleted for good; the handler
+                                asks for confirmation before anything is removed. */}
+                            {isArchived && canDeleteProduct && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 rounded-md border border-red-500/30 bg-red-500/8 text-red-700 hover:bg-red-500/15 dark:text-red-400"
+                                title="Delete permanently (cannot be undone)"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  void handleDeleteArchivedProduct(folder.product);
+                                }}
+                              >
+                                <Trash2 className="h-4 w-4" strokeWidth={2.25} />
+                              </Button>
+                            )}
                             <Button
                               type="button"
                               variant="ghost"

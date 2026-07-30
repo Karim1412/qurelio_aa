@@ -11,7 +11,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Plus, Eye } from '@/components/icons';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Plus, Eye, ChevronDown, ChevronUp, Settings } from '@/components/icons';
+import { cn } from '@/utils/cn';
 import { productApi } from '@/lib/api';
 import toast from 'react-hot-toast';
 import catalogData from '@/data/regulatory_reference_catalog.json';
@@ -66,6 +74,19 @@ const VERSION_OVERRIDES: Record<string, { current: string; latest: string }> = {
   'EU MDR': { current: 'Reg. (EU) 2017/745 (2021)', latest: 'Consolidated 2024' },
   'ICH GCP E6': { current: 'E6(R2)', latest: 'E6(R3) — 2025' },
   'EU GMP': { current: 'Annex 1 (2008)', latest: 'Annex 1 revised 2022' },
+};
+
+/**
+ * Demo-only transition deadlines, same footing as VERSION_OVERRIDES above:
+ * illustrative dates so the "Next deadline" tile has something to resolve to.
+ * Nothing in the catalog or the API carries a deadline — replace this map when a
+ * real transition-date source exists.
+ */
+const DEMO_DEADLINES: Record<string, string> = {
+  'ISO 27001': '2025-10-31',
+  'EU GMP': '2026-08-25',
+  'ICH GCP E6': '2026-07-23',
+  'EU MDR': '2027-03-01',
 };
 
 /** Filter the catalog by short_code, reference, title and aliases (EN/FR). */
@@ -134,6 +155,19 @@ export default function MonitoringPage() {
   const [scanning, setScanning] = useState(false);
   const [results, setResults] = useState<ScanRow[] | null>(null);
   const [modalRow, setModalRow] = useState<ScanRow | null>(null);
+  /** Configuration lives in a modal; the page keeps only the KPI row and results. */
+  const [configOpen, setConfigOpen] = useState(false);
+  /** Projects whose assigned-compliance panel is open. */
+  const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
+
+  const toggleProject = (projectId: string) => {
+    setExpandedProjects((prev) => {
+      const next = new Set(prev);
+      if (next.has(projectId)) next.delete(projectId);
+      else next.add(projectId);
+      return next;
+    });
+  };
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -220,9 +254,14 @@ export default function MonitoringPage() {
     setConfigs(working);
     setProjectId('');
     setSelected([]);
+    // Close the config modal so the KPI row and loader are visible while scanning.
+    setConfigOpen(false);
     setScanning(true);
+    // Clearing results resets the tiles to zero, so the post-scan values land as a
+    // visible change rather than replacing an identical number.
     setResults(null);
     setModalRow(null);
+    setExpandedProjects(new Set()); // ids from the previous scan no longer apply
     // Static scan: loader then a version-comparison table.
     timerRef.current = setTimeout(() => {
       const rows: ScanRow[] = working.map((c) => ({
@@ -241,6 +280,76 @@ export default function MonitoringPage() {
 
   const selectedProduct = products.find((p) => p.id === projectId);
 
+  /**
+   * KPI tiles. Null until a scan completes, which is what makes the row sit at
+   * zero on load and fill in when the scan resolves.
+   */
+  const metrics = useMemo(() => {
+    if (!results) return null;
+    const names = new Set<string>();
+    let outdated = 0;
+    results.forEach((r) =>
+      r.items.forEach((it) => {
+        names.add(it.name);
+        if (it.outdated) outdated += 1;
+      }),
+    );
+    const affected = results.filter((r) => r.items.some((it) => it.outdated));
+    const upcoming = [...names]
+      .filter((n) => DEMO_DEADLINES[n])
+      .map((n) => ({ name: n, date: DEMO_DEADLINES[n] }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+    return {
+      regulations: names.size,
+      projects: results.length,
+      changes: outdated,
+      affected: affected.length,
+      deadline: upcoming[0] ?? null,
+    };
+  }, [results]);
+
+  const formatDeadline = (iso: string) =>
+    new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+  const tiles = [
+    {
+      label: 'Regulations monitored',
+      value: metrics ? String(metrics.regulations) : '0',
+      caption: metrics
+        ? `Across ${metrics.projects} project${metrics.projects === 1 ? '' : 's'}`
+        : 'Run a scan to populate',
+      accent: 'bg-teal-500',
+      valueClass: 'text-[var(--text-primary)]',
+    },
+    {
+      label: 'Active changes',
+      value: metrics ? String(metrics.changes) : '0',
+      caption: metrics
+        ? metrics.changes > 0
+          ? `${metrics.affected} project${metrics.affected === 1 ? '' : 's'} affected`
+          : 'Every assigned version is current'
+        : 'Run a scan to populate',
+      accent: 'bg-rose-500',
+      valueClass: metrics && metrics.changes > 0 ? 'text-rose-600' : 'text-[var(--text-primary)]',
+    },
+    {
+      label: 'Pending impact review',
+      value: metrics ? String(metrics.affected) : '0',
+      caption: metrics ? 'Projects awaiting version review' : 'Run a scan to populate',
+      accent: 'bg-amber-500',
+      valueClass: metrics && metrics.affected > 0 ? 'text-amber-600' : 'text-[var(--text-primary)]',
+    },
+    {
+      label: 'Next deadline',
+      value: metrics?.deadline ? formatDeadline(metrics.deadline.date) : '—',
+      caption: metrics
+        ? (metrics.deadline?.name ?? 'No deadline tracked for these references')
+        : 'Run a scan to populate',
+      accent: 'bg-indigo-500',
+      valueClass: 'text-[var(--text-primary)]',
+    },
+  ];
+
   return (
     <DashboardLayout pageTitle="Monitoring" pageTagline="Regulatory Monitoring">
       {loading ? (
@@ -249,16 +358,56 @@ export default function MonitoringPage() {
         </div>
       ) : (
         <div className="space-y-6">
-          {/* ── Configuration ─────────────────────────────────────── */}
-          <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-sm">
-            <div className="border-b border-[var(--border)] px-5 py-4">
+          {/* ── KPI row ───────────────────────────────────────────── */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {tiles.map((t) => (
+              <div
+                key={t.label}
+                className="flex overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] shadow-sm"
+              >
+                {/* Accent rail — the colour is what separates the tiles at a glance. */}
+                <span className={cn('w-1 shrink-0', t.accent)} aria-hidden />
+                <div className="min-w-0 flex-1 px-4 py-3.5">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--muted)]">
+                    {t.label}
+                  </p>
+                  <p className={cn('mt-1 text-2xl font-extrabold leading-tight', t.valueClass)}>
+                    {t.value}
+                  </p>
+                  <p className="mt-1 truncate text-[12px] text-[var(--muted)]" title={t.caption}>
+                    {t.caption}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* ── Configuration entry point ─────────────────────────── */}
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-5 py-4 shadow-sm">
+            <div className="min-w-0">
               <h2 className="text-sm font-bold text-[var(--text-primary)]">Project &amp; compliance configuration</h2>
               <p className="text-[13px] text-[var(--muted)]">
-                Choose a project, assign compliance standards, then run a scan to compare versions.
+                {configs.length > 0
+                  ? `${configs.length} project${configs.length === 1 ? '' : 's'} queued for scan`
+                  : 'Choose a project, assign compliance standards, then run a scan to compare versions.'}
               </p>
             </div>
+            <Button type="button" onClick={() => setConfigOpen(true)} className="gap-2" disabled={scanning}>
+              <Settings className="h-4 w-4" />
+              {scanning ? 'Scanning…' : 'Configure & scan'}
+            </Button>
+          </div>
 
-            <div className="space-y-5 px-5 py-5">
+          <Dialog open={configOpen} onOpenChange={setConfigOpen}>
+            <DialogContent className="max-h-[88vh] max-w-3xl overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-base">Project &amp; compliance configuration</DialogTitle>
+                <DialogDescription>
+                  Choose a project, assign compliance standards, then run a scan to compare versions.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-5">
               {/* Project selection */}
               <div className="space-y-1.5">
                 <label className="text-[13px] font-semibold text-[var(--text-primary)]">Project</label>
@@ -462,8 +611,9 @@ export default function MonitoringPage() {
                   ))}
                 </div>
               )}
-            </div>
-          </div>
+              </div>
+            </DialogContent>
+          </Dialog>
 
           {/* ── Loader ────────────────────────────────────────────── */}
           {scanning && (
@@ -481,62 +631,117 @@ export default function MonitoringPage() {
                 <h2 className="text-sm font-bold text-[var(--text-primary)]">Scan results</h2>
                 <p className="text-[13px] text-[var(--muted)]">{results.length} project(s) scanned</p>
               </div>
-              <div className="max-w-full overflow-x-auto">
-                <Table className="min-w-[820px]">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">Project name</TableHead>
-                      <TableHead className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">Assigned compliance(s)</TableHead>
-                      <TableHead className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">Current version</TableHead>
-                      <TableHead className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">Latest version</TableHead>
-                      <TableHead className="w-[130px] text-right text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {results.map((row) => (
-                      <TableRow key={row.projectId} className="align-top">
-                        <TableCell className="font-semibold text-[var(--text-primary)]">
-                          {row.name}
-                          <div className="font-mono text-[11px] font-normal text-[var(--muted)]">{row.reference}</div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-col gap-1.5">
-                            {row.items.map((it) => (
-                              <div key={it.name} className="flex min-h-[24px] items-center text-sm text-[var(--text-primary)]">{it.name}</div>
-                            ))}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-col gap-1.5">
-                            {row.items.map((it) => (
-                              <div key={it.name} className="flex min-h-[24px] items-center font-mono text-[13px] text-[var(--muted)]">{it.current}</div>
-                            ))}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-col gap-1.5">
-                            {row.items.map((it) => (
-                              <div key={it.name} className="flex min-h-[24px] items-center gap-2">
-                                <span className="font-mono text-[13px] text-[var(--text-primary)]">{it.latest}</span>
-                                {it.outdated ? (
-                                  <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-700 dark:text-amber-300">Update</span>
-                                ) : (
-                                  <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold uppercase text-emerald-700 dark:text-emerald-300">Up to date</span>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button type="button" variant="outline" size="sm" onClick={() => setModalRow(row)} className="gap-1.5">
-                            <Eye className="h-4 w-4" />
-                            View Details
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+              {/* One accordion per project: the header carries the name and the
+                  action, the panel holds that project's assigned compliances.
+                  Each entry is inset from the card edges and separated by a gap
+                  rather than a divider line. */}
+              <div className="space-y-3 px-5 pb-5 pt-4">
+                {results.map((row) => {
+                  const open = expandedProjects.has(row.projectId);
+                  const outdatedCount = row.items.filter((it) => it.outdated).length;
+                  return (
+                    <div
+                      key={row.projectId}
+                      className="overflow-hidden rounded-xl border border-[var(--border)]"
+                    >
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        aria-expanded={open}
+                        aria-controls={`compliances-${row.projectId}`}
+                        onClick={() => toggleProject(row.projectId)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            toggleProject(row.projectId);
+                          }
+                        }}
+                        className={cn(
+                          'flex w-full cursor-pointer items-center gap-3 px-5 py-4 text-left transition-hover',
+                          // Every header carries colour so closed rows still read as
+                          // accordion headers; the open one deepens against its
+                          // plain white panel. Amber flags outdated versions.
+                          open
+                            ? 'bg-[var(--brand-primary)]/15'
+                            : outdatedCount > 0
+                              ? 'bg-amber-500/[0.10] hover:bg-amber-500/[0.16]'
+                              : 'bg-[var(--brand-primary)]/[0.06] hover:bg-[var(--brand-primary)]/[0.12]',
+                        )}
+                      >
+                        {open ? (
+                          <ChevronUp className="h-4 w-4 shrink-0 text-[var(--muted)]" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4 shrink-0 text-[var(--muted)]" />
+                        )}
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate font-semibold text-[var(--text-primary)]">{row.name}</p>
+                          <p className="truncate font-mono text-[11px] text-[var(--muted)]">{row.reference}</p>
+                        </div>
+                        <span className="shrink-0 text-[11px] text-[var(--muted)]">
+                          {row.items.length} compliance{row.items.length === 1 ? '' : 's'}
+                          {outdatedCount > 0 && (
+                            <span className="ml-2 rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-700 dark:text-amber-300">
+                              {outdatedCount} update{outdatedCount === 1 ? '' : 's'}
+                            </span>
+                          )}
+                        </span>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          // Must not toggle the panel — this opens the benchmark modal.
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setModalRow(row);
+                          }}
+                          className="ml-1 shrink-0 gap-1.5"
+                        >
+                          <Eye className="h-4 w-4" />
+                          View Details
+                        </Button>
+                      </div>
+
+                      {open && (
+                        <div id={`compliances-${row.projectId}`} className="max-w-full overflow-x-auto bg-[var(--surface)] px-5 pb-4 pt-1">
+                          <Table className="min-w-[620px]">
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead className="bg-transparent text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">Assigned compliance(s)</TableHead>
+                                <TableHead className="bg-transparent text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">Current version</TableHead>
+                                <TableHead className="bg-transparent text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">Latest version</TableHead>
+                                <TableHead className="bg-transparent text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">Status</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {row.items.length === 0 ? (
+                                <TableRow>
+                                  <TableCell colSpan={4} className="py-6 text-center text-sm text-[var(--muted)]">
+                                    No compliance assigned to this project.
+                                  </TableCell>
+                                </TableRow>
+                              ) : (
+                                row.items.map((it) => (
+                                  <TableRow key={it.name}>
+                                    <TableCell className="text-sm font-medium text-[var(--text-primary)]">{it.name}</TableCell>
+                                    <TableCell className="font-mono text-[13px] text-[var(--muted)]">{it.current}</TableCell>
+                                    <TableCell className="font-mono text-[13px] text-[var(--text-primary)]">{it.latest}</TableCell>
+                                    <TableCell>
+                                      {it.outdated ? (
+                                        <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-700 dark:text-amber-300">Update</span>
+                                      ) : (
+                                        <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold uppercase text-emerald-700 dark:text-emerald-300">Up to date</span>
+                                      )}
+                                    </TableCell>
+                                  </TableRow>
+                                ))
+                              )}
+                            </TableBody>
+                          </Table>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

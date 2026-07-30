@@ -31,6 +31,16 @@ type ClausePhase =
   | 'done'
   | 'failed';
 
+/** Fraction of a clause considered complete at each phase, for the progress bar. */
+const CLAUSE_PHASE_WEIGHT: Record<ClausePhase, number> = {
+  queued: 0.1,
+  retrieving_iso: 0.25,
+  retrieving_evidence: 0.45,
+  reasoning: 0.65,
+  done: 1,
+  failed: 1,
+};
+
 type ClauseState = {
   clauseRef: string;
   clauseTitle: string;
@@ -270,6 +280,24 @@ export function AgentActivityPanel({
   }, [order, clauses, run.totalClauses]);
 
   const finished = !!run.finishedAt || !!run.failed;
+
+  // Clause progress caps at 95% so the bar cannot read "done" while the overall
+  // summary is still being drafted; only a finished run reaches 100%.
+  //
+  // Partial phases are credited on purpose: clauses run concurrently and settle
+  // in a burst at the end, so counting completions alone leaves the bar pinned
+  // at 0% for most of the run.
+  const progressPct = useMemo(() => {
+    if (finished) return 100;
+    if (run.summarising) return 95;
+    if (stats.total <= 0) return 0;
+    const credited = order.reduce((sum, ref) => {
+      const phase = clauses[ref]?.phase;
+      return sum + (phase ? CLAUSE_PHASE_WEIGHT[phase] : 0);
+    }, 0);
+    return Math.round(Math.min(95, (credited / stats.total) * 95));
+  }, [finished, order, clauses, stats.total, run.summarising]);
+
   const headerStatus = run.failed
     ? { label: 'Failed', color: '#b71c1c', bg: '#ffebee' }
     : run.finishedAt
@@ -295,6 +323,35 @@ export function AgentActivityPanel({
           {stats.done}/{stats.total || '—'} clauses
           {stats.active > 0 && ` · ${stats.active} in-flight`}
           {stats.failed > 0 && ` · ${stats.failed} failed`}
+        </div>
+      </div>
+
+      {/* 0 → 100% completion bar. Driven by settled clauses, so it tracks the run
+          rather than the clock; the last 5% is reserved for summary drafting. */}
+      <div
+        className="mb-3"
+        role="progressbar"
+        aria-valuenow={progressPct}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={`Evaluation ${progressPct}% complete`}
+      >
+        <div className="mb-1 flex items-baseline justify-between">
+          <span className="text-[11px] text-[var(--muted)]">
+            {finished ? 'Complete' : run.summarising ? 'Drafting summary' : 'Analysing clauses'}
+          </span>
+          <span className="font-mono text-sm font-bold tabular-nums text-[var(--text-primary)]">
+            {progressPct}%
+          </span>
+        </div>
+        <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--page-bg)]">
+          <div
+            className="h-full rounded-full transition-[width] duration-500 ease-out"
+            style={{
+              width: `${progressPct}%`,
+              background: run.failed ? '#b71c1c' : finished ? '#36b37e' : 'var(--brand-primary)',
+            }}
+          />
         </div>
       </div>
 

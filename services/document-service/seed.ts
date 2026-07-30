@@ -1,9 +1,9 @@
 /**
  * Demo seed — creates several products (projects) with documents for the
- * "Althea Medtech / AlphaFlow" medical-device scenario (see Demo Dataset).
+ * "Byrsa Pharma" pharmaceutical scenario (06_Demo_Data_Pharma).
  *
- * Products come from product_registry.json; the flagship AlphaFlow 3 gets its
- * document folder from ./seed-data/AlphaFlow3/*.docx.
+ * Products come from each pharma product folder's product.json; every product
+ * gets its own document set from ./seed-data/<seedFolder>/ (.docx).
  *
  * Run from the repo root against the RUNNING stack (host ports):
  *   cd services/document-service
@@ -66,336 +66,516 @@ const marketLabels = (codes: string[]) => codes.map((c) => MARKET_LABEL[c] ?? c)
 // ── Product definitions (from product_registry.json) ───────────────────────
 type SeedProduct = Partial<Product> & { name: string };
 
-const FLAGSHIP: SeedProduct = {
-  name: 'AlphaFlow 3 Volumetric Infusion Pump',
-  reference: 'ALT-AF3-2200',
-  sku: 'ALT-AF3-2200',
-  description:
-    'Third-generation reusable volumetric infusion pump for hospital and clinical use. Mains- and battery-powered, with dose-error-reduction software (configurable drug library), air-in-line and occlusion detection, and a tamper-evident therapy event log.',
-  brandName: 'AlphaFlow',
-  productFamily: 'AlphaFlow Infusion Platform',
-  productType: 'finished',
-  productStatus: 'active',
-  categoryTags: ['Active medical device — volumetric infusion pump'],
-  intendedUse:
-    'Mains- and battery-powered volumetric infusion pump for the controlled intravenous administration of fluids, medications, blood and blood products to adult, pediatric and neonatal patients in hospital and clinical environments. Delivery range 0.1–1200 mL/h with ±5% flow accuracy.',
-  targetUsers: ['Medical professionals', 'B2B — Commercial / Distribution (hospital procurement)'],
-  keyMaterials: [
-    'Medical-grade polycarbonate housing',
-    'Platinum-cured silicone pumping segment',
-    'Rechargeable lithium-ion battery',
-    'PCBA / embedded microcontroller',
-    'DEHP-free, latex-free fluid path',
-  ],
-  physicalForm: 'Solid',
-  hsTariffCode: '9018.90',
-  countryOfOrigin: 'France',
-  targetMarkets: marketLabels(['EU', 'UK', 'GCC']),
-  requiredCertifications: [
-    'CE marking under EU MDR 2017/745 (Class IIb)',
-    'EN ISO 13485:2016 — QMS',
-    'EN ISO 14971:2019 — risk management',
-    'IEC 60601-1 — general electrical safety',
-    'IEC 60601-2-24 — particular requirements for infusion pumps',
-    'IEC 62304 — medical device software lifecycle',
-    'IEC 62366-1 — usability engineering',
-  ],
-  applicableRegulations: [
-    'EU MDR — Regulation (EU) 2017/745',
-    'GDPR — Regulation (EU) 2016/679 (therapy log & servicing data)',
-    'EU AI Act — Regulation (EU) 2024/1689 (drug-library dose calculation)',
-  ],
-  industryLabels: ['CE Marking'],
-  productionSites: ['Lyon Manufacturing & R&D Centre', 'Sfax Assembly & Packaging Plant'],
-  productionProcesses: [
-    'Production / Assembly',
-    'Electronics / PCBA Assembly',
-    'Quality Control',
-    'Software Development',
-    'Packaging',
-  ],
-  criticalSuppliers: [
-    'Nordcell GmbH (lithium-ion cells)',
-    'Rhône PCBA Contract Manufacturing (electronics)',
-    'PolySil Medical (silicone pump segments)',
-  ],
-  productCertifications: [
-    {
-      standardName: 'CE Certificate — EU MDR 2017/745, Class IIb',
-      certifyingBody: 'TÜV SÜD Product Service (Notified Body 0123)',
-      certificateNumber: 'G2-24-0148-MDR',
-      marketScope: 'European Union / EEA',
-      issueDate: '2024-02-15',
-      expiryDate: '2029-02-14',
-    },
-    {
-      standardName: 'IEC 60601-1 / 60601-2-24 — Test Report & Certificate',
-      certifyingBody: 'TÜV SÜD',
-      certificateNumber: 'TR-60601-AF3-2023',
-      marketScope: 'EU / UK / GCC',
-      issueDate: '2023-11-20',
-      expiryDate: '2028-11-19',
-    },
-  ],
-  onboardingStatus: 'COMPLETED',
-  currentStep: 6,
-};
-
-const OTHER_PRODUCTS: SeedProduct[] = [
+const PHARMA_PRODUCTS: SeedProduct[] = [
   {
-    name: 'AlphaFlow 2 Volumetric Infusion Pump',
-    reference: 'ALT-AF2-1900',
-    sku: 'ALT-AF2-1900',
-    description:
-      'Second-generation reusable volumetric infusion pump — the predecessor to the AlphaFlow 3. Maintained for the installed base of hospitals still running the AF2 platform.',
-    brandName: 'AlphaFlow',
-    productFamily: 'AlphaFlow Infusion Platform',
+    name: 'Furolix 20 mg/2 mL — furosemide, solution for injection',
+    reference: 'BYR-FUR-020',
+    sku: 'BYR-FUR-020',
+    description: 'Sterile, preservative-free aqueous solution of furosemide 10 mg/mL for intravenous or intramuscular administration, filled in 2 mL amber Type I glass ampoules and terminally sterilised by moist heat (121 °C, F0 ≥ 15 min) at the Sidi Thabet sterile site. Supplied in cartons of 10 and hospital cartons of 50. Photolabile — protected by amber glass and the outer carton.',
+    brandName: 'Furolix',
+    productFamily: 'Byrsa Sterile Injectables',
     productType: 'finished',
     productStatus: 'active',
-    categoryTags: ['Infusion pump (legacy)'],
-    intendedUse:
-      'Controlled intravenous administration of fluids and medications to adult and pediatric patients in hospital settings. Delivery range 1–999 mL/h with ±5% flow accuracy. Operated by trained healthcare professionals.',
-    targetUsers: ['Medical professionals', 'B2B — Commercial / Distribution (hospital procurement)'],
-    keyMaterials: ['Polycarbonate housing', 'Silicone pumping segment', 'NiMH battery pack', 'PCBA / embedded microcontroller'],
-    physicalForm: 'Solid',
-    hsTariffCode: '9018.90',
-    countryOfOrigin: 'France',
-    targetMarkets: marketLabels(['EU', 'GCC']),
+    categoryTags: [
+      'Medicinal product for human use — sterile small-volume parenteral (ampoule)',
+    ],
+    intendedUse: 'Oedema associated with congestive heart failure, hepatic cirrhosis or renal disease including nephrotic syndrome, where a rapid onset of diuresis is required or oral administration is not practicable; acute pulmonary oedema; adjunct in hypertensive crisis. Administered by healthcare professionals in hospital and emergency settings. Adults: 20–40 mg by slow intravenous injection over 1–2 minutes, not exceeding 4 mg/minute; paediatric 0.5–1 mg/kg per dose (max 20 mg/day). Single-dose container — any unused portion is discarded. Incompatible with acidic solutions (pH < 7), notably glucose 5 %.',
+    targetUsers: [
+      'Hospital prescribers, nurses, hospital pharmacists',
+      'B2B — hospital tenders, wholesalers',
+    ],
+    keyMaterials: [
+      'Furosemide (active substance, CEP-covered API)',
+      'Sodium chloride (tonicity agent)',
+      'Sodium hydroxide 1 M (pH adjustment to 8.0–9.3)',
+      'Water for injections (Ph. Eur.)',
+      'Nitrogen, 0.2 µm filtered (headspace overlay)',
+      '2 mL amber Type I glass ampoule, one-point-cut',
+    ],
+    physicalForm: 'Liquid',
+    hsTariffCode: '3004.90',
+    countryOfOrigin: 'TN',
+    targetMarkets: [
+      'Tunisia (domestic)',
+      'Libya',
+      'Algeria',
+      'Iraq',
+      'Saudi Arabia (SFDA, under evaluation)',
+      'Senegal',
+      'European Union (via MAH Pharmelis SAS)',
+    ],
     requiredCertifications: [
-      'CE marking under EU MDR 2017/745 (Class IIb)',
-      'EN ISO 13485:2016 — QMS',
-      'EN ISO 14971:2019 — risk management',
-      'IEC 60601-1 — general electrical safety',
-      'IEC 60601-2-24 — infusion pumps',
-      'IEC 62304 — medical device software',
-    ],
-    applicableRegulations: ['EU MDR — Regulation (EU) 2017/745', 'GDPR — Regulation (EU) 2016/679'],
-    industryLabels: ['CE Marking'],
-    productionSites: ['Lyon Manufacturing & R&D Centre', 'Sfax Assembly & Packaging Plant'],
-    productionProcesses: ['Production / Assembly', 'Quality Control', 'Packaging'],
-    criticalSuppliers: ['PolySil Medical (silicone pump segments)', 'Rhône PCBA Contract Manufacturing (electronics)'],
-    productCertifications: [
-      {
-        standardName: 'CE Certificate — EU MDR 2017/745, Class IIb',
-        certifyingBody: 'TÜV SÜD Product Service (Notified Body 0123)',
-        certificateNumber: 'G2-21-0091-MDR',
-        marketScope: 'European Union / EEA',
-        issueDate: '2021-05-10',
-        expiryDate: '2026-05-09',
-      },
-    ],
-    onboardingStatus: 'COMPLETED',
-    currentStep: 6,
-  },
-  {
-    name: 'AlphaFlow SD Ambulatory Syringe Driver',
-    reference: 'ALT-SD-3100',
-    sku: 'ALT-SD-3100',
-    description:
-      'Compact, battery-powered ambulatory syringe driver for continuous subcutaneous and intravenous medication delivery, including palliative and home-care therapy under clinical supervision.',
-    brandName: 'AlphaFlow',
-    productFamily: 'AlphaFlow Infusion Platform',
-    productType: 'finished',
-    productStatus: 'active',
-    categoryTags: ['Syringe driver'],
-    intendedUse:
-      'Continuous, programmable delivery of medication from a syringe to adult and pediatric patients in hospital, clinic and supervised home-care settings. Delivery range 0.1–99 mL/h. Operated by trained healthcare professionals.',
-    targetUsers: ['Medical professionals', 'B2B — Commercial / Distribution (hospital procurement)'],
-    keyMaterials: ['ABS / polycarbonate housing', 'Stepper-motor drive', 'Rechargeable lithium-ion battery', 'PCBA / embedded microcontroller'],
-    physicalForm: 'Solid',
-    hsTariffCode: '9018.31',
-    countryOfOrigin: 'France',
-    targetMarkets: marketLabels(['EU', 'UK']),
-    requiredCertifications: [
-      'CE marking under EU MDR 2017/745 (Class IIb)',
-      'EN ISO 13485:2016 — QMS',
-      'EN ISO 14971:2019 — risk management',
-      'IEC 60601-1 — general electrical safety',
-      'IEC 60601-2-24 — infusion pumps',
-      'IEC 62304 — medical device software',
-      'IEC 62366-1 — usability engineering',
-    ],
-    applicableRegulations: ['EU MDR — Regulation (EU) 2017/745', 'UK MDR 2002 (post-Brexit)', 'GDPR — Regulation (EU) 2016/679'],
-    industryLabels: ['CE Marking'],
-    productionSites: ['Lyon Manufacturing & R&D Centre', 'Sfax Assembly & Packaging Plant'],
-    productionProcesses: ['Production / Assembly', 'Electronics / PCBA Assembly', 'Quality Control', 'Software Development', 'Packaging'],
-    criticalSuppliers: ['Nordcell GmbH (lithium-ion cells)', 'Rhône PCBA Contract Manufacturing (electronics)'],
-    productCertifications: [
-      {
-        standardName: 'CE Certificate — EU MDR 2017/745, Class IIb',
-        certifyingBody: 'TÜV SÜD Product Service (Notified Body 0123)',
-        certificateNumber: 'G2-23-0210-MDR',
-        marketScope: 'European Union / EEA / United Kingdom',
-        issueDate: '2023-03-01',
-        expiryDate: '2028-02-29',
-      },
-    ],
-    onboardingStatus: 'COMPLETED',
-    currentStep: 6,
-  },
-  {
-    name: 'AlphaLine Standard IV Giving Set (sterile, single-use)',
-    reference: 'ALT-GS-0450',
-    sku: 'ALT-GS-0450',
-    description:
-      'Sterile, single-use gravity/pump IV administration set with drip chamber, roller clamp and luer-lock connector. Compatible with the AlphaFlow pump range.',
-    brandName: 'AlphaLine',
-    productFamily: 'AlphaLine Disposables',
-    productType: 'finished',
-    productStatus: 'active',
-    categoryTags: ['IV administration set'],
-    intendedUse:
-      'Single-use administration of intravenous fluids and medications to patients under the care of healthcare professionals. Sterile (ethylene-oxide), non-pyrogenic, DEHP-free fluid path.',
-    targetUsers: ['Medical professionals', 'B2B — Commercial / Distribution (hospital procurement)'],
-    keyMaterials: ['DEHP-free PVC tubing', 'ABS spike & drip chamber', 'Latex-free components', 'Polycarbonate luer-lock connector'],
-    physicalForm: 'Solid',
-    hsTariffCode: '9018.39',
-    countryOfOrigin: 'Tunisia',
-    targetMarkets: marketLabels(['EU', 'GCC', 'MAGHREB']),
-    requiredCertifications: [
-      'CE marking under EU MDR 2017/745 (Class IIa)',
-      'EN ISO 13485:2016 — QMS',
-      'EN ISO 8536-4 — infusion equipment',
-      'EN ISO 11135 — ethylene-oxide sterilization',
-      'EN ISO 10993-1 — biological evaluation',
-    ],
-    applicableRegulations: ['EU MDR — Regulation (EU) 2017/745', 'REACH — Regulation (EU) 1907/2006'],
-    industryLabels: ['CE Marking'],
-    productionSites: ['Sfax Assembly & Packaging Plant'],
-    productionProcesses: ['Extrusion / Moulding', 'Production / Assembly', 'Sterilization', 'Quality Control', 'Packaging'],
-    criticalSuppliers: ['PolyMed Tubing (DEHP-free PVC)', 'SteriPack (contract EO sterilization)'],
-    productCertifications: [
-      {
-        standardName: 'CE Certificate — EU MDR 2017/745, Class IIa',
-        certifyingBody: 'TÜV SÜD Product Service (Notified Body 0123)',
-        certificateNumber: 'G1-24-0332-MDR',
-        marketScope: 'European Union / EEA',
-        issueDate: '2024-04-18',
-        expiryDate: '2029-04-17',
-      },
-    ],
-    onboardingStatus: 'COMPLETED',
-    currentStep: 6,
-  },
-  {
-    name: 'AlphaDock Charging & Docking Station',
-    reference: 'ALT-DK-0075',
-    sku: 'ALT-DK-0075',
-    description:
-      'Mains-powered multi-bay charging and docking station for the AlphaFlow pump range. Accessory to an active medical device.',
-    brandName: 'AlphaFlow',
-    productFamily: 'AlphaFlow Accessories',
-    productType: 'component',
-    productStatus: 'active',
-    categoryTags: ['Accessory (electrical)'],
-    intendedUse:
-      'Charging, storage and data-sync docking for AlphaFlow infusion devices in clinical environments. Accessory intended to be used together with an active medical device.',
-    targetUsers: ['Medical professionals', 'B2B — Commercial / Distribution (hospital procurement)'],
-    keyMaterials: ['ABS / polycarbonate housing', 'Medical-grade power supply', 'PCBA / charge controller'],
-    physicalForm: 'Solid',
-    hsTariffCode: '8504.40',
-    countryOfOrigin: 'France',
-    targetMarkets: marketLabels(['EU']),
-    requiredCertifications: [
-      'IEC 60601-1 — general electrical safety',
-      'IEC 60601-1-2 — electromagnetic compatibility',
-      'CE marking (accessory to EU MDR device)',
+      'Marketing authorisation (AMM) — DPM Tunisia',
+      'GMP certificate, sterile scope — DPM Tunisia',
+      'EU GMP certificate for a third-country sterile site — ANSM (France)',
+      'WHO-format Certificate of a Pharmaceutical Product (CPP)',
+      'CEP for the active substance — EDQM (supplier-held)',
+      'Ph. Eur. monographs and general chapters 2.6.1 / 2.6.14 / 2.9.19 / 2.9.20 / 5.1.1 (USER_SUPPLIED — referenced by number only)',
     ],
     applicableRegulations: [
-      'EU MDR — Regulation (EU) 2017/745 (accessory)',
-      'RoHS — Directive 2011/65/EU',
-      'WEEE — Directive 2012/19/EU',
+      'Loi n° 85-91 du 22 novembre 1985 réglementant les activités pharmaceutiques (Tunisia)',
+      'Directive 2001/83/EC — Community code relating to medicinal products for human use',
+      'EudraLex Volume 4 — EU GMP Part I and **Annex 1 (2022 revision)**, Annex 15, Annex 16',
+      'Regulation (EC) No 1234/2008 — variations',
+      'Commission Delegated Regulation (EU) 2016/161 — safety features',
+      'ICH Q1A(R2), Q1B, Q3D, Q7, Q9(R1), Q10',
+      'WHO TRS — GMP for sterile pharmaceutical products',
     ],
-    industryLabels: ['CE Marking'],
-    productionSites: ['Lyon Manufacturing & R&D Centre'],
-    productionProcesses: ['Electronics / PCBA Assembly', 'Production / Assembly', 'Quality Control'],
-    criticalSuppliers: ['Rhône PCBA Contract Manufacturing (electronics)'],
-    productCertifications: [],
-    onboardingStatus: 'COMPLETED',
-    currentStep: 6,
-  },
-  {
-    name: 'AF3 Control-Board Assembly (PCBA)',
-    reference: 'ALT-PCB-2201',
-    sku: 'ALT-PCB-2201',
-    description:
-      'Populated printed-circuit-board assembly (main control board) for the AlphaFlow 3 pump. Internal electronic component / sub-assembly.',
-    brandName: 'AlphaFlow',
-    productFamily: 'AlphaFlow Components',
-    productType: 'component',
-    productStatus: 'active',
-    categoryTags: ['Electronic component'],
-    intendedUse:
-      'Embedded control, motor drive and alarm handling for the AlphaFlow 3 infusion pump. Not placed on the market as a standalone device — integrated into a finished medical device.',
-    targetUsers: ['B2B — OEM / Internal manufacturing'],
-    keyMaterials: ['FR-4 printed circuit board', 'Embedded microcontroller', 'Passive & active SMD components', 'Lead-free solder'],
-    physicalForm: 'Solid',
-    hsTariffCode: '8534.00',
-    countryOfOrigin: 'France',
-    targetMarkets: marketLabels(['EU']),
-    requiredCertifications: [
-      'IPC-A-610 — acceptability of electronic assemblies',
-      'IEC 62304 — medical device software (as integrated)',
-    ],
-    applicableRegulations: ['RoHS — Directive 2011/65/EU', 'REACH — Regulation (EU) 1907/2006'],
     industryLabels: [],
-    productionSites: ['Lyon Manufacturing & R&D Centre'],
-    productionProcesses: ['Electronics / PCBA Assembly', 'Quality Control'],
-    criticalSuppliers: ['Rhône PCBA Contract Manufacturing (electronics)'],
-    productCertifications: [],
+    productionSites: [
+      'Sidi Thabet Sterile Site — line SVP-1',
+    ],
+    productionProcesses: [
+      'Water for injections production and distribution',
+      'Compounding under nitrogen (Grade C)',
+      'Clarifying filtration (0.45 + 0.2 µm)',
+      'Ampoule washing and depyrogenation tunnel (≥ 250 °C)',
+      'Filling and tip-sealing (Grade A air supply in Grade C background)',
+      'Terminal moist-heat sterilisation (121 °C, F0 ≥ 15)',
+      '100 % visual inspection',
+      'Quality Control — sterility, endotoxins, particulates',
+    ],
+    criticalSuppliers: [
+      'Anhui Kangtai Fine Chemicals Co. Ltd, China — furosemide API (CEP R1-CEP-2018-244/02)',
+      'Verrerie Médicale Adriatica S.p.A. — amber Type I ampoules (primary source)',
+      'Sfax Glass Industries — ampoules (secondary source)',
+    ],
+    productCertifications: [
+      {
+        standardName: 'Marketing Authorisation (AMM) — Tunisia',
+        certifyingBody: 'Direction de la Pharmacie et du Médicament (DPM)',
+        certificateNumber: 'AMM 2019-0207/DPM',
+        marketScope: 'Tunisia',
+        issueDate: '2019-06-11',
+        expiryDate: '2029-06-10',
+      },
+      {
+        standardName: 'GMP Certificate — sterile products, terminally sterilised SVP',
+        certifyingBody: 'DPM Tunisia',
+        certificateNumber: 'GMP/TN-2024-0069',
+        marketScope: 'Tunisia + export',
+        issueDate: '2024-04-11',
+        expiryDate: '2027-02-18',
+      },
+      {
+        standardName: 'EU GMP Certificate — third-country sterile site',
+        certifyingBody: 'ANSM (France)',
+        certificateNumber: 'FR/GMP/2024/0188',
+        marketScope: 'European Union / EEA',
+        issueDate: '2024-02-29',
+        expiryDate: '2027-02-28',
+      },
+      {
+        standardName: 'Certificate of a Pharmaceutical Product (WHO format)',
+        certifyingBody: 'DPM Tunisia',
+        certificateNumber: 'CPP/TN-2025-0412',
+        marketScope: 'Saudi Arabia (importing authority: SFDA)',
+        issueDate: '2025-12-04',
+        expiryDate: '2027-12-03',
+      },
+    ],
     onboardingStatus: 'COMPLETED',
     currentStep: 6,
+    seedFolder: 'Furolix_Injectable',
   },
   {
-    name: 'AF3 Li-Ion Battery Pack (replacement)',
-    reference: 'ALT-BAT-2202',
-    sku: 'ALT-BAT-2202',
-    description:
-      'Rechargeable lithium-ion battery pack (replacement spare) for the AlphaFlow 3 pump, with integrated battery-management system.',
-    brandName: 'AlphaFlow',
-    productFamily: 'AlphaFlow Components',
-    productType: 'raw_material',
+    name: 'Glucoryl 850 — metformin hydrochloride 850 mg film-coated tablets',
+    reference: 'BYR-GLU-850',
+    sku: 'BYR-GLU-850',
+    description: 'Generic immediate-release film-coated tablet of metformin hydrochloride 850 mg for the treatment of type 2 diabetes mellitus. Manufactured by high-shear wet granulation, compression and aqueous film coating at the Ben Arous plant. Packed in PVC/PVDC–aluminium blisters, carton of 30 tablets. Bioequivalence to the reference product demonstrated in study BE-MET-2021-07.',
+    brandName: 'Glucoryl',
+    productFamily: 'Byrsa Oral Antidiabetics',
+    productType: 'finished',
     productStatus: 'active',
-    categoryTags: ['Spare part'],
-    intendedUse:
-      'Field-replaceable power source for the AlphaFlow 3 infusion pump, providing ≥ 6 h runtime. Replaced by trained service technicians.',
-    targetUsers: ['Medical professionals', 'B2B — OEM / Internal manufacturing'],
-    keyMaterials: ['Lithium-ion cells', 'Battery-management PCBA', 'Polycarbonate enclosure'],
+    categoryTags: [
+      'Medicinal product for human use — solid oral form (film-coated tablet)',
+    ],
+    intendedUse: 'Treatment of type 2 diabetes mellitus, particularly in overweight patients, when dietary management and exercise alone do not achieve adequate glycaemic control — in adults as monotherapy or in combination with other oral antidiabetic agents or insulin, and in children from 10 years of age and adolescents. Prescription-only (liste I). Usual starting dose 850 mg once or twice daily with or after meals; maximum 3 000 mg daily in divided doses. Contraindicated in severe renal impairment (GFR < 30 mL/min/1.73 m²) and in conditions predisposing to lactic acidosis.',
+    targetUsers: [
+      'Prescribers and pharmacists',
+      'B2B — wholesalers, tender bodies',
+      'Patients (self-administration)',
+    ],
+    keyMaterials: [
+      'Metformin hydrochloride (active substance, CEP-covered API)',
+      'Povidone K30 (binder)',
+      'Maize starch (diluent/disintegrant)',
+      'Magnesium stearate, vegetable origin (lubricant)',
+      'Opadry II White 85F18422 — hypromellose, titanium dioxide E171, macrogol 3350, talc',
+      'PVC/PVDC 250/60 µm forming film + 20 µm aluminium lidding',
+    ],
     physicalForm: 'Solid',
-    hsTariffCode: '8507.60',
-    countryOfOrigin: 'France',
-    targetMarkets: marketLabels(['EU']),
+    hsTariffCode: '3004.90',
+    countryOfOrigin: 'TN',
+    targetMarkets: [
+      'Tunisia (domestic)',
+      'Libya',
+      'Algeria',
+      'Senegal',
+      'Côte d\'Ivoire',
+      'Iraq (under evaluation)',
+      'European Union (via MAH Pharmelis SAS)',
+    ],
     requiredCertifications: [
-      'IEC 62133-2 — secondary lithium cell/battery safety',
-      'UN 38.3 — lithium battery transport testing',
+      'Marketing authorisation (AMM) — DPM Tunisia',
+      'GMP certificate — DPM Tunisia',
+      'EU GMP certificate for a third-country site — ANSM (France)',
+      'WHO-format Certificate of a Pharmaceutical Product (CPP)',
+      'CEP for the active substance — EDQM (supplier-held)',
+      'Ph. Eur. monographs (USER_SUPPLIED — referenced by number only, never hosted)',
     ],
     applicableRegulations: [
-      'EU Batteries Regulation (EU) 2023/1542',
-      'REACH — Regulation (EU) 1907/2006',
-      'RoHS — Directive 2011/65/EU',
+      'Loi n° 85-91 du 22 novembre 1985 réglementant les activités pharmaceutiques (Tunisia)',
+      'Directive 2001/83/EC — Community code relating to medicinal products for human use',
+      'EudraLex Volume 4 — EU GMP, Part I and Annexes 15 & 16',
+      'Regulation (EC) No 1234/2008 — variations',
+      'Commission Delegated Regulation (EU) 2016/161 — safety features',
+      'ICH Q1A(R2), Q3C, Q3D, M7(R2), Q7, Q9(R1), Q10',
     ],
     industryLabels: [],
-    productionSites: ['Lyon Manufacturing & R&D Centre'],
-    productionProcesses: ['Production / Assembly', 'Quality Control'],
-    criticalSuppliers: ['Nordcell GmbH (lithium-ion cells)'],
-    productCertifications: [],
+    productionSites: [
+      'Ben Arous Solid & Semi-Solid Plant',
+    ],
+    productionProcesses: [
+      'Dispensing',
+      'High-shear wet granulation',
+      'Fluid-bed drying',
+      'Blending and compression',
+      'Aqueous film coating',
+      'Blistering and cartoning',
+      'Quality Control (chemical/physical, microbiological)',
+    ],
+    criticalSuppliers: [
+      'Shreeji Actives Pvt Ltd, India — metformin hydrochloride API (CEP R1-CEP-2016-118, single source)',
+      'Colorcon — Opadry II film coat',
+      'Univar Maghreb — povidone, maize starch',
+      'Klöckner Pentaplast / Amcor Tunisia — primary and secondary packaging',
+    ],
+    productCertifications: [
+      {
+        standardName: 'Marketing Authorisation (AMM) — Tunisia',
+        certifyingBody: 'Direction de la Pharmacie et du Médicament (DPM)',
+        certificateNumber: 'AMM 2022-0418/DPM',
+        marketScope: 'Tunisia',
+        issueDate: '2022-03-14',
+        expiryDate: '2027-03-13',
+      },
+      {
+        standardName: 'GMP Certificate — non-sterile solid oral & semi-solid forms',
+        certifyingBody: 'DPM Tunisia',
+        certificateNumber: 'GMP/TN-2023-0142',
+        marketScope: 'Tunisia + export',
+        issueDate: '2023-11-08',
+        expiryDate: '2027-09-11',
+      },
+      {
+        standardName: 'EU GMP Certificate — third-country manufacturing site',
+        certifyingBody: 'ANSM (France)',
+        certificateNumber: 'FR/GMP/2024/0731',
+        marketScope: 'European Union / EEA',
+        issueDate: '2024-08-30',
+        expiryDate: '2027-06-23',
+      },
+      {
+        standardName: 'Certificate of a Pharmaceutical Product (WHO format)',
+        certifyingBody: 'DPM Tunisia',
+        certificateNumber: 'CPP/TN-2025-0388',
+        marketScope: 'Iraq (importing authority: MoH / KIMADIA)',
+        issueDate: '2025-11-19',
+        expiryDate: '2027-11-18',
+      },
+    ],
     onboardingStatus: 'COMPLETED',
     currentStep: 6,
+    seedFolder: 'Glucoryl850_Tablet',
+  },
+  {
+    name: 'Mycozan 2 % cream — ketoconazole 20 mg/g',
+    reference: 'BYR-MYC-020',
+    sku: 'BYR-MYC-020',
+    description: 'Topical imidazole antifungal cream, 2 % ketoconazole in an oil-in-water emulsion, manufactured by hot-process emulsification and high-shear homogenisation at the Ben Arous semi-solid suite. Preserved with methyl and propyl parahydroxybenzoate; contains 10 % w/w propylene glycol. Packed in 30 g internally lacquered aluminium tubes.',
+    brandName: 'Mycozan',
+    productFamily: 'Byrsa Dermatology',
+    productType: 'finished',
+    productStatus: 'active',
+    categoryTags: [
+      'Medicinal product for human use — semi-solid cutaneous form (cream)',
+    ],
+    intendedUse: 'Topical treatment of dermatomycoses caused by dermatophytes and/or yeasts: tinea corporis, tinea cruris, tinea pedis, tinea manuum, cutaneous candidosis, pityriasis versicolor and seborrhoeic dermatitis. Applied once or twice daily to the affected area and immediately surrounding skin for 2–6 weeks depending on indication. Cutaneous use only; not for ophthalmic, oral or intravaginal use. Multi-dose container used by the patient over several weeks.',
+    targetUsers: [
+      'Patients (self-application)',
+      'Prescribers, dermatologists, pharmacists',
+      'B2B — wholesalers and distributors',
+    ],
+    keyMaterials: [
+      'Ketoconazole (active substance, CEP-covered API)',
+      'Propylene glycol 10 % w/w — high-risk excipient, distributor-supplied',
+      'Cetostearyl alcohol / stearyl alcohol (consistency agents)',
+      'Polysorbate 60 and sorbitan monostearate (emulsifier pair)',
+      'Isopropyl myristate (emollient)',
+      'Methyl and propyl parahydroxybenzoate (preservatives)',
+      'Sodium sulfite anhydrous (antioxidant)',
+      'Internally lacquered aluminium tube (epoxy-phenolic), HDPE cap',
+    ],
+    physicalForm: 'Semi-solid',
+    hsTariffCode: '3004.20',
+    countryOfOrigin: 'TN',
+    targetMarkets: [
+      'Tunisia (domestic)',
+      'Libya',
+      'Algeria',
+      'Morocco',
+      'Senegal',
+      'Côte d\'Ivoire (submitted)',
+      'European Union (via MAH Pharmelis SAS)',
+    ],
+    requiredCertifications: [
+      'Marketing authorisation (AMM) — DPM Tunisia',
+      'GMP certificate (semi-solid scope) — DPM Tunisia',
+      'EU GMP certificate for a third-country site — ANSM (France)',
+      'WHO-format Certificate of a Pharmaceutical Product (CPP)',
+      'CEP for the active substance — EDQM (supplier-held)',
+      'Ph. Eur. 5.1.3 / 5.1.4 and USP ⟨51⟩ (USER_SUPPLIED — referenced by number only, never hosted)',
+    ],
+    applicableRegulations: [
+      'Loi n° 85-91 du 22 novembre 1985 réglementant les activités pharmaceutiques (Tunisia)',
+      'Directive 2001/83/EC — Community code relating to medicinal products for human use (labelling, Title V)',
+      'EU guideline on excipients in the labelling and package leaflet of medicinal products for human use',
+      'EudraLex Volume 4 — EU GMP Part I (Ch. 5 supplier qualification, Ch. 6 QC)',
+      'Regulation (EC) No 1234/2008 — variations',
+      'Commission Delegated Regulation (EU) 2016/161 — safety features',
+      'ICH Q1A(R2), Q3D, Q7, Q9(R1), Q10',
+    ],
+    industryLabels: [],
+    productionSites: [
+      'Ben Arous Solid & Semi-Solid Plant — semi-solid suite SS-2',
+    ],
+    productionProcesses: [
+      'Dispensing',
+      'Hot-process oil/water phase preparation (72 ± 3 °C)',
+      'Vacuum emulsification and high-shear homogenisation',
+      'Active addition at 45 °C and controlled cooling (≤ 1.5 °C/min)',
+      'Aluminium tube filling and crimping',
+      'Cartoning',
+      'Quality Control — physicochemical, rheology, microbiology',
+    ],
+    criticalSuppliers: [
+      'Ravensa Fine Chemicals S.L., Spain — ketoconazole API (CEP R1-CEP-2015-097/03)',
+      'Chemitrade Maghreb SARL — propylene glycol (DISTRIBUTOR, questionnaire-qualified only)',
+      'Univar Maghreb — parabens, sodium sulfite, isopropyl myristate',
+      'Peter Greven — cetostearyl and stearyl alcohol',
+      'Tuboplast Maghreb — aluminium tubes',
+    ],
+    productCertifications: [
+      {
+        standardName: 'Marketing Authorisation (AMM) — Tunisia',
+        certifyingBody: 'Direction de la Pharmacie et du Médicament (DPM)',
+        certificateNumber: 'AMM 2020-0533/DPM',
+        marketScope: 'Tunisia',
+        issueDate: '2020-09-08',
+        expiryDate: '2030-09-07',
+      },
+      {
+        standardName: 'GMP Certificate — non-sterile solid oral & semi-solid forms',
+        certifyingBody: 'DPM Tunisia',
+        certificateNumber: 'GMP/TN-2023-0142',
+        marketScope: 'Tunisia + export',
+        issueDate: '2023-11-08',
+        expiryDate: '2027-09-11',
+      },
+      {
+        standardName: 'EU GMP Certificate — third-country manufacturing site',
+        certifyingBody: 'ANSM (France)',
+        certificateNumber: 'FR/GMP/2024/0731',
+        marketScope: 'European Union / EEA',
+        issueDate: '2024-08-30',
+        expiryDate: '2027-06-23',
+      },
+      {
+        standardName: 'Certificate of a Pharmaceutical Product (WHO format)',
+        certifyingBody: 'DPM Tunisia',
+        certificateNumber: 'CPP/TN-2026-0044',
+        marketScope: 'Côte d\'Ivoire (importing authority: DPML)',
+        issueDate: '2026-03-05',
+        expiryDate: '2028-03-04',
+      },
+    ],
+    onboardingStatus: 'COMPLETED',
+    currentStep: 6,
+    seedFolder: 'Mycozan_Cream',
+  },
+  {
+    name: 'Pedialgic 120 mg/5 mL — paracetamol oral suspension, sugar-free',
+    reference: 'BYR-PED-120',
+    sku: 'BYR-PED-120',
+    description: 'Sugar-free paediatric paracetamol oral suspension, strawberry-flavoured, preserved with sodium benzoate and suspended with xanthan gum and microcrystalline cellulose/carmellose. Manufactured on line LIQ-1 at the Grombalia liquids plant. Supplied in a 100 mL amber PET bottle with a child-resistant closure, bottle adapter and a 5 mL graduated oral syringe. Vehicle contains three high-risk polyol/glycol excipients: sorbitol 70 %, glycerol and propylene glycol.',
+    brandName: 'Pedialgic',
+    productFamily: 'Byrsa Paediatrics',
+    productType: 'finished',
+    productStatus: 'active',
+    categoryTags: [
+      'Medicinal product for human use — oral liquid (suspension), paediatric',
+    ],
+    intendedUse: 'Short-term symptomatic treatment of mild to moderate pain and/or fever in infants and children weighing 4 kg to 32 kg (approximately 1 month to 12 years). Dosing is by body weight: 15 mg/kg per dose up to four times daily, minimum interval 4 hours, maximum 60 mg/kg per day. Administered by parents and carers using the graduated oral syringe supplied; the bottle must be shaken before each use. OTC pharmacy sale. In-use period 3 months after first opening.',
+    targetUsers: [
+      'Parents and carers (paediatric patients from 1 month)',
+      'Pharmacists, paediatricians',
+      'B2B — wholesalers, public tenders',
+    ],
+    keyMaterials: [
+      'Paracetamol, micronised (active substance, CEP-covered API)',
+      'Sorbitol 70 % non-crystallising — HIGH-RISK EXCIPIENT (1 750 mg/5 mL)',
+      'Glycerol — HIGH-RISK EXCIPIENT (500 mg/5 mL)',
+      'Propylene glycol — HIGH-RISK EXCIPIENT (200 mg/5 mL)',
+      'Xanthan gum, microcrystalline cellulose + carmellose sodium (suspending system)',
+      'Sodium benzoate E211 (preservative), citrate buffer',
+      'Strawberry flavour (propylene glycol carrier), carmoisine E122',
+      '100 mL amber PET bottle, child-resistant closure, 5 mL graduated oral syringe',
+    ],
+    physicalForm: 'Liquid',
+    hsTariffCode: '3004.90',
+    countryOfOrigin: 'TN',
+    targetMarkets: [
+      'Tunisia (domestic)',
+      'Libya',
+      'Algeria',
+      'Morocco',
+      'Senegal',
+      'Côte d\'Ivoire',
+      'Iraq',
+      'European Union (via MAH Pharmelis SAS)',
+    ],
+    requiredCertifications: [
+      'Marketing authorisation (AMM) — DPM Tunisia — EXPIRES 2026-11-21, renewal overdue',
+      'GMP certificate (liquid oral scope) — DPM Tunisia',
+      'EU GMP certificate for a third-country site — ANSM (France)',
+      'WHO-format Certificate of a Pharmaceutical Product (CPP) — supports 6 export registrations',
+      'CEP for the active substance — EDQM (supplier-held)',
+      'Ph. Eur. 5.1.3 / 5.1.4 and ISO 15378 (USER_SUPPLIED — referenced by number only, never hosted)',
+    ],
+    applicableRegulations: [
+      'Loi n° 85-91 du 22 novembre 1985 réglementant les activités pharmaceutiques (Tunisia)',
+      'DPM circular of 2025-09-04 — per-container identity and DEG/EG testing for oral liquid manufacturers',
+      'Directive 2001/83/EC — Community code relating to medicinal products for human use',
+      'EudraLex Volume 4 — EU GMP Part I, Chapter 5 (starting materials and suppliers), Chapter 6 (QC)',
+      'Commission Delegated Regulation (EU) 2016/161 — safety features',
+      'Regulation (EC) No 1234/2008 — variations',
+      'WHO guidance and medical product alerts on contaminated paediatric oral liquids',
+      'ICH Q1A(R2), Q3D, Q7, Q9(R1), Q10',
+    ],
+    industryLabels: [],
+    productionSites: [
+      'Grombalia Liquids & Packaging Plant — line LIQ-1',
+    ],
+    productionProcesses: [
+      'Purified water production and distribution',
+      'Vehicle preparation and polyol addition',
+      'High-shear hydration of the suspending system',
+      'Micronised API dispersion and homogenisation',
+      'Volumetric filling, child-resistant closure application, induction sealing',
+      'Packing with dosing syringe and leaflet',
+      'Quality Control — physicochemical, dose uniformity, microbiology',
+    ],
+    criticalSuppliers: [
+      'Anhui Kangtai Fine Chemicals Co. Ltd, China — paracetamol API (CEP R1-CEP-2017-315/02)',
+      'Chemitrade Maghreb SARL — sorbitol 70 %, glycerol, propylene glycol (DISTRIBUTOR; questionnaire-qualified 2021, never audited; upstream manufacturer undocumented)',
+      'Aromatica Tunisie — strawberry flavour (propylene glycol carrier)',
+      'Univar Maghreb — sodium benzoate, buffers',
+      'Emballages du Cap Bon — amber PET bottles, child-resistant closures, oral syringes',
+    ],
+    productCertifications: [
+      {
+        standardName: 'Marketing Authorisation (AMM) — Tunisia',
+        certifyingBody: 'Direction de la Pharmacie et du Médicament (DPM)',
+        certificateNumber: 'AMM 2021-0692/DPM',
+        marketScope: 'Tunisia (and the basis for 6 export registrations + the CPP)',
+        issueDate: '2021-11-22',
+        expiryDate: '2026-11-21',
+      },
+      {
+        standardName: 'GMP Certificate — non-sterile liquid oral forms',
+        certifyingBody: 'DPM Tunisia',
+        certificateNumber: 'GMP/TN-2024-0211',
+        marketScope: 'Tunisia + export',
+        issueDate: '2024-06-14',
+        expiryDate: '2027-04-30',
+      },
+      {
+        standardName: 'EU GMP Certificate — third-country manufacturing site',
+        certifyingBody: 'ANSM (France)',
+        certificateNumber: 'FR/GMP/2025/0104',
+        marketScope: 'European Union / EEA',
+        issueDate: '2025-03-18',
+        expiryDate: '2028-01-19',
+      },
+      {
+        standardName: 'Certificate of a Pharmaceutical Product (WHO format)',
+        certifyingBody: 'DPM Tunisia',
+        certificateNumber: 'CPP/TN-2025-0501',
+        marketScope: 'Iraq, Senegal, Côte d\'Ivoire',
+        issueDate: '2025-12-22',
+        expiryDate: '2027-12-21',
+      },
+    ],
+    onboardingStatus: 'COMPLETED',
+    currentStep: 6,
+    seedFolder: 'Pedialgic_Syrup',
   },
 ];
 
-// ── Flagship document folder (./seed-data/AlphaFlow3) → category ───────────
-const DOC_CATEGORY: Record<string, string> = {
-  'AlphaFlow 3 — Technical Documentation (MDR Annex II).docx': 'Technical File',
-  'Risk Management File (ISO 14971).docx': 'Technical File',
-  'CE Certificate — MDR Class IIb (TUV SUD).docx': 'Certificate',
-  'Electrical Safety Test Report (IEC 60601-1 & -2-24).docx': 'Test Report',
-  'Software V&V Report (IEC 62304).docx': 'Test Report',
-  'Instructions for Use (IFU) v3.2.docx': 'Specification',
-  'EU Declaration of Conformity.docx': 'Certificate',
-  'Post-Market Surveillance Plan.docx': 'Quality Plan',
-  'Product Specification - Datasheet.docx': 'Specification',
+const DOC_CATEGORY_JSON: Record<string, Record<string, string>> = {
+  "Furolix_Injectable": {
+    "Marketing Authorisation (AMM) & Export Registrations.docx": "Certificate",
+    "Finished Product Specification (sterile SVP).docx": "Specification",
+    "Manufacturing Process & Batch Formula.docx": "Technical File",
+    "Stability Study Report (ICH Q1A + Q1B).docx": "Test Report",
+    "Certificate of Analysis — batch FUR20-2602.docx": "Test Report",
+    "SmPC & Package Leaflet + Labelling.docx": "Specification",
+    "GMP Certificate (sterile scope) & WHO-format CPP.docx": "Certificate",
+    "Product Quality Review (PQR) 2025.docx": "Quality Plan",
+    "Sterility Assurance & Contamination Control Strategy (Annex 1) — DRAFT.docx": "Quality Plan"
+  },
+  "Glucoryl850_Tablet": {
+    "Marketing Authorisation (AMM) & Export Registrations.docx": "Certificate",
+    "Finished Product Specification (release & shelf-life).docx": "Specification",
+    "Manufacturing Process & Batch Formula.docx": "Technical File",
+    "Stability Study Report (ICH Q1A(R2)).docx": "Test Report",
+    "Certificate of Analysis — batch GLU850-2603.docx": "Test Report",
+    "SmPC & Package Leaflet + Labelling.docx": "Specification",
+    "GMP Certificate & WHO-format CPP.docx": "Certificate",
+    "Product Quality Review (PQR) 2025.docx": "Quality Plan",
+    "Nitrosamine Risk Assessment (ICH M7).docx": "Technical File"
+  },
+  "Mycozan_Cream": {
+    "Marketing Authorisation (AMM) & Export Registrations.docx": "Certificate",
+    "Finished Product Specification (semi-solid).docx": "Specification",
+    "Manufacturing Process & Batch Formula (O-W emulsion).docx": "Technical File",
+    "Stability Study Report (ICH Q1A(R2)).docx": "Test Report",
+    "Certificate of Analysis — batch MYC02-2601.docx": "Test Report",
+    "SmPC & Package Leaflet + Labelling.docx": "Specification",
+    "GMP Certificate & WHO-format CPP.docx": "Certificate",
+    "Product Quality Review (PQR) 2025.docx": "Quality Plan",
+    "Microbiological Quality & Preservative Efficacy Report.docx": "Test Report"
+  },
+  "Pedialgic_Syrup": {
+    "Marketing Authorisation (AMM) & Export Registrations.docx": "Certificate",
+    "Finished Product Specification (oral suspension).docx": "Specification",
+    "Manufacturing Process & Batch Formula.docx": "Technical File",
+    "Stability Study Report (ICH Q1A(R2)) incl. in-use study.docx": "Test Report",
+    "Certificate of Analysis — batch PED120-2605.docx": "Test Report",
+    "SmPC & Package Leaflet + Labelling + dosing device.docx": "Specification",
+    "GMP Certificate & WHO-format CPP.docx": "Certificate",
+    "Product Quality Review (PQR) 2025.docx": "Quality Plan",
+    "Excipient Risk Assessment — DEG-EG in high-risk excipients — DRAFT.docx": "Technical File"
+  }
 };
+
+/**
+ * Document category per file, keyed by seed folder. Generated from each
+ * product.json `documents[]` in 06_Demo_Data_Pharma — the folder name comes from
+ * the product's `seedFolder`, so every product gets its own document set.
+ */
+const DOC_CATEGORY: Record<string, Record<string, string>> = DOC_CATEGORY_JSON;
 const DOCX_MIME = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
 
 function storageKey(companyId: string, productName: string, filename: string): string {
@@ -464,50 +644,76 @@ async function seed() {
   const productRepo = ds.getRepository(Product);
   const docRepo = ds.getRepository(Document);
 
+  // ── Retire products from earlier demo datasets ───────────────────────────
+  // The pharma dataset replaces the medical-device one; leaving the old rows
+  // behind would mix two unrelated portfolios in the same tenant.
+  const keepNames = PHARMA_PRODUCTS.map((p) => p.name);
+  const stale = (await productRepo.find({ where: { companyId } })).filter(
+    (p) => !keepNames.includes(p.name),
+  );
+  for (const old of stale) {
+    await docRepo.delete({ productId: old.id });
+    await productRepo.delete({ id: old.id });
+    console.log(`- removed previous demo product: ${old.name}`);
+  }
+
   // ── Products (idempotent by companyId + name) ────────────────────────────
-  const all: SeedProduct[] = [FLAGSHIP, ...OTHER_PRODUCTS];
-  let flagshipId = '';
-  for (const p of all) {
+  const productIds = new Map<string, string>();
+  for (const p of PHARMA_PRODUCTS) {
     const existing = await productRepo.findOne({ where: { companyId, name: p.name } });
+    // seedFolder drives the document folder; it is not a Product column.
+    const { seedFolder, ...columns } = p as SeedProduct & { seedFolder?: string };
     let product: Product;
     if (existing) {
       // Upsert: refresh the full profile so re-running enriches older minimal rows.
-      product = await productRepo.save(productRepo.merge(existing, { ...p, companyId }));
+      product = await productRepo.save(productRepo.merge(existing, { ...columns, companyId }));
       console.log(`~ product updated: ${p.name}`);
     } else {
-      product = await productRepo.save(productRepo.create({ ...p, companyId }));
+      product = await productRepo.save(productRepo.create({ ...columns, companyId }));
       console.log(`+ product created: ${p.name}`);
     }
-    if (p === FLAGSHIP) flagshipId = product.id;
+    if (seedFolder) productIds.set(seedFolder, product.id);
   }
 
-  // ── Flagship documents (idempotent: skip if it already has docs) ─────────
-  const existingDocs = await docRepo.count({ where: { productId: flagshipId } });
-  if (existingDocs > 0) {
-    console.log(`= flagship already has ${existingDocs} document(s) — skipping upload`);
-  } else {
-    const minio = new Minio.Client({
-      endPoint: MINIO_ENDPOINT,
-      port: MINIO_PORT,
-      useSSL: (process.env.MINIO_USE_SSL || 'false') === 'true',
-      accessKey: process.env.MINIO_ACCESS_KEY,
-      secretKey: process.env.MINIO_SECRET_KEY,
-    });
-    if (!(await minio.bucketExists(MINIO_BUCKET))) {
-      await minio.makeBucket(MINIO_BUCKET, 'us-east-1');
+  // ── Product documents — each product gets its own folder ─────────────────
+  const minio = new Minio.Client({
+    endPoint: MINIO_ENDPOINT,
+    port: MINIO_PORT,
+    useSSL: (process.env.MINIO_USE_SSL || 'false') === 'true',
+    accessKey: process.env.MINIO_ACCESS_KEY,
+    secretKey: process.env.MINIO_SECRET_KEY,
+  });
+  if (!(await minio.bucketExists(MINIO_BUCKET))) {
+    await minio.makeBucket(MINIO_BUCKET, 'us-east-1');
+  }
+
+  let total = 0;
+  for (const p of PHARMA_PRODUCTS) {
+    const folder = (p as SeedProduct & { seedFolder?: string }).seedFolder;
+    const productId = folder ? productIds.get(folder) : undefined;
+    if (!folder || !productId) continue;
+
+    // Idempotent per product: an existing document set is left untouched.
+    const existingDocs = await docRepo.count({ where: { productId } });
+    if (existingDocs > 0) {
+      console.log(`= ${p.name} already has ${existingDocs} document(s) — skipping`);
+      continue;
     }
 
-    const dir = path.join(__dirname, 'seed-data', 'AlphaFlow3');
+    const dir = path.join(__dirname, 'seed-data', folder);
     const files = fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => f.endsWith('.docx')) : [];
+    const categories = DOC_CATEGORY[folder] || {};
     let count = 0;
     for (const filename of files) {
-      const category = DOC_CATEGORY[filename];
+      // Anything without a declared category is not a product document
+      // (e.g. the deliberately blocked pharmacopoeia samples).
+      const category = categories[filename];
       if (!category) {
         console.log(`  · skipped (not a product doc): ${filename}`);
-        continue; // e.g. the blocked "EN ISO 13485" standard sample
+        continue;
       }
       const buffer = fs.readFileSync(path.join(dir, filename));
-      const key = storageKey(companyId, FLAGSHIP.name, filename);
+      const key = storageKey(companyId, p.name, filename);
       await minio.putObject(MINIO_BUCKET, key, buffer, buffer.length, { 'Content-Type': DOCX_MIME });
       await docRepo.save(
         docRepo.create({
@@ -519,17 +725,18 @@ async function seed() {
           approvalStatus: DocumentApprovalStatus.APPROVED,
           storageKey: key,
           companyId,
-          productId: flagshipId,
+          productId,
           uploadedBy,
           version: 1,
           tags: [category],
         }),
       );
       count++;
-      console.log(`  + document: ${filename} [${category}]`);
     }
-    console.log(`✓ ${count} document(s) attached to ${FLAGSHIP.name}`);
+    total += count;
+    console.log(`✓ ${count} document(s) attached to ${p.name}`);
   }
+  console.log(`✓ ${total} document(s) across ${PHARMA_PRODUCTS.length} product(s)`);
 
   await ds.destroy();
   console.log('✅ Seed complete');

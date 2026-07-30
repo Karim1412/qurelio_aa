@@ -9,14 +9,20 @@
       "02_V3_Documentation/02_Legal_and_Compliance/Qurelio_V3_Open_Regulations_Analysis_EN.md",
       "02_V3_Documentation/02_Legal_and_Compliance/Qurelio_V3_Legal_Compliance_Framework_EN.md"
     ],
-    "target_industries": ["Medical Devices", "IVD", "Pharmaceuticals", "Cosmetics"],
+    "target_industries": [
+      "Medical Devices",
+      "IVD",
+      "Pharmaceuticals",
+      "Cosmetics"
+    ],
     "target_markets": "Tunisia/MENA export sector → primary export destinations EU, US, GCC. Catalog covers domestic (Tunisia), the export jurisdictions, and the international/harmonisation bodies those markets recognise.",
     "legal_boundary_note": "Per Open Regulations Analysis §2/§3.8: public law/regulation/directive/decree text is free to ingest & AI-analyze (legal_status=INGESTIBLE). Private technical standards (ISO/IEC/EN/ASTM/GSO/national NT standards) are copyrighted — Qurelio may list the number + scope for selection/monitoring only, never host or AI-analyze the text (legal_status=REFERENCE_ONLY); the tenant may upload their OWN licensed copy under a liability shift. National gazette texts with unconfirmed reuse licensing (Tunisia JORT, MENA) are user-uploaded under a liability shift (legal_status=USER_UPLOAD).",
     "as_of_date": "2026-07-13",
     "version": "v0.1 — seed",
-    "count_note": "Curated holistic seed. Some standard families are collapsed to one entry (e.g. the ISO 10993 series, ICH Q3 impurity family). Verify [VERIFY] flags before production — mainly Tunisian decree numbers and reuse-licensing status."
+    "count_note": "Curated holistic seed. Some standard families are collapsed to one entry (e.g. the ISO 10993 series, ICH Q3 impurity family). Verify [VERIFY] flags before production — mainly Tunisian decree numbers and reuse-licensing status.",
+    "source": "06_Demo_Data_Pharma/regulatory_applicability_matrix.json",
+    "note": "Pharmaceutical catalog — replaces the previous medical-device catalog."
   },
-
   "schema": {
     "regulation_id": "Stable internal id. REG-/DIR-/CFR-/LAW-/DEC-/STD-/ICH-/WHO-/GSO-/NT- prefixes by type.",
     "reference": "Canonical citation shown as the primary result label.",
@@ -36,97 +42,551 @@
     "source_url": "Official source link.",
     "tags": "Display chips."
   },
-
   "legal_status_legend": {
     "INGESTIBLE": "Public legal text. Qurelio ingests the full text and runs the compliance engine on it directly.",
     "REFERENCE_ONLY": "Copyrighted paid standard. Selectable for monitoring/assignment; Qurelio shows number + scope only. To analyze, the tenant uploads their OWN licensed copy (liability shift).",
     "USER_UPLOAD": "Reuse licensing unconfirmed (national gazettes / MENA). Not hosted by Qurelio; the tenant uploads the text and accepts full legal liability before analysis."
   },
-
   "catalog": [
-    { "regulation_id": "REG-EU-2017-745", "reference": "Regulation (EU) 2017/745", "short_code": "EU MDR", "title": "Medical Devices Regulation (MDR)", "aliases": ["MDR", "medical device regulation", "2017/745", "reglement dispositifs medicaux", "CE marking devices"], "type": "Regulation", "authority": "European Parliament & Council", "jurisdiction": "European Union / EEA", "country_region": "EU", "industry": ["Medical Devices"], "category": "Market Access & Safety", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Consolidated 2024 (incl. Reg (EU) 2023/607 transitional)", "source": "EUR-Lex (OJ L 117)", "source_url": "https://eur-lex.europa.eu/eli/reg/2017/745/oj", "tags": ["MDR", "CE marking", "medical devices"] },
-    { "regulation_id": "REG-EU-2017-746", "reference": "Regulation (EU) 2017/746", "short_code": "EU IVDR", "title": "In Vitro Diagnostic Medical Devices Regulation (IVDR)", "aliases": ["IVDR", "in vitro diagnostic", "2017/746", "dispositifs medicaux de diagnostic in vitro"], "type": "Regulation", "authority": "European Parliament & Council", "jurisdiction": "European Union / EEA", "country_region": "EU", "industry": ["IVD"], "category": "Market Access & Safety", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Consolidated 2024 (incl. Reg (EU) 2024/1860)", "source": "EUR-Lex (OJ L 117)", "source_url": "https://eur-lex.europa.eu/eli/reg/2017/746/oj", "tags": ["IVDR", "diagnostics", "CE marking"] },
-    { "regulation_id": "DIR-EU-1993-42", "reference": "Directive 93/42/EEC", "short_code": "MDD", "title": "Medical Devices Directive (MDD) — legacy", "aliases": ["MDD", "93/42", "medical devices directive", "legacy directive"], "type": "Directive", "authority": "Council of the European Communities", "jurisdiction": "European Union / EEA", "country_region": "EU", "industry": ["Medical Devices"], "category": "Market Access & Safety (legacy)", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Repealed by MDR; relevant for legacy/'MDD certificate' devices", "source": "EUR-Lex", "source_url": "https://eur-lex.europa.eu/eli/dir/1993/42/oj", "tags": ["legacy", "MDD"] },
-    { "regulation_id": "DIR-EU-1998-79", "reference": "Directive 98/79/EC", "short_code": "IVDD", "title": "In Vitro Diagnostic Medical Devices Directive (IVDD) — legacy", "aliases": ["IVDD", "98/79", "in vitro diagnostic directive"], "type": "Directive", "authority": "European Parliament & Council", "jurisdiction": "European Union / EEA", "country_region": "EU", "industry": ["IVD"], "category": "Market Access & Safety (legacy)", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Repealed by IVDR", "source": "EUR-Lex", "source_url": "https://eur-lex.europa.eu/eli/dir/1998/79/oj", "tags": ["legacy", "IVDD"] },
-    { "regulation_id": "DIR-EU-1990-385", "reference": "Directive 90/385/EEC", "short_code": "AIMDD", "title": "Active Implantable Medical Devices Directive (AIMDD) — legacy", "aliases": ["AIMDD", "90/385", "active implantable"], "type": "Directive", "authority": "Council of the European Communities", "jurisdiction": "European Union / EEA", "country_region": "EU", "industry": ["Medical Devices"], "category": "Market Access & Safety (legacy)", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Repealed by MDR", "source": "EUR-Lex", "source_url": "https://eur-lex.europa.eu/eli/dir/1990/385/oj", "tags": ["legacy", "implantable"] },
-    { "regulation_id": "GUID-EU-MDCG", "reference": "MDCG Guidance documents", "short_code": "MDCG", "title": "Medical Device Coordination Group (MDCG) Guidance", "aliases": ["MDCG", "guidance", "coordination group", "MDCG 2019-11", "software qualification"], "type": "Guideline", "authority": "Medical Device Coordination Group (European Commission)", "jurisdiction": "European Union / EEA", "country_region": "EU", "industry": ["Medical Devices", "IVD"], "category": "Guidance & Interpretation", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Rolling series", "source": "European Commission health portal", "source_url": "https://health.ec.europa.eu/medical-devices-sector/new-regulations/guidance-mdcg-endorsed-documents-and-other-guidance_en", "tags": ["MDCG", "guidance"] },
-    { "regulation_id": "CFR-21-820", "reference": "21 CFR Part 820", "short_code": "QMSR (21 CFR 820)", "title": "Quality Management System Regulation (QMSR) — formerly Quality System Regulation (QSR)", "aliases": ["21 CFR 820", "QSR", "QMSR", "quality system regulation", "820", "part 820"], "type": "Regulation", "authority": "US FDA", "jurisdiction": "United States", "country_region": "US", "industry": ["Medical Devices", "IVD"], "category": "Quality System", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "QMSR amendment effective 2026-02-02 (incorporates ISO 13485:2016 by reference)", "source": "eCFR", "source_url": "https://www.ecfr.gov/current/title-21/chapter-I/subchapter-H/part-820", "tags": ["FDA", "QMSR", "quality system"] },
-    { "regulation_id": "CFR-21-803", "reference": "21 CFR Part 803", "short_code": "21 CFR 803", "title": "Medical Device Reporting (MDR)", "aliases": ["21 CFR 803", "medical device reporting", "MDR reporting", "adverse event", "803"], "type": "Regulation", "authority": "US FDA", "jurisdiction": "United States", "country_region": "US", "industry": ["Medical Devices", "IVD"], "category": "Vigilance & Reporting", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Current", "source": "eCFR", "source_url": "https://www.ecfr.gov/current/title-21/chapter-I/subchapter-H/part-803", "tags": ["FDA", "vigilance"] },
-    { "regulation_id": "CFR-21-807", "reference": "21 CFR Part 807", "short_code": "21 CFR 807 (510k)", "title": "Establishment Registration and Device Listing incl. Premarket Notification 510(k)", "aliases": ["21 CFR 807", "510k", "510(k)", "premarket notification", "establishment registration", "807"], "type": "Regulation", "authority": "US FDA", "jurisdiction": "United States", "country_region": "US", "industry": ["Medical Devices", "IVD"], "category": "Market Access", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Current", "source": "eCFR", "source_url": "https://www.ecfr.gov/current/title-21/chapter-I/subchapter-H/part-807", "tags": ["FDA", "510k"] },
-    { "regulation_id": "CFR-21-814", "reference": "21 CFR Part 814", "short_code": "21 CFR 814 (PMA)", "title": "Premarket Approval of Medical Devices (PMA)", "aliases": ["21 CFR 814", "PMA", "premarket approval", "814"], "type": "Regulation", "authority": "US FDA", "jurisdiction": "United States", "country_region": "US", "industry": ["Medical Devices"], "category": "Market Access", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Current", "source": "eCFR", "source_url": "https://www.ecfr.gov/current/title-21/chapter-I/subchapter-H/part-814", "tags": ["FDA", "PMA"] },
-    { "regulation_id": "CFR-21-812", "reference": "21 CFR Part 812", "short_code": "21 CFR 812 (IDE)", "title": "Investigational Device Exemptions (IDE)", "aliases": ["21 CFR 812", "IDE", "investigational device", "812"], "type": "Regulation", "authority": "US FDA", "jurisdiction": "United States", "country_region": "US", "industry": ["Medical Devices"], "category": "Clinical Investigation", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Current", "source": "eCFR", "source_url": "https://www.ecfr.gov/current/title-21/chapter-I/subchapter-H/part-812", "tags": ["FDA", "clinical"] },
-    { "regulation_id": "CFR-21-801", "reference": "21 CFR Part 801", "short_code": "21 CFR 801", "title": "Medical Device Labeling", "aliases": ["21 CFR 801", "device labeling", "801"], "type": "Regulation", "authority": "US FDA", "jurisdiction": "United States", "country_region": "US", "industry": ["Medical Devices", "IVD"], "category": "Labeling", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Current", "source": "eCFR", "source_url": "https://www.ecfr.gov/current/title-21/chapter-I/subchapter-H/part-801", "tags": ["FDA", "labeling"] },
-    { "regulation_id": "CFR-21-830", "reference": "21 CFR Part 830", "short_code": "21 CFR 830 (UDI)", "title": "Unique Device Identification (UDI)", "aliases": ["21 CFR 830", "UDI", "unique device identification", "830"], "type": "Regulation", "authority": "US FDA", "jurisdiction": "United States", "country_region": "US", "industry": ["Medical Devices", "IVD"], "category": "Identification & Traceability", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Current", "source": "eCFR", "source_url": "https://www.ecfr.gov/current/title-21/chapter-I/subchapter-H/part-830", "tags": ["FDA", "UDI"] },
-    { "regulation_id": "GUID-INT-IMDRF", "reference": "IMDRF Guidance", "short_code": "IMDRF", "title": "International Medical Device Regulators Forum — Guidance (SaMD, QMS, adverse-event terminology)", "aliases": ["IMDRF", "SaMD", "software as a medical device", "harmonisation"], "type": "Guideline", "authority": "IMDRF", "jurisdiction": "International (harmonisation)", "country_region": "INT", "industry": ["Medical Devices", "IVD"], "category": "Harmonisation & Guidance", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Rolling series", "source": "IMDRF", "source_url": "https://www.imdrf.org/documents", "tags": ["IMDRF", "SaMD"] },
-    { "regulation_id": "PROG-INT-MDSAP", "reference": "MDSAP", "short_code": "MDSAP", "title": "Medical Device Single Audit Program", "aliases": ["MDSAP", "single audit", "audit program"], "type": "Guideline", "authority": "MDSAP participating regulators (FDA, Health Canada, TGA, ANVISA, MHLW/PMDA)", "jurisdiction": "International (multi-jurisdiction audit)", "country_region": "INT", "industry": ["Medical Devices"], "category": "Audit Program", "legal_status": "INGESTIBLE", "engine_capability": "Program documents ingested & AI-analyzed", "current_version": "Current companion documents", "source": "FDA / IMDRF", "source_url": "https://www.fda.gov/medical-devices/cdrh-international-programs/medical-device-single-audit-program-mdsap", "tags": ["MDSAP", "audit"] },
-    { "regulation_id": "STD-ISO-13485", "reference": "ISO 13485:2016", "short_code": "ISO 13485", "title": "Medical devices — Quality management systems — Requirements for regulatory purposes", "aliases": ["ISO 13485", "13485", "EN ISO 13485", "medical device QMS", "quality management system"], "type": "Standard", "authority": "ISO", "jurisdiction": "International standard", "country_region": "INT", "industry": ["Medical Devices", "IVD"], "category": "Quality System (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "2016 (+ Amd 1:2021 EU Annex Z)", "source": "ISO (paid)", "source_url": "https://www.iso.org/standard/59752.html", "tags": ["ISO", "QMS", "paid standard"] },
-    { "regulation_id": "STD-ISO-14971", "reference": "ISO 14971:2019", "short_code": "ISO 14971", "title": "Medical devices — Application of risk management to medical devices", "aliases": ["ISO 14971", "14971", "risk management", "gestion des risques"], "type": "Standard", "authority": "ISO", "jurisdiction": "International standard", "country_region": "INT", "industry": ["Medical Devices", "IVD"], "category": "Risk Management (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "2019 (+ Amd 1:2021)", "source": "ISO (paid)", "source_url": "https://www.iso.org/standard/72704.html", "tags": ["ISO", "risk", "paid standard"] },
-    { "regulation_id": "STD-ISO-10993", "reference": "ISO 10993 (series)", "short_code": "ISO 10993", "title": "Biological evaluation of medical devices (multi-part series)", "aliases": ["ISO 10993", "10993", "biocompatibility", "biological evaluation"], "type": "Standard", "authority": "ISO", "jurisdiction": "International standard", "country_region": "INT", "industry": ["Medical Devices"], "category": "Biocompatibility (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "Series (10993-1:2018 et al.)", "source": "ISO (paid)", "source_url": "https://www.iso.org/standard/68936.html", "tags": ["ISO", "biocompatibility", "paid standard"] },
-    { "regulation_id": "STD-IEC-60601-1", "reference": "IEC 60601-1", "short_code": "IEC 60601-1", "title": "Medical electrical equipment — Part 1: General requirements for basic safety and essential performance", "aliases": ["IEC 60601", "60601-1", "electrical safety", "medical electrical equipment"], "type": "Standard", "authority": "IEC", "jurisdiction": "International standard", "country_region": "INT", "industry": ["Medical Devices"], "category": "Electrical Safety (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "Ed. 3.2 (+ collateral/particular -2-x parts)", "source": "IEC (paid)", "source_url": "https://webstore.iec.ch/publication/2612", "tags": ["IEC", "electrical safety", "paid standard"] },
-    { "regulation_id": "STD-IEC-62304", "reference": "IEC 62304", "short_code": "IEC 62304", "title": "Medical device software — Software life cycle processes", "aliases": ["IEC 62304", "62304", "software lifecycle", "medical device software"], "type": "Standard", "authority": "IEC", "jurisdiction": "International standard", "country_region": "INT", "industry": ["Medical Devices", "IVD"], "category": "Software Lifecycle (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "2006 + Amd 1:2015", "source": "IEC (paid)", "source_url": "https://webstore.iec.ch/publication/22794", "tags": ["IEC", "software", "paid standard"] },
-    { "regulation_id": "STD-IEC-62366-1", "reference": "IEC 62366-1", "short_code": "IEC 62366-1", "title": "Medical devices — Part 1: Application of usability engineering to medical devices", "aliases": ["IEC 62366", "62366", "usability engineering", "human factors"], "type": "Standard", "authority": "IEC", "jurisdiction": "International standard", "country_region": "INT", "industry": ["Medical Devices", "IVD"], "category": "Usability (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "2015 + Amd 1:2020", "source": "IEC (paid)", "source_url": "https://webstore.iec.ch/publication/63021", "tags": ["IEC", "usability", "paid standard"] },
-    { "regulation_id": "STD-ISO-15223-1", "reference": "ISO 15223-1", "short_code": "ISO 15223-1", "title": "Medical devices — Symbols to be used with information to be supplied by the manufacturer — Part 1", "aliases": ["ISO 15223", "15223", "device symbols", "labeling symbols"], "type": "Standard", "authority": "ISO", "jurisdiction": "International standard", "country_region": "INT", "industry": ["Medical Devices", "IVD"], "category": "Labeling (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "2021", "source": "ISO (paid)", "source_url": "https://www.iso.org/standard/77326.html", "tags": ["ISO", "symbols", "paid standard"] },
-    { "regulation_id": "STD-ISO-STERIL", "reference": "ISO 11135 / 11137 / 17665", "short_code": "Sterilization ISO", "title": "Sterilization of health-care products — EO (11135), Radiation (11137), Moist heat (17665)", "aliases": ["ISO 11135", "ISO 11137", "ISO 17665", "sterilization", "ethylene oxide", "gamma", "steam sterilization"], "type": "Standard", "authority": "ISO", "jurisdiction": "International standard", "country_region": "INT", "industry": ["Medical Devices"], "category": "Sterilization (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "Current editions", "source": "ISO (paid)", "source_url": "https://www.iso.org/ics/11.080.01/x/", "tags": ["ISO", "sterilization", "paid standard"] },
-    { "regulation_id": "STD-ISO-11607", "reference": "ISO 11607-1 / -2", "short_code": "ISO 11607", "title": "Packaging for terminally sterilized medical devices", "aliases": ["ISO 11607", "11607", "sterile packaging", "sterile barrier"], "type": "Standard", "authority": "ISO", "jurisdiction": "International standard", "country_region": "INT", "industry": ["Medical Devices"], "category": "Packaging (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "2019 + Amd 1:2023", "source": "ISO (paid)", "source_url": "https://www.iso.org/standard/70799.html", "tags": ["ISO", "packaging", "paid standard"] },
-    { "regulation_id": "STD-ISO-15189", "reference": "ISO 15189:2022", "short_code": "ISO 15189", "title": "Medical laboratories — Requirements for quality and competence", "aliases": ["ISO 15189", "15189", "medical laboratories", "lab accreditation"], "type": "Standard", "authority": "ISO", "jurisdiction": "International standard", "country_region": "INT", "industry": ["IVD"], "category": "Laboratory Quality (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "2022", "source": "ISO (paid)", "source_url": "https://www.iso.org/standard/76677.html", "tags": ["ISO", "laboratory", "paid standard"] },
-    { "regulation_id": "STD-IEC-62443", "reference": "IEC 62443", "short_code": "IEC 62443", "title": "Security for industrial automation and control systems — product cybersecurity (applied to connected devices)", "aliases": ["IEC 62443", "62443", "cybersecurity", "product security"], "type": "Standard", "authority": "IEC", "jurisdiction": "International standard", "country_region": "INT", "industry": ["Medical Devices"], "category": "Cybersecurity (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "Series", "source": "IEC (paid)", "source_url": "https://webstore.iec.ch/publication/7029", "tags": ["IEC", "cybersecurity", "paid standard"] },
-    { "regulation_id": "STD-ISO-14155", "reference": "ISO 14155:2020", "short_code": "ISO 14155", "title": "Clinical investigation of medical devices for human subjects — Good clinical practice", "aliases": ["ISO 14155", "14155", "clinical investigation", "GCP devices"], "type": "Standard", "authority": "ISO", "jurisdiction": "International standard", "country_region": "INT", "industry": ["Medical Devices"], "category": "Clinical Investigation (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "2020", "source": "ISO (paid)", "source_url": "https://www.iso.org/standard/71690.html", "tags": ["ISO", "clinical", "paid standard"] },
-    { "regulation_id": "LAW-TN-2008-32", "reference": "Loi n° 2008-32", "short_code": "Loi 2008-32 (DM)", "title": "Loi n° 2008-32 relative aux dispositifs médicaux (Tunisia medical devices law)", "aliases": ["loi 2008-32", "2008-32", "dispositifs medicaux tunisie", "tunisia medical devices"], "type": "Law", "authority": "République Tunisienne / Ministère de la Santé (DPM → ANMPS)", "jurisdiction": "Tunisia", "country_region": "TN", "industry": ["Medical Devices", "IVD"], "category": "Domestic Market Access", "legal_status": "USER_UPLOAD", "engine_capability": "Reuse licensing of JORT unconfirmed — tenant uploads the text under liability shift [VERIFY]", "current_version": "2008 [VERIFY consolidation]", "source": "JORT (Journal Officiel de la République Tunisienne)", "source_url": "http://www.dpm.tn/industrie/reglementation", "tags": ["Tunisia", "medical devices", "JORT"] },
-    { "regulation_id": "DEC-TN-2010-3031", "reference": "Décret n° 2010-3031", "short_code": "Décret 2010-3031", "title": "Décret n° 2010-3031 — classification et enregistrement des dispositifs médicaux", "aliases": ["decret 2010-3031", "2010-3031", "classification dispositifs medicaux", "enregistrement DM"], "type": "Decree", "authority": "République Tunisienne / Ministère de la Santé", "jurisdiction": "Tunisia", "country_region": "TN", "industry": ["Medical Devices", "IVD"], "category": "Domestic Classification & Registration", "legal_status": "USER_UPLOAD", "engine_capability": "Reuse licensing of JORT unconfirmed — tenant uploads the text under liability shift [VERIFY]", "current_version": "2010 [VERIFY]", "source": "JORT", "source_url": "http://www.dpm.tn/industrie/reglementation", "tags": ["Tunisia", "decree", "registration"] },
-    { "regulation_id": "DEC-TN-2001-2965", "reference": "Décret n° 2001-2965", "short_code": "Décret 2001-2965", "title": "Décret n° 2001-2965 — exigences techniques de sécurité et évaluation de la conformité des dispositifs médicaux", "aliases": ["decret 2001-2965", "2001-2965", "securite technique DM", "conformite dispositifs"], "type": "Decree", "authority": "République Tunisienne / Ministère de la Santé", "jurisdiction": "Tunisia", "country_region": "TN", "industry": ["Medical Devices"], "category": "Domestic Safety & Conformity", "legal_status": "USER_UPLOAD", "engine_capability": "Reuse licensing of JORT unconfirmed — tenant uploads the text under liability shift [VERIFY]", "current_version": "2001 [VERIFY]", "source": "JORT", "source_url": "http://www.dpm.tn/industrie/reglementation", "tags": ["Tunisia", "decree", "conformity"] },
-    { "regulation_id": "REG-SA-SFDA-MD", "reference": "SFDA Medical Devices Regulation (MDS-REQ)", "short_code": "SFDA MDMA", "title": "Saudi FDA Medical Devices Interim Regulation & Marketing Authorization (MDMA) requirements", "aliases": ["SFDA", "MDMA", "saudi medical device", "MDS-REQ", "GHAD device"], "type": "Technical Regulation", "authority": "Saudi Food & Drug Authority (SFDA)", "jurisdiction": "Saudi Arabia (GCC reference market)", "country_region": "SA", "industry": ["Medical Devices", "IVD"], "category": "GCC Market Access", "legal_status": "USER_UPLOAD", "engine_capability": "Confirm SFDA reuse terms — otherwise tenant uploads under liability shift [VERIFY]", "current_version": "Current MDS-REQ series", "source": "SFDA", "source_url": "https://www.sfda.gov.sa/en/regulations", "tags": ["SFDA", "Saudi", "GCC"] },
-    { "regulation_id": "DIR-EU-2001-83", "reference": "Directive 2001/83/EC", "short_code": "EU Med Code", "title": "Community code relating to medicinal products for human use", "aliases": ["2001/83", "community code", "medicinal products", "code communautaire medicament"], "type": "Directive", "authority": "European Parliament & Council", "jurisdiction": "European Union / EEA", "country_region": "EU", "industry": ["Pharmaceuticals"], "category": "Market Access & Authorisation", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Consolidated (pharma package revision pending)", "source": "EUR-Lex", "source_url": "https://eur-lex.europa.eu/eli/dir/2001/83/oj", "tags": ["EU", "pharma", "authorisation"] },
-    { "regulation_id": "REG-EU-2004-726", "reference": "Regulation (EC) No 726/2004", "short_code": "EMA Reg 726/2004", "title": "Community procedures for the authorisation and supervision of medicinal products (EMA)", "aliases": ["726/2004", "EMA", "centralised procedure", "authorisation supervision"], "type": "Regulation", "authority": "European Parliament & Council / EMA", "jurisdiction": "European Union / EEA", "country_region": "EU", "industry": ["Pharmaceuticals"], "category": "Market Access & Authorisation", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Consolidated", "source": "EUR-Lex", "source_url": "https://eur-lex.europa.eu/eli/reg/2004/726/oj", "tags": ["EU", "EMA", "centralised"] },
-    { "regulation_id": "REG-EU-2014-536", "reference": "Regulation (EU) No 536/2014", "short_code": "EU CTR", "title": "Clinical Trials Regulation (CTR)", "aliases": ["536/2014", "clinical trials regulation", "CTR", "essais cliniques", "CTIS"], "type": "Regulation", "authority": "European Parliament & Council", "jurisdiction": "European Union / EEA", "country_region": "EU", "industry": ["Pharmaceuticals"], "category": "Clinical Trials", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "In application since 2022", "source": "EUR-Lex", "source_url": "https://eur-lex.europa.eu/eli/reg/2014/536/oj", "tags": ["EU", "clinical trials"] },
-    { "regulation_id": "GUID-EU-GMP-V4", "reference": "EudraLex Volume 4 (EU GMP)", "short_code": "EU GMP", "title": "EU Guidelines for Good Manufacturing Practice for medicinal products (EudraLex Vol. 4, incl. Annex 1, Annex 11)", "aliases": ["EU GMP", "eudralex volume 4", "GMP", "annex 1", "annex 11", "bonnes pratiques de fabrication"], "type": "Guideline", "authority": "European Commission", "jurisdiction": "European Union / EEA", "country_region": "EU", "industry": ["Pharmaceuticals"], "category": "Good Manufacturing Practice", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Rolling (Annex 1 revised 2022, in force 2023)", "source": "European Commission (EudraLex)", "source_url": "https://health.ec.europa.eu/medicinal-products/eudralex/eudralex-volume-4_en", "tags": ["EU", "GMP", "EudraLex"] },
-    { "regulation_id": "DIR-EU-2011-62", "reference": "Directive 2011/62/EU", "short_code": "FMD", "title": "Falsified Medicines Directive (FMD)", "aliases": ["2011/62", "falsified medicines", "FMD", "safety features", "serialisation"], "type": "Directive", "authority": "European Parliament & Council", "jurisdiction": "European Union / EEA", "country_region": "EU", "industry": ["Pharmaceuticals"], "category": "Supply Chain Integrity", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "In force (Delegated Reg (EU) 2016/161)", "source": "EUR-Lex", "source_url": "https://eur-lex.europa.eu/eli/dir/2011/62/oj", "tags": ["EU", "falsified medicines", "serialisation"] },
-    { "regulation_id": "CFR-21-211", "reference": "21 CFR Part 211", "short_code": "21 CFR 211", "title": "Current Good Manufacturing Practice for Finished Pharmaceuticals", "aliases": ["21 CFR 211", "cGMP", "finished pharmaceuticals", "211", "good manufacturing practice"], "type": "Regulation", "authority": "US FDA", "jurisdiction": "United States", "country_region": "US", "industry": ["Pharmaceuticals"], "category": "Good Manufacturing Practice", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Current", "source": "eCFR", "source_url": "https://www.ecfr.gov/current/title-21/chapter-I/subchapter-C/part-211", "tags": ["FDA", "cGMP"] },
-    { "regulation_id": "CFR-21-210", "reference": "21 CFR Part 210", "short_code": "21 CFR 210", "title": "cGMP in Manufacturing, Processing, Packing, or Holding of Drugs — General", "aliases": ["21 CFR 210", "cGMP general", "210"], "type": "Regulation", "authority": "US FDA", "jurisdiction": "United States", "country_region": "US", "industry": ["Pharmaceuticals"], "category": "Good Manufacturing Practice", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Current", "source": "eCFR", "source_url": "https://www.ecfr.gov/current/title-21/chapter-I/subchapter-C/part-210", "tags": ["FDA", "cGMP"] },
-    { "regulation_id": "CFR-21-314", "reference": "21 CFR Part 314", "short_code": "21 CFR 314", "title": "Applications for FDA Approval to Market a New Drug (NDA / ANDA)", "aliases": ["21 CFR 314", "NDA", "ANDA", "new drug application", "314"], "type": "Regulation", "authority": "US FDA", "jurisdiction": "United States", "country_region": "US", "industry": ["Pharmaceuticals"], "category": "Market Access", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Current", "source": "eCFR", "source_url": "https://www.ecfr.gov/current/title-21/chapter-I/subchapter-D/part-314", "tags": ["FDA", "NDA", "ANDA"] },
-    { "regulation_id": "CFR-21-11", "reference": "21 CFR Part 11", "short_code": "21 CFR 11", "title": "Electronic Records; Electronic Signatures", "aliases": ["21 CFR 11", "part 11", "electronic records", "electronic signatures", "data integrity"], "type": "Regulation", "authority": "US FDA", "jurisdiction": "United States", "country_region": "US", "industry": ["Pharmaceuticals", "Medical Devices"], "category": "Data Integrity & Computerised Systems", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Current", "source": "eCFR", "source_url": "https://www.ecfr.gov/current/title-21/chapter-I/subchapter-A/part-11", "tags": ["FDA", "data integrity"] },
-    { "regulation_id": "CFR-21-4", "reference": "21 CFR Part 4", "short_code": "21 CFR 4", "title": "Regulation of Combination Products", "aliases": ["21 CFR 4", "combination products", "drug device combination", "4"], "type": "Regulation", "authority": "US FDA", "jurisdiction": "United States", "country_region": "US", "industry": ["Pharmaceuticals", "Medical Devices"], "category": "Combination Products", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Current", "source": "eCFR", "source_url": "https://www.ecfr.gov/current/title-21/chapter-I/subchapter-A/part-4", "tags": ["FDA", "combination products"] },
-    { "regulation_id": "ICH-Q7", "reference": "ICH Q7", "short_code": "ICH Q7", "title": "Good Manufacturing Practice Guide for Active Pharmaceutical Ingredients", "aliases": ["ICH Q7", "Q7", "API GMP", "active pharmaceutical ingredient"], "type": "Guideline", "authority": "ICH", "jurisdiction": "International (harmonised)", "country_region": "ICH", "industry": ["Pharmaceuticals"], "category": "GMP Guidance", "legal_status": "INGESTIBLE", "engine_capability": "Publicly available ICH guideline — ingested & AI-analyzed", "current_version": "Step 4 (2000)", "source": "ICH", "source_url": "https://www.ich.org/page/quality-guidelines", "tags": ["ICH", "API", "GMP"] },
-    { "regulation_id": "ICH-Q9", "reference": "ICH Q9(R1)", "short_code": "ICH Q9", "title": "Quality Risk Management", "aliases": ["ICH Q9", "Q9", "quality risk management", "QRM"], "type": "Guideline", "authority": "ICH", "jurisdiction": "International (harmonised)", "country_region": "ICH", "industry": ["Pharmaceuticals"], "category": "Quality Risk Management", "legal_status": "INGESTIBLE", "engine_capability": "Publicly available ICH guideline — ingested & AI-analyzed", "current_version": "R1 (2023)", "source": "ICH", "source_url": "https://www.ich.org/page/quality-guidelines", "tags": ["ICH", "risk"] },
-    { "regulation_id": "ICH-Q10", "reference": "ICH Q10", "short_code": "ICH Q10", "title": "Pharmaceutical Quality System", "aliases": ["ICH Q10", "Q10", "pharmaceutical quality system", "PQS"], "type": "Guideline", "authority": "ICH", "jurisdiction": "International (harmonised)", "country_region": "ICH", "industry": ["Pharmaceuticals"], "category": "Quality System", "legal_status": "INGESTIBLE", "engine_capability": "Publicly available ICH guideline — ingested & AI-analyzed", "current_version": "Step 4 (2008)", "source": "ICH", "source_url": "https://www.ich.org/page/quality-guidelines", "tags": ["ICH", "PQS"] },
-    { "regulation_id": "ICH-Q1", "reference": "ICH Q1A(R2)", "short_code": "ICH Q1", "title": "Stability Testing of New Drug Substances and Products", "aliases": ["ICH Q1", "Q1A", "stability testing", "stability"], "type": "Guideline", "authority": "ICH", "jurisdiction": "International (harmonised)", "country_region": "ICH", "industry": ["Pharmaceuticals"], "category": "Stability", "legal_status": "INGESTIBLE", "engine_capability": "Publicly available ICH guideline — ingested & AI-analyzed", "current_version": "R2 (revision to unified Q1 ongoing)", "source": "ICH", "source_url": "https://www.ich.org/page/quality-guidelines", "tags": ["ICH", "stability"] },
-    { "regulation_id": "ICH-Q2", "reference": "ICH Q2(R2)", "short_code": "ICH Q2", "title": "Validation of Analytical Procedures", "aliases": ["ICH Q2", "Q2", "analytical validation", "method validation"], "type": "Guideline", "authority": "ICH", "jurisdiction": "International (harmonised)", "country_region": "ICH", "industry": ["Pharmaceuticals"], "category": "Analytical", "legal_status": "INGESTIBLE", "engine_capability": "Publicly available ICH guideline — ingested & AI-analyzed", "current_version": "R2 (2023)", "source": "ICH", "source_url": "https://www.ich.org/page/quality-guidelines", "tags": ["ICH", "analytical"] },
-    { "regulation_id": "ICH-Q3", "reference": "ICH Q3A/B/C/D", "short_code": "ICH Q3", "title": "Impurities (in new drug substances, products, residual solvents, elemental impurities)", "aliases": ["ICH Q3", "Q3A", "Q3C", "Q3D", "impurities", "residual solvents", "elemental impurities"], "type": "Guideline", "authority": "ICH", "jurisdiction": "International (harmonised)", "country_region": "ICH", "industry": ["Pharmaceuticals"], "category": "Impurities", "legal_status": "INGESTIBLE", "engine_capability": "Publicly available ICH guideline — ingested & AI-analyzed", "current_version": "Current family", "source": "ICH", "source_url": "https://www.ich.org/page/quality-guidelines", "tags": ["ICH", "impurities"] },
-    { "regulation_id": "ICH-E6", "reference": "ICH E6(R3)", "short_code": "ICH GCP E6", "title": "Good Clinical Practice (GCP)", "aliases": ["ICH E6", "E6", "GCP", "good clinical practice", "bonnes pratiques cliniques"], "type": "Guideline", "authority": "ICH", "jurisdiction": "International (harmonised)", "country_region": "ICH", "industry": ["Pharmaceuticals"], "category": "Good Clinical Practice", "legal_status": "INGESTIBLE", "engine_capability": "Publicly available ICH guideline — ingested & AI-analyzed", "current_version": "R3 (adopted 2025)", "source": "ICH", "source_url": "https://www.ich.org/page/efficacy-guidelines", "tags": ["ICH", "GCP"] },
-    { "regulation_id": "ICH-M4", "reference": "ICH M4 (CTD)", "short_code": "ICH CTD M4", "title": "Common Technical Document for the Registration of Pharmaceuticals for Human Use", "aliases": ["ICH M4", "CTD", "common technical document", "eCTD"], "type": "Guideline", "authority": "ICH", "jurisdiction": "International (harmonised)", "country_region": "ICH", "industry": ["Pharmaceuticals"], "category": "Dossier Format", "legal_status": "INGESTIBLE", "engine_capability": "Publicly available ICH guideline — ingested & AI-analyzed", "current_version": "Current", "source": "ICH", "source_url": "https://www.ich.org/page/multidisciplinary-guidelines", "tags": ["ICH", "CTD"] },
-    { "regulation_id": "WHO-GMP", "reference": "WHO GMP (WHO TRS)", "short_code": "WHO GMP", "title": "WHO Good Manufacturing Practices for Pharmaceutical Products (Technical Report Series)", "aliases": ["WHO GMP", "WHO TRS", "good manufacturing practices", "prequalification"], "type": "Guideline", "authority": "World Health Organization", "jurisdiction": "International", "country_region": "WHO", "industry": ["Pharmaceuticals"], "category": "Good Manufacturing Practice", "legal_status": "INGESTIBLE", "engine_capability": "WHO guidance — ingested & AI-analyzed (confirm CC licensing) [VERIFY]", "current_version": "Current TRS annexes", "source": "WHO", "source_url": "https://www.who.int/teams/health-product-and-policy-standards/standards-and-specifications/norms-and-standards-for-pharmaceuticals", "tags": ["WHO", "GMP"] },
-    { "regulation_id": "WHO-GDP", "reference": "WHO Good Distribution Practices", "short_code": "WHO GDP", "title": "WHO Good Distribution Practices for pharmaceutical products", "aliases": ["WHO GDP", "good distribution practices", "distribution"], "type": "Guideline", "authority": "World Health Organization", "jurisdiction": "International", "country_region": "WHO", "industry": ["Pharmaceuticals"], "category": "Good Distribution Practice", "legal_status": "INGESTIBLE", "engine_capability": "WHO guidance — ingested & AI-analyzed (confirm CC licensing) [VERIFY]", "current_version": "Current TRS annex", "source": "WHO", "source_url": "https://www.who.int/teams/health-product-and-policy-standards", "tags": ["WHO", "GDP"] },
-    { "regulation_id": "PH-INT-WHO", "reference": "The International Pharmacopoeia (Ph. Int.)", "short_code": "Ph. Int.", "title": "The International Pharmacopoeia (WHO)", "aliases": ["international pharmacopoeia", "ph int", "WHO pharmacopoeia"], "type": "Pharmacopoeia", "authority": "World Health Organization", "jurisdiction": "International", "country_region": "WHO", "industry": ["Pharmaceuticals"], "category": "Pharmacopoeia", "legal_status": "INGESTIBLE", "engine_capability": "Freely published by WHO — ingested & AI-analyzed (confirm reuse) [VERIFY]", "current_version": "Current online edition", "source": "WHO", "source_url": "https://digicollections.net/phint/", "tags": ["WHO", "pharmacopoeia"] },
-    { "regulation_id": "PH-EUR", "reference": "European Pharmacopoeia (Ph. Eur.)", "short_code": "Ph. Eur.", "title": "European Pharmacopoeia", "aliases": ["european pharmacopoeia", "ph eur", "EDQM", "pharmacopee europeenne"], "type": "Pharmacopoeia", "authority": "EDQM / Council of Europe", "jurisdiction": "Europe", "country_region": "EU", "industry": ["Pharmaceuticals"], "category": "Pharmacopoeia (paid)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference monograph number + scope only — tenant uploads own licensed copy to analyze", "current_version": "Current edition + supplements", "source": "EDQM (paid)", "source_url": "https://www.edqm.eu/en/european-pharmacopoeia", "tags": ["Ph. Eur.", "pharmacopoeia", "paid"] },
-    { "regulation_id": "PH-USP-NF", "reference": "USP–NF", "short_code": "USP-NF", "title": "United States Pharmacopeia — National Formulary", "aliases": ["USP", "USP-NF", "national formulary", "united states pharmacopeia"], "type": "Pharmacopoeia", "authority": "US Pharmacopeial Convention", "jurisdiction": "United States", "country_region": "US", "industry": ["Pharmaceuticals"], "category": "Pharmacopoeia (paid)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference monograph number + scope only — tenant uploads own licensed copy to analyze", "current_version": "Current edition", "source": "USP (paid)", "source_url": "https://www.usp.org/", "tags": ["USP", "pharmacopoeia", "paid"] },
-    { "regulation_id": "LAW-TN-85-91", "reference": "Loi n° 85-91 du 22 novembre 1985", "short_code": "Loi 85-91", "title": "Loi n° 85-91 réglementant la fabrication et l'enregistrement des médicaments à usage humain", "aliases": ["loi 85-91", "85-91", "fabrication medicaments", "enregistrement medicaments", "AMM tunisie", "marketing authorization tunisia"], "type": "Law", "authority": "République Tunisienne / DPM", "jurisdiction": "Tunisia", "country_region": "TN", "industry": ["Pharmaceuticals"], "category": "Domestic Manufacture & Registration", "legal_status": "USER_UPLOAD", "engine_capability": "Reuse licensing of JORT unconfirmed — tenant uploads the text under liability shift [VERIFY]", "current_version": "1985, modified by Loi 99-73 (1999)", "source": "JORT / DPM", "source_url": "https://dpm.tn/industrie/reglementation", "tags": ["Tunisia", "AMM", "pharma"] },
-    { "regulation_id": "LAW-TN-99-73", "reference": "Loi n° 99-73 du 26 juillet 1999", "short_code": "Loi 99-73", "title": "Loi n° 99-73 modifiant la loi n° 85-91 (fabrication et enregistrement des médicaments)", "aliases": ["loi 99-73", "99-73", "modification 85-91"], "type": "Law", "authority": "République Tunisienne / DPM", "jurisdiction": "Tunisia", "country_region": "TN", "industry": ["Pharmaceuticals"], "category": "Domestic Manufacture & Registration", "legal_status": "USER_UPLOAD", "engine_capability": "Reuse licensing of JORT unconfirmed — tenant uploads the text under liability shift [VERIFY]", "current_version": "1999", "source": "JORT / DPM", "source_url": "https://dpm.tn/industrie/reglementation", "tags": ["Tunisia", "amendment", "pharma"] },
-    { "regulation_id": "LAW-TN-90-105", "reference": "Loi n° 90-105", "short_code": "Loi 90-105 (PCT)", "title": "Loi n° 90-105 relative à la Pharmacie Centrale de Tunisie", "aliases": ["loi 90-105", "90-105", "pharmacie centrale tunisie", "PCT import"], "type": "Law", "authority": "République Tunisienne", "jurisdiction": "Tunisia", "country_region": "TN", "industry": ["Pharmaceuticals"], "category": "Import & Distribution", "legal_status": "USER_UPLOAD", "engine_capability": "Reuse licensing of JORT unconfirmed — tenant uploads the text under liability shift [VERIFY]", "current_version": "1990 [VERIFY]", "source": "JORT", "source_url": "https://dpm.tn/industrie/reglementation", "tags": ["Tunisia", "import", "PCT"] },
-    { "regulation_id": "REG-EU-1223-2009", "reference": "Regulation (EC) No 1223/2009", "short_code": "EU Cosmetics Reg", "title": "Regulation on Cosmetic Products", "aliases": ["1223/2009", "cosmetics regulation", "cosmetic products", "CPNP", "reglement cosmetiques", "PIF"], "type": "Regulation", "authority": "European Parliament & Council", "jurisdiction": "European Union / EEA", "country_region": "EU", "industry": ["Cosmetics"], "category": "Market Access & Safety", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Consolidated (rolling Annex II–VI amendments)", "source": "EUR-Lex", "source_url": "https://eur-lex.europa.eu/eli/reg/2009/1223/oj", "tags": ["EU", "cosmetics", "CPNP"] },
-    { "regulation_id": "US-MOCRA-2022", "reference": "MoCRA (2022)", "short_code": "MoCRA", "title": "Modernization of Cosmetics Regulation Act of 2022 (amending the FD&C Act)", "aliases": ["MoCRA", "modernization of cosmetics", "cosmetics regulation act", "facility registration cosmetics", "product listing cosmetics"], "type": "Law", "authority": "US Congress / FDA", "jurisdiction": "United States", "country_region": "US", "industry": ["Cosmetics"], "category": "Market Access & Safety", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "2022 (phased implementation)", "source": "US Congress / FDA", "source_url": "https://www.fda.gov/cosmetics/cosmetics-laws-regulations/modernization-cosmetics-regulation-act-2022-mocra", "tags": ["US", "MoCRA", "cosmetics"] },
-    { "regulation_id": "CFR-21-700", "reference": "21 CFR Parts 700–740", "short_code": "21 CFR Cosmetics", "title": "FDA Cosmetics regulations (Parts 700–740, incl. Part 701 Labeling)", "aliases": ["21 CFR 700", "21 CFR 701", "cosmetics labeling", "700", "701"], "type": "Regulation", "authority": "US FDA", "jurisdiction": "United States", "country_region": "US", "industry": ["Cosmetics"], "category": "Labeling & Composition", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Current", "source": "eCFR", "source_url": "https://www.ecfr.gov/current/title-21/chapter-I/subchapter-G", "tags": ["FDA", "cosmetics", "labeling"] },
-    { "regulation_id": "STD-ISO-22716", "reference": "ISO 22716:2007", "short_code": "ISO 22716", "title": "Cosmetics — Good Manufacturing Practices (GMP) — Guidelines on GMP", "aliases": ["ISO 22716", "22716", "cosmetics GMP", "cosmetics good manufacturing practices", "BPF cosmetiques"], "type": "Standard", "authority": "ISO", "jurisdiction": "International standard", "country_region": "INT", "industry": ["Cosmetics"], "category": "Good Manufacturing Practice (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "2007", "source": "ISO (paid)", "source_url": "https://www.iso.org/standard/36437.html", "tags": ["ISO", "cosmetics GMP", "paid standard"] },
-    { "regulation_id": "STD-ISO-16128", "reference": "ISO 16128", "short_code": "ISO 16128", "title": "Cosmetics — Technical definitions and criteria for natural and organic cosmetic ingredients and products", "aliases": ["ISO 16128", "16128", "natural organic cosmetics", "natural ingredients"], "type": "Standard", "authority": "ISO", "jurisdiction": "International standard", "country_region": "INT", "industry": ["Cosmetics"], "category": "Natural/Organic (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "16128-1:2016 / -2:2017", "source": "ISO (paid)", "source_url": "https://www.iso.org/standard/62503.html", "tags": ["ISO", "natural", "paid standard"] },
-    { "regulation_id": "STD-ISO-SPF", "reference": "ISO 24444 / 24443", "short_code": "ISO SPF/UVA", "title": "Cosmetics — Sun protection test methods (SPF in vivo 24444; UVA in vitro 24443)", "aliases": ["ISO 24444", "ISO 24443", "SPF", "sun protection factor", "UVA"], "type": "Standard", "authority": "ISO", "jurisdiction": "International standard", "country_region": "INT", "industry": ["Cosmetics"], "category": "Sun Protection Testing (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "Current editions", "source": "ISO (paid)", "source_url": "https://www.iso.org/standard/72250.html", "tags": ["ISO", "SPF", "paid standard"] },
-    { "regulation_id": "STD-ISO-COS-MICRO", "reference": "ISO 29621 / 11930", "short_code": "ISO Cosmetics Micro", "title": "Cosmetics — Microbiology: risk assessment of low-risk products (29621) & preservation efficacy (11930)", "aliases": ["ISO 29621", "ISO 11930", "cosmetics microbiology", "preservation efficacy", "challenge test"], "type": "Standard", "authority": "ISO", "jurisdiction": "International standard", "country_region": "INT", "industry": ["Cosmetics"], "category": "Microbiology (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "Current editions", "source": "ISO (paid)", "source_url": "https://www.iso.org/standard/75809.html", "tags": ["ISO", "microbiology", "paid standard"] },
-    { "regulation_id": "NT-TN-106-01", "reference": "NT 106.01", "short_code": "NT 106.01", "title": "Norme Tunisienne NT 106.01 — sécurité des produits cosmétiques (general safety)", "aliases": ["NT 106.01", "106.01", "norme tunisienne cosmetiques", "cosmetics safety tunisia", "INNORPI"], "type": "Standard", "authority": "INNORPI (Institut National de la Normalisation et de la Propriété Industrielle)", "jurisdiction": "Tunisia", "country_region": "TN", "industry": ["Cosmetics"], "category": "National Standard — Safety", "legal_status": "REFERENCE_ONLY", "engine_capability": "National standard sold by INNORPI — reference number + scope only; tenant uploads own copy [VERIFY licensing]", "current_version": "[VERIFY]", "source": "INNORPI (paid)", "source_url": "http://www.innorpi.tn/", "tags": ["Tunisia", "NT", "cosmetics", "paid standard"] },
-    { "regulation_id": "NT-TN-106-02", "reference": "NT 106.02", "short_code": "NT 106.02", "title": "Norme Tunisienne NT 106.02 — étiquetage des produits cosmétiques (labeling)", "aliases": ["NT 106.02", "106.02", "etiquetage cosmetiques", "cosmetics labeling tunisia"], "type": "Standard", "authority": "INNORPI", "jurisdiction": "Tunisia", "country_region": "TN", "industry": ["Cosmetics"], "category": "National Standard — Labeling", "legal_status": "REFERENCE_ONLY", "engine_capability": "National standard sold by INNORPI — reference number + scope only; tenant uploads own copy [VERIFY licensing]", "current_version": "[VERIFY]", "source": "INNORPI (paid)", "source_url": "http://www.innorpi.tn/", "tags": ["Tunisia", "NT", "labeling", "paid standard"] },
-    { "regulation_id": "NT-TN-106-03", "reference": "NT 106.03", "short_code": "NT 106.03", "title": "Norme Tunisienne NT 106.03 — bonnes pratiques de fabrication des cosmétiques (GMP)", "aliases": ["NT 106.03", "106.03", "BPF cosmetiques tunisie", "cosmetics GMP tunisia"], "type": "Standard", "authority": "INNORPI", "jurisdiction": "Tunisia", "country_region": "TN", "industry": ["Cosmetics"], "category": "National Standard — GMP", "legal_status": "REFERENCE_ONLY", "engine_capability": "National standard sold by INNORPI — reference number + scope only; tenant uploads own copy [VERIFY licensing]", "current_version": "[VERIFY]", "source": "INNORPI (paid)", "source_url": "http://www.innorpi.tn/", "tags": ["Tunisia", "NT", "GMP", "paid standard"] },
-    { "regulation_id": "NT-TN-106-04", "reference": "NT 106.04", "short_code": "NT 106.04", "title": "Norme Tunisienne NT 106.04 — vérification de l'innocuité des cosmétiques (safety verification)", "aliases": ["NT 106.04", "106.04", "innocuite cosmetiques", "cosmetics safety verification"], "type": "Standard", "authority": "INNORPI", "jurisdiction": "Tunisia", "country_region": "TN", "industry": ["Cosmetics"], "category": "National Standard — Safety Assessment", "legal_status": "REFERENCE_ONLY", "engine_capability": "National standard sold by INNORPI — reference number + scope only; tenant uploads own copy [VERIFY licensing]", "current_version": "[VERIFY]", "source": "INNORPI (paid)", "source_url": "http://www.innorpi.tn/", "tags": ["Tunisia", "NT", "safety", "paid standard"] },
-    { "regulation_id": "DEC-TN-99-769", "reference": "Décret n° 99-769 du 15 avril 1999", "short_code": "Décret 99-769 (ANCSEP)", "title": "Décret n° 99-769 portant création de l'ANCSEP (Agence Nationale de Contrôle Sanitaire et Environnemental des Produits)", "aliases": ["decret 99-769", "99-769", "ANCSEP", "controle sanitaire produits"], "type": "Decree", "authority": "République Tunisienne / Ministère de la Santé", "jurisdiction": "Tunisia", "country_region": "TN", "industry": ["Cosmetics", "Cross-industry"], "category": "Domestic Control Authority", "legal_status": "USER_UPLOAD", "engine_capability": "Reuse licensing of JORT unconfirmed — tenant uploads the text under liability shift [VERIFY]", "current_version": "1999", "source": "JORT / ANCSEP", "source_url": "http://www.ancsep.rns.tn/", "tags": ["Tunisia", "ANCSEP", "decree"] },
-    { "regulation_id": "GSO-1943", "reference": "GSO 1943:2016", "short_code": "GSO 1943", "title": "Safety Requirements of Cosmetics and Personal Care Products (Gulf Standard)", "aliases": ["GSO 1943", "1943", "gulf standard cosmetics", "GCC cosmetics safety", "personal care products"], "type": "Standard", "authority": "GSO (GCC Standardization Organization)", "jurisdiction": "GCC / Gulf", "country_region": "GCC", "industry": ["Cosmetics"], "category": "GCC Technical Regulation (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Gulf standard sold by GSO — reference number + scope only; tenant uploads own copy [VERIFY licensing]", "current_version": "2016 (+ SFDA restricted-substance circulars 2025)", "source": "GSO (paid)", "source_url": "https://www.gso.org.sa/", "tags": ["GSO", "Gulf", "cosmetics", "paid standard"] },
-    { "regulation_id": "GSO-2528", "reference": "GSO 2528", "short_code": "GSO 2528", "title": "Labeling of Cosmetics and Personal Care Products (Gulf Standard)", "aliases": ["GSO 2528", "2528", "gulf cosmetics labeling"], "type": "Standard", "authority": "GSO", "jurisdiction": "GCC / Gulf", "country_region": "GCC", "industry": ["Cosmetics"], "category": "GCC Labeling (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Gulf standard sold by GSO — reference number + scope only; tenant uploads own copy [VERIFY licensing]", "current_version": "[VERIFY]", "source": "GSO (paid)", "source_url": "https://www.gso.org.sa/", "tags": ["GSO", "labeling", "paid standard"] },
-    { "regulation_id": "REG-SA-SFDA-COS", "reference": "SFDA Cosmetics Technical Regulation", "short_code": "SFDA Cosmetics", "title": "Saudi FDA Cosmetics Technical Regulation & GHAD/FASEH notification requirements", "aliases": ["SFDA cosmetics", "GHAD", "FASEH", "saudi cosmetics", "certificate of conformity cosmetics"], "type": "Technical Regulation", "authority": "Saudi Food & Drug Authority (SFDA)", "jurisdiction": "Saudi Arabia (GCC reference market)", "country_region": "SA", "industry": ["Cosmetics"], "category": "GCC Market Access", "legal_status": "USER_UPLOAD", "engine_capability": "Confirm SFDA reuse terms — otherwise tenant uploads under liability shift [VERIFY]", "current_version": "Current (2025 restricted/prohibited substance updates)", "source": "SFDA", "source_url": "https://www.sfda.gov.sa/en/regulations", "tags": ["SFDA", "Saudi", "cosmetics"] },
-    { "regulation_id": "REG-EU-2016-679", "reference": "Regulation (EU) 2016/679", "short_code": "GDPR", "title": "General Data Protection Regulation (GDPR)", "aliases": ["GDPR", "2016/679", "data protection", "privacy", "RGPD", "donnees personnelles"], "type": "Regulation", "authority": "European Parliament & Council", "jurisdiction": "European Union / EEA", "country_region": "EU", "industry": ["Cross-industry"], "category": "Data Protection & Privacy", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "In force since 2018", "source": "EUR-Lex", "source_url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj", "tags": ["GDPR", "privacy"] },
-    { "regulation_id": "REG-EU-2024-1689", "reference": "Regulation (EU) 2024/1689", "short_code": "EU AI Act", "title": "Artificial Intelligence Act (AI Act)", "aliases": ["AI Act", "2024/1689", "artificial intelligence act", "high-risk AI"], "type": "Regulation", "authority": "European Parliament & Council", "jurisdiction": "European Union / EEA", "country_region": "EU", "industry": ["Cross-industry"], "category": "AI & Product Safety", "legal_status": "INGESTIBLE", "engine_capability": "Full text ingested & AI-analyzed", "current_version": "Phasing in from 2026", "source": "EUR-Lex", "source_url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj", "tags": ["AI Act", "high-risk AI"] },
-    { "regulation_id": "LAW-TN-2004-63", "reference": "Loi n° 2004-63 du 27 juillet 2004", "short_code": "Loi 2004-63", "title": "Loi n° 2004-63 relative à la protection des données à caractère personnel (Tunisia data protection)", "aliases": ["loi 2004-63", "2004-63", "protection donnees personnelles", "INPDP", "tunisia data protection"], "type": "Law", "authority": "République Tunisienne / INPDP", "jurisdiction": "Tunisia", "country_region": "TN", "industry": ["Cross-industry"], "category": "Data Protection & Privacy", "legal_status": "USER_UPLOAD", "engine_capability": "Reuse licensing of JORT unconfirmed — tenant uploads the text under liability shift [VERIFY]", "current_version": "2004", "source": "JORT / INPDP", "source_url": "http://www.inpdp.tn/", "tags": ["Tunisia", "data protection", "INPDP"] },
-    { "regulation_id": "STD-ISO-9001", "reference": "ISO 9001:2015", "short_code": "ISO 9001", "title": "Quality management systems — Requirements", "aliases": ["ISO 9001", "9001", "quality management system", "QMS generic"], "type": "Standard", "authority": "ISO", "jurisdiction": "International standard", "country_region": "INT", "industry": ["Cross-industry"], "category": "Quality System (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "2015 (Amd 1:2024 climate action)", "source": "ISO (paid)", "source_url": "https://www.iso.org/standard/62085.html", "tags": ["ISO", "QMS", "paid standard"] },
-    { "regulation_id": "STD-ISO-14001", "reference": "ISO 14001:2015", "short_code": "ISO 14001", "title": "Environmental management systems — Requirements with guidance for use", "aliases": ["ISO 14001", "14001", "environmental management", "EMS"], "type": "Standard", "authority": "ISO", "jurisdiction": "International standard", "country_region": "INT", "industry": ["Cross-industry"], "category": "Environmental (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "2015 (Amd 1:2024)", "source": "ISO (paid)", "source_url": "https://www.iso.org/standard/60857.html", "tags": ["ISO", "environment", "paid standard"] },
-    { "regulation_id": "STD-ISO-45001", "reference": "ISO 45001:2018", "short_code": "ISO 45001", "title": "Occupational health and safety management systems — Requirements", "aliases": ["ISO 45001", "45001", "occupational health safety", "OHS", "SST"], "type": "Standard", "authority": "ISO", "jurisdiction": "International standard", "country_region": "INT", "industry": ["Cross-industry"], "category": "Health & Safety (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "2018", "source": "ISO (paid)", "source_url": "https://www.iso.org/standard/63787.html", "tags": ["ISO", "OHS", "paid standard"] },
-    { "regulation_id": "STD-ISO-27001", "reference": "ISO/IEC 27001:2022", "short_code": "ISO 27001", "title": "Information security, cybersecurity and privacy protection — Information security management systems — Requirements", "aliases": ["ISO 27001", "27001", "information security", "ISMS", "cybersecurity management"], "type": "Standard", "authority": "ISO/IEC", "jurisdiction": "International standard", "country_region": "INT", "industry": ["Cross-industry"], "category": "Information Security (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "2022", "source": "ISO (paid)", "source_url": "https://www.iso.org/standard/27001", "tags": ["ISO", "infosec", "paid standard"] },
-    { "regulation_id": "STD-ISO-17025", "reference": "ISO/IEC 17025:2017", "short_code": "ISO 17025", "title": "General requirements for the competence of testing and calibration laboratories", "aliases": ["ISO 17025", "17025", "testing calibration laboratories", "lab competence"], "type": "Standard", "authority": "ISO/IEC", "jurisdiction": "International standard", "country_region": "INT", "industry": ["Cross-industry"], "category": "Laboratory Competence (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "2017", "source": "ISO (paid)", "source_url": "https://www.iso.org/standard/66912.html", "tags": ["ISO", "laboratory", "paid standard"] },
-    { "regulation_id": "STD-ISO-19011", "reference": "ISO 19011:2018", "short_code": "ISO 19011", "title": "Guidelines for auditing management systems", "aliases": ["ISO 19011", "19011", "auditing management systems", "audit guidelines"], "type": "Standard", "authority": "ISO", "jurisdiction": "International standard", "country_region": "INT", "industry": ["Cross-industry"], "category": "Auditing (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "2018", "source": "ISO (paid)", "source_url": "https://www.iso.org/standard/70017.html", "tags": ["ISO", "audit", "paid standard"] },
-    { "regulation_id": "STD-ISO-31000", "reference": "ISO 31000:2018", "short_code": "ISO 31000", "title": "Risk management — Guidelines", "aliases": ["ISO 31000", "31000", "risk management guidelines", "enterprise risk"], "type": "Standard", "authority": "ISO", "jurisdiction": "International standard", "country_region": "INT", "industry": ["Cross-industry"], "category": "Risk Management (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "2018", "source": "ISO (paid)", "source_url": "https://www.iso.org/standard/65694.html", "tags": ["ISO", "risk", "paid standard"] },
-    { "regulation_id": "STD-ISO-15378", "reference": "ISO 15378:2017", "short_code": "ISO 15378", "title": "Primary packaging materials for medicinal products — GMP requirements", "aliases": ["ISO 15378", "15378", "primary packaging medicinal", "pharma packaging GMP"], "type": "Standard", "authority": "ISO", "jurisdiction": "International standard", "country_region": "INT", "industry": ["Pharmaceuticals"], "category": "Packaging GMP (standard)", "legal_status": "REFERENCE_ONLY", "engine_capability": "Reference number + scope only — tenant uploads own licensed copy to analyze", "current_version": "2017", "source": "ISO (paid)", "source_url": "https://www.iso.org/standard/70326.html", "tags": ["ISO", "packaging", "paid standard"] },
-    { "regulation_id": "CODEX-ALIMENTARIUS", "reference": "Codex Alimentarius", "short_code": "Codex", "title": "Codex Alimentarius (FAO/WHO food & related standards; relevant for excipients / nutraceutical borderline products)", "aliases": ["codex", "codex alimentarius", "FAO WHO standards"], "type": "Guideline", "authority": "FAO / WHO Codex Alimentarius Commission", "jurisdiction": "International", "country_region": "INT", "industry": ["Cross-industry"], "category": "Harmonised Standards (borderline products)", "legal_status": "INGESTIBLE", "engine_capability": "Publicly available — ingested & AI-analyzed", "current_version": "Rolling", "source": "Codex Alimentarius", "source_url": "https://www.fao.org/fao-who-codexalimentarius/en/", "tags": ["Codex", "FAO/WHO"] }
+    {
+      "regulation_id": "GUID-EU-GMP-ANX1",
+      "reference": "EudraLex Vol. 4, Annex 1",
+      "short_code": "Annex 1",
+      "title": "Manufacture of Sterile Medicinal Products",
+      "aliases": [
+        "annex 1",
+        "annexe 1",
+        "sterile GMP",
+        "CCS",
+        "contamination control strategy",
+        "fabrication steriles"
+      ],
+      "type": "Guideline",
+      "authority": "European Commission / PIC/S",
+      "jurisdiction": "European Union / EEA (adopted by PIC/S)",
+      "country_region": "EU",
+      "industry": [
+        "Pharmaceuticals"
+      ],
+      "category": "Good Manufacturing Practice — Sterile",
+      "legal_status": "INGESTIBLE",
+      "engine_capability": "Full text ingested & AI-analyzed",
+      "current_version": "2022 revision — in operation since 2023-08-25 (§8.123 lyophilisation from 2024-08-25)",
+      "previous_version": "2008 version (2008/11/25)",
+      "source": "European Commission (EudraLex Vol. 4)",
+      "source_url": "https://health.ec.europa.eu/medicinal-products/eudralex/eudralex-volume-4_en",
+      "tags": [
+        "EU",
+        "GMP",
+        "sterile",
+        "CCS"
+      ]
+    },
+    {
+      "regulation_id": "GUID-EU-GMP-ANX15",
+      "reference": "EudraLex Vol. 4, Annex 15",
+      "short_code": "Annex 15",
+      "title": "Qualification and Validation",
+      "aliases": [
+        "annex 15",
+        "qualification",
+        "validation",
+        "process validation"
+      ],
+      "type": "Guideline",
+      "authority": "European Commission",
+      "jurisdiction": "European Union / EEA",
+      "country_region": "EU",
+      "industry": [
+        "Pharmaceuticals"
+      ],
+      "category": "Good Manufacturing Practice",
+      "legal_status": "INGESTIBLE",
+      "engine_capability": "Full text ingested & AI-analyzed",
+      "current_version": "2015 revision — in operation since 2015-10-01",
+      "source": "European Commission (EudraLex Vol. 4)",
+      "source_url": "https://health.ec.europa.eu/medicinal-products/eudralex/eudralex-volume-4_en",
+      "tags": [
+        "EU",
+        "GMP",
+        "validation"
+      ]
+    },
+    {
+      "regulation_id": "GUID-EU-GMP-ANX16",
+      "reference": "EudraLex Vol. 4, Annex 16",
+      "short_code": "Annex 16",
+      "title": "Certification by a Qualified Person and Batch Release",
+      "aliases": [
+        "annex 16",
+        "QP release",
+        "batch certification",
+        "personne qualifiee"
+      ],
+      "type": "Guideline",
+      "authority": "European Commission",
+      "jurisdiction": "European Union / EEA",
+      "country_region": "EU",
+      "industry": [
+        "Pharmaceuticals"
+      ],
+      "category": "Good Manufacturing Practice",
+      "legal_status": "INGESTIBLE",
+      "engine_capability": "Full text ingested & AI-analyzed",
+      "current_version": "2015 revision — in operation since 2016-04-15",
+      "source": "European Commission (EudraLex Vol. 4)",
+      "source_url": "https://health.ec.europa.eu/medicinal-products/eudralex/eudralex-volume-4_en",
+      "tags": [
+        "EU",
+        "GMP",
+        "QP",
+        "batch release"
+      ]
+    },
+    {
+      "regulation_id": "REG-EC-2008-1234",
+      "reference": "Regulation (EC) No 1234/2008",
+      "short_code": "Variations Reg",
+      "title": "Examination of variations to the terms of marketing authorisations for medicinal products",
+      "aliases": [
+        "1234/2008",
+        "variations",
+        "type IA",
+        "type IB",
+        "type II",
+        "modifications AMM"
+      ],
+      "type": "Regulation",
+      "authority": "European Commission",
+      "jurisdiction": "European Union / EEA",
+      "country_region": "EU",
+      "industry": [
+        "Pharmaceuticals"
+      ],
+      "category": "Market Access & Authorisation",
+      "legal_status": "INGESTIBLE",
+      "engine_capability": "Full text ingested & AI-analyzed",
+      "current_version": "Consolidated",
+      "source": "EUR-Lex",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2008/1234/oj",
+      "tags": [
+        "EU",
+        "variations",
+        "lifecycle"
+      ]
+    },
+    {
+      "regulation_id": "REG-EU-2016-161",
+      "reference": "Commission Delegated Regulation (EU) 2016/161",
+      "short_code": "Safety features",
+      "title": "Detailed rules for the safety features appearing on the packaging of medicinal products for human use (unique identifier + anti-tampering device)",
+      "aliases": [
+        "2016/161",
+        "safety features",
+        "unique identifier",
+        "UI",
+        "ATD",
+        "serialisation",
+        "data matrix",
+        "serialisation",
+        "dispositif antieffraction"
+      ],
+      "type": "Regulation",
+      "authority": "European Commission",
+      "jurisdiction": "European Union / EEA",
+      "country_region": "EU",
+      "industry": [
+        "Pharmaceuticals"
+      ],
+      "category": "Packaging & Anti-falsification",
+      "legal_status": "INGESTIBLE",
+      "engine_capability": "Full text ingested & AI-analyzed",
+      "current_version": "Applicable since 2019-02-09",
+      "parent_reference": "DIR-EU-2011-62 (Falsified Medicines Directive)",
+      "source": "EUR-Lex",
+      "source_url": "https://eur-lex.europa.eu/eli/reg_del/2016/161/oj",
+      "tags": [
+        "EU",
+        "serialisation",
+        "FMD"
+      ]
+    },
+    {
+      "regulation_id": "GUID-EU-EXCIPIENTS",
+      "reference": "Excipients in the labelling and package leaflet of medicinal products for human use",
+      "short_code": "Excipients guideline",
+      "title": "European Commission guideline on excipients in the labelling and package leaflet, with its Annex of excipient-specific warnings by route of administration",
+      "aliases": [
+        "excipients",
+        "excipient warnings",
+        "known effect",
+        "parabens",
+        "propylene glycol",
+        "sorbitol",
+        "excipients a effet notoire"
+      ],
+      "type": "Guideline",
+      "authority": "European Commission / EMA",
+      "jurisdiction": "European Union / EEA",
+      "country_region": "EU",
+      "industry": [
+        "Pharmaceuticals"
+      ],
+      "category": "Labelling & Package Leaflet",
+      "legal_status": "INGESTIBLE",
+      "engine_capability": "Full text ingested & AI-analyzed",
+      "current_version": "Current revision with the excipient Annex (route-specific thresholds and warning texts)",
+      "source": "European Commission / EMA",
+      "source_url": "https://www.ema.europa.eu/en/excipients-labelling-package-leaflet-medicinal-products-human-use-scientific-guideline",
+      "tags": [
+        "EU",
+        "labelling",
+        "excipients"
+      ]
+    },
+    {
+      "regulation_id": "GUID-EU-BE",
+      "reference": "Guideline on the Investigation of Bioequivalence",
+      "short_code": "BE guideline",
+      "title": "CPMP/EWP/QWP/1401/98 Rev. 1 — Investigation of bioequivalence for immediate-release oral dosage forms",
+      "aliases": [
+        "bioequivalence",
+        "BE",
+        "1401/98",
+        "bioequivalence generique"
+      ],
+      "type": "Guideline",
+      "authority": "EMA / CHMP",
+      "jurisdiction": "European Union / EEA",
+      "country_region": "EU",
+      "industry": [
+        "Pharmaceuticals"
+      ],
+      "category": "Generics & Equivalence",
+      "legal_status": "INGESTIBLE",
+      "engine_capability": "Full text ingested & AI-analyzed",
+      "current_version": "Rev. 1 (in force; revision under discussion)",
+      "source": "EMA",
+      "source_url": "https://www.ema.europa.eu/en/investigation-bioequivalence-scientific-guideline",
+      "tags": [
+        "EU",
+        "generics",
+        "bioequivalence"
+      ]
+    },
+    {
+      "regulation_id": "GUID-EU-TOPICAL",
+      "reference": "Guideline on quality and equivalence of topical products",
+      "short_code": "Topical guideline",
+      "title": "CHMP/QWP/708282/2018 — quality and equivalence of locally applied, locally acting cutaneous products",
+      "aliases": [
+        "topical",
+        "cutaneous",
+        "IVRT",
+        "semi-solid",
+        "creme",
+        "equivalence topique"
+      ],
+      "type": "Guideline",
+      "authority": "EMA / CHMP",
+      "jurisdiction": "European Union / EEA",
+      "country_region": "EU",
+      "industry": [
+        "Pharmaceuticals"
+      ],
+      "category": "Quality — Dosage Form Specific",
+      "legal_status": "INGESTIBLE",
+      "engine_capability": "Full text ingested & AI-analyzed",
+      "current_version": "Current (in force)",
+      "source": "EMA",
+      "source_url": "https://www.ema.europa.eu/en/quality-equivalence-topical-products-scientific-guideline",
+      "tags": [
+        "EU",
+        "topical",
+        "semi-solid"
+      ]
+    },
+    {
+      "regulation_id": "REG-EC-2006-1901",
+      "reference": "Regulation (EC) No 1901/2006",
+      "short_code": "Paediatric Reg",
+      "title": "Medicinal products for paediatric use",
+      "aliases": [
+        "1901/2006",
+        "paediatric",
+        "pediatric regulation",
+        "PIP",
+        "medicament pediatrique"
+      ],
+      "type": "Regulation",
+      "authority": "European Parliament & Council",
+      "jurisdiction": "European Union / EEA",
+      "country_region": "EU",
+      "industry": [
+        "Pharmaceuticals"
+      ],
+      "category": "Paediatric Medicines",
+      "legal_status": "INGESTIBLE",
+      "engine_capability": "Full text ingested & AI-analyzed",
+      "current_version": "Consolidated",
+      "related_guideline": "EMA guideline on pharmaceutical development of medicines for paediatric use (EMA/CHMP/QWP/805880/2012) — dosing devices, excipient acceptability by age",
+      "source": "EUR-Lex",
+      "source_url": "https://eur-lex.europa.eu/eli/reg/2006/1901/oj",
+      "tags": [
+        "EU",
+        "paediatric"
+      ]
+    },
+    {
+      "regulation_id": "ICH-M7",
+      "reference": "ICH M7(R2)",
+      "short_code": "ICH M7",
+      "title": "Assessment and control of DNA reactive (mutagenic) impurities in pharmaceuticals to limit potential carcinogenic risk",
+      "aliases": [
+        "M7",
+        "mutagenic impurities",
+        "nitrosamines",
+        "TTC",
+        "impuretes mutagenes"
+      ],
+      "type": "Guideline",
+      "authority": "ICH",
+      "jurisdiction": "International (ICH regions)",
+      "country_region": "ICH",
+      "industry": [
+        "Pharmaceuticals"
+      ],
+      "category": "Impurities & Safety",
+      "legal_status": "INGESTIBLE",
+      "engine_capability": "Full text ingested & AI-analyzed",
+      "current_version": "R2 (2023)",
+      "previous_version": "R1 (2017)",
+      "source": "ICH — published free of charge",
+      "source_url": "https://www.ich.org/page/multidisciplinary-guidelines",
+      "tags": [
+        "ICH",
+        "impurities",
+        "nitrosamines"
+      ]
+    },
+    {
+      "regulation_id": "ICH-M9",
+      "reference": "ICH M9",
+      "short_code": "ICH M9",
+      "title": "Biopharmaceutics Classification System-based biowaivers",
+      "aliases": [
+        "M9",
+        "BCS",
+        "biowaiver",
+        "classification biopharmaceutique"
+      ],
+      "type": "Guideline",
+      "authority": "ICH",
+      "jurisdiction": "International (ICH regions)",
+      "country_region": "ICH",
+      "industry": [
+        "Pharmaceuticals"
+      ],
+      "category": "Generics & Equivalence",
+      "legal_status": "INGESTIBLE",
+      "engine_capability": "Full text ingested & AI-analyzed",
+      "current_version": "Step 4 (2019)",
+      "source": "ICH — published free of charge",
+      "source_url": "https://www.ich.org/page/multidisciplinary-guidelines",
+      "tags": [
+        "ICH",
+        "biowaiver",
+        "generics"
+      ]
+    },
+    {
+      "regulation_id": "GUID-EMA-NITROSAMINE",
+      "reference": "Nitrosamine impurities in human medicinal products — Article 5(3) referral outcome and Q&A",
+      "short_code": "Nitrosamines Q&A",
+      "title": "EMA/CHMP call for review, acceptable intakes and the 3-step approach (risk evaluation → confirmatory testing → dossier update) for nitrosamine impurities",
+      "aliases": [
+        "nitrosamines",
+        "NDMA",
+        "NDEA",
+        "article 5(3)",
+        "acceptable intake",
+        "3-step approach"
+      ],
+      "type": "Guideline",
+      "authority": "EMA / CHMP",
+      "jurisdiction": "European Union / EEA",
+      "country_region": "EU",
+      "industry": [
+        "Pharmaceuticals"
+      ],
+      "category": "Impurities & Safety",
+      "legal_status": "INGESTIBLE",
+      "engine_capability": "Full text ingested & AI-analyzed",
+      "current_version": "Rolling — Q&A updated periodically",
+      "source": "EMA",
+      "source_url": "https://www.ema.europa.eu/en/human-regulatory-overview/post-authorisation/pharmacovigilance-post-authorisation/referral-procedures-human-medicines/nitrosamine-impurities",
+      "tags": [
+        "EU",
+        "nitrosamines",
+        "impurities"
+      ]
+    },
+    {
+      "regulation_id": "GUID-WHO-DEG-EG",
+      "reference": "WHO guidance and Medical Product Alerts on DEG/EG contamination of oral liquid medicines",
+      "short_code": "WHO DEG/EG",
+      "title": "WHO expectations on identity testing of each container of high-risk excipients (glycerol, propylene glycol, sorbitol, polyethylene glycol) and limit testing for diethylene glycol and ethylene glycol",
+      "aliases": [
+        "DEG",
+        "EG",
+        "diethylene glycol",
+        "ethylene glycol",
+        "syrup contamination",
+        "glycerine",
+        "sirop contamine"
+      ],
+      "type": "Guideline",
+      "authority": "World Health Organization",
+      "jurisdiction": "International",
+      "country_region": "WHO",
+      "industry": [
+        "Pharmaceuticals"
+      ],
+      "category": "Starting Materials & Supply Chain",
+      "legal_status": "INGESTIBLE",
+      "engine_capability": "Full text ingested & AI-analyzed",
+      "current_version": "Current — alerts issued from 2022 onwards, guidance consolidated",
+      "source": "WHO — free publication",
+      "source_url": "https://www.who.int/teams/regulation-prequalification/incidents-and-SF/full-list-of-who-medical-product-alerts",
+      "tags": [
+        "WHO",
+        "excipients",
+        "paediatric",
+        "DEG"
+      ]
+    },
+    {
+      "regulation_id": "GUID-TN-GMP",
+      "reference": "Guide des Bonnes Pratiques de Fabrication (Tunisia)",
+      "short_code": "TN GMP",
+      "title": "Tunisian GMP guide for medicinal products for human use, aligned with EudraLex Vol. 4 Part I and WHO TRS GMP",
+      "aliases": [
+        "BPF",
+        "bonnes pratiques de fabrication",
+        "GMP tunisie",
+        "DPM GMP"
+      ],
+      "type": "Guideline",
+      "authority": "Direction de la Pharmacie et du Médicament (DPM), Ministère de la Santé",
+      "jurisdiction": "Tunisia",
+      "country_region": "TN",
+      "industry": [
+        "Pharmaceuticals"
+      ],
+      "category": "Good Manufacturing Practice",
+      "legal_status": "USER_UPLOAD",
+      "engine_capability": "Not hosted — tenant uploads the text and accepts legal liability before analysis",
+      "current_version": "Current edition [VERIFY against DPM before go-live]",
+      "source": "DPM Tunisia",
+      "source_url": "",
+      "tags": [
+        "TN",
+        "GMP",
+        "DPM"
+      ]
+    },
+    {
+      "regulation_id": "ORD-TN-DPM-2025-09",
+      "reference": "Circulaire DPM du 04/09/2025",
+      "short_code": "DPM circular 2025",
+      "title": "Circular to manufacturers of oral liquid preparations — verification of the identity of each container of glycerol, propylene glycol, sorbitol and polyethylene glycol, and limit testing for diethylene glycol and ethylene glycol",
+      "aliases": [
+        "circulaire DPM",
+        "DEG EG tunisie",
+        "sirops",
+        "excipients a risque"
+      ],
+      "type": "Order/Circular",
+      "authority": "Direction de la Pharmacie et du Médicament (DPM)",
+      "jurisdiction": "Tunisia",
+      "country_region": "TN",
+      "industry": [
+        "Pharmaceuticals"
+      ],
+      "category": "Starting Materials & Supply Chain",
+      "legal_status": "USER_UPLOAD",
+      "engine_capability": "Not hosted — tenant uploads the text and accepts legal liability before analysis",
+      "current_version": "Issued 2025-09-04",
+      "is_fabricated_for_demo": true,
+      "fabrication_note": "Plausible national instrument invented for the demo; the underlying WHO/international expectation it reflects is real.",
+      "source": "DPM Tunisia (tenant-supplied)",
+      "source_url": "",
+      "tags": [
+        "TN",
+        "DPM",
+        "DEG",
+        "oral liquids"
+      ]
+    },
+    {
+      "regulation_id": "CERT-EDQM-CEP",
+      "reference": "EDQM Certification of Suitability to the monographs of the European Pharmacopoeia (CEP)",
+      "short_code": "CEP",
+      "title": "Certification scheme under which an active-substance manufacturer demonstrates that a Ph. Eur. monograph adequately controls the quality of its substance",
+      "aliases": [
+        "CEP",
+        "certificat de conformite",
+        "certification of suitability",
+        "EDQM certificate"
+      ],
+      "type": "Guideline",
+      "authority": "EDQM / Council of Europe",
+      "jurisdiction": "European Union / EEA + recognising authorities",
+      "country_region": "EU",
+      "industry": [
+        "Pharmaceuticals"
+      ],
+      "category": "Active Substance & Supply Chain",
+      "legal_status": "INGESTIBLE",
+      "engine_capability": "Scheme rules and certificate metadata ingested — the referenced Ph. Eur. monograph text itself remains REFERENCE_ONLY",
+      "current_version": "Current scheme rules",
+      "source": "EDQM",
+      "source_url": "https://www.edqm.eu/en/certification-of-suitability",
+      "tags": [
+        "EDQM",
+        "CEP",
+        "API"
+      ]
+    },
+    {
+      "regulation_id": "SCHEME-WHO-CPP",
+      "reference": "WHO Certification Scheme on the Quality of Pharmaceutical Products moving in International Commerce",
+      "short_code": "WHO CPP",
+      "title": "Certificate of a Pharmaceutical Product (CPP) — the export certificate format required by most MENA and African importing authorities",
+      "aliases": [
+        "CPP",
+        "certificate of pharmaceutical product",
+        "certificat de produit pharmaceutique",
+        "export certificate"
+      ],
+      "type": "Guideline",
+      "authority": "World Health Organization",
+      "jurisdiction": "International",
+      "country_region": "WHO",
+      "industry": [
+        "Pharmaceuticals"
+      ],
+      "category": "Export & Market Access",
+      "legal_status": "INGESTIBLE",
+      "engine_capability": "Full text ingested & AI-analyzed",
+      "current_version": "Current scheme",
+      "source": "WHO — free publication",
+      "source_url": "https://www.who.int/teams/health-product-policy-and-standards/standards-and-specifications/norms-and-standards-for-pharmaceuticals",
+      "tags": [
+        "WHO",
+        "export",
+        "CPP"
+      ]
+    }
   ]
 }
