@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     LLM_MAX_TOKENS:      int  = 1000
     # JSON extraction completions — separate cap (often needs more than chat).
     STRUCTURE_MAX_TOKENS: int = 4096
+    # Product-wizard pre-fill runs as its own compact pass, so it fits under providers
+    # that hard-cap max_tokens (agregatech rejects anything above 1000).
+    ONBOARDING_MAX_TOKENS: int = 1000
     # JSON structuring (document extraction); can match OPENAI_MODEL for OpenRouter
     STRUCTURE_MODEL:     str  = "gpt-4o-mini"
     # Max characters of extracted text sent in the structuring prompt (tokens ≈ chars/4).

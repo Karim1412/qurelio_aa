@@ -248,6 +248,8 @@ services:
       OPENAI_MODEL: ${OPENAI_MODEL}
       LLM_MAX_TOKENS: ${LLM_MAX_TOKENS:-1000}
       STRUCTURE_MAX_TOKENS: ${STRUCTURE_MAX_TOKENS:-1000}
+      # Product onboarding pre-fill runs as a separate, compact extraction pass.
+      ONBOARDING_MAX_TOKENS: ${ONBOARDING_MAX_TOKENS:-1000}
       # Cap extracted text in structuring prompt
       STRUCTURE_MAX_INPUT_CHARS: ${STRUCTURE_MAX_INPUT_CHARS:-10000}
       STRUCTURE_MODEL: ${STRUCTURE_MODEL:-gpt-4o}

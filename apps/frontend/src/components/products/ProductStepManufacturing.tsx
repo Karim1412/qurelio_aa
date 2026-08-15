@@ -1,15 +1,11 @@
 'use client';
 
 import React from 'react';
-import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { TagInput } from '@/components/company/TagInput';
+import { AiLabel } from '@/components/products/AiFilled';
+import { PRODUCTION_PROCESSES as PROCESSES } from '@/components/products/product-options';
 import { cn } from '@/utils/cn';
-
-const PROCESSES = [
-  'Production / Assembly', 'Quality Control', 'Procurement',
-  'Dyeing & Finishing', 'Packaging', 'Logistics / Warehousing',
-];
 
 export interface ProductManufacturingData {
   productionSites: string[];
@@ -22,14 +18,22 @@ interface Props {
   companySites?: string[];
   companyProcesses?: string[];
   onChange: (d: Partial<ProductManufacturingData>) => void;
+  /** Field keys pre-filled from uploaded documents (see product-prefill.ts). */
+  aiFields?: string[];
 }
 
-export function ProductStepManufacturing({ data, companySites = [], companyProcesses = [], onChange }: Props) {
+/** Append selections that are not in the configured list so nothing selected is invisible. */
+function withSelected(options: string[], selected: string[]): string[] {
+  return [...options, ...selected.filter((s) => !options.includes(s))];
+}
+
+export function ProductStepManufacturing({ data, companySites = [], companyProcesses = [], onChange, aiFields }: Props) {
   const toggle = (arr: string[], val: string) =>
     arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val];
 
-  const sites = companySites.length > 0 ? companySites : ['No sites configured'];
-  const processes = companyProcesses.length > 0 ? companyProcesses : PROCESSES;
+  const configuredSites = companySites.length > 0 ? companySites : [];
+  const sites = withSelected(configuredSites, data.productionSites);
+  const processes = withSelected(companyProcesses.length > 0 ? companyProcesses : PROCESSES, data.productionProcesses);
 
   return (
     <div className="space-y-8">
@@ -38,8 +42,11 @@ export function ProductStepManufacturing({ data, companySites = [], companyProce
       </div>
 
       <div className="space-y-2.5">
-        <Label>Production sites</Label>
+        <AiLabel field="manufacturing.productionSites" aiFields={aiFields}>Production sites</AiLabel>
         <p className="text-[11px] text-[var(--muted)]">Select the company sites where this product is produced. Pulled from your <span className="font-semibold text-[var(--brand-primary)]">Company Profile</span>.</p>
+        {sites.length === 0 && (
+          <p className="text-[13px] text-[var(--muted)]">No sites configured.</p>
+        )}
         <div className="flex flex-wrap gap-2.5">
           {sites.map((s) => {
             const checked = data.productionSites.includes(s);
@@ -56,7 +63,7 @@ export function ProductStepManufacturing({ data, companySites = [], companyProce
       </div>
 
       <div className="space-y-2.5">
-        <Label>Relevant production processes</Label>
+        <AiLabel field="manufacturing.productionProcesses" aiFields={aiFields}>Relevant production processes</AiLabel>
         <p className="text-[11px] text-[var(--muted)]">Select processes involved in making this product. Pre-filled from your company profile.</p>
         <div className="flex flex-wrap gap-2.5">
           {processes.map((p) => {
@@ -73,7 +80,7 @@ export function ProductStepManufacturing({ data, companySites = [], companyProce
       </div>
 
       <div className="space-y-1.5">
-        <Label>Critical suppliers &amp; inputs</Label>
+        <AiLabel field="manufacturing.criticalSuppliers" aiFields={aiFields}>Critical suppliers &amp; inputs</AiLabel>
         <TagInput tags={data.criticalSuppliers} onChange={(criticalSuppliers) => onChange({ criticalSuppliers })} placeholder="Add a supplier or input name..." />
         <p className="text-[11px] text-[var(--muted)]">Optional. Links to Supplier Quality module. Used to scope supplier audits and SCARs related to this product.</p>
       </div>

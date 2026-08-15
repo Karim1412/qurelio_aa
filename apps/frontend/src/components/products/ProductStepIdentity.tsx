@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
+import { AiChip, AiLabel } from '@/components/products/AiFilled';
 import { cn } from '@/utils/cn';
 
 // ── Soft illustrated SVG icons for each product type ────────────────────────
@@ -108,9 +109,11 @@ export interface ProductIdentityData {
 interface Props {
   data: ProductIdentityData;
   onChange: (d: Partial<ProductIdentityData>) => void;
+  /** Field keys pre-filled from uploaded documents (see product-prefill.ts). */
+  aiFields?: string[];
 }
 
-export function ProductStepIdentity({ data, onChange }: Props) {
+export function ProductStepIdentity({ data, onChange, aiFields }: Props) {
   return (
     <div className="space-y-8">
       <div>
@@ -119,35 +122,38 @@ export function ProductStepIdentity({ data, onChange }: Props) {
 
       <div className="space-y-5">
         <div className="space-y-1.5">
-          <Label>Product name <span className="text-red-500">*</span></Label>
+          <AiLabel required field="identity.name" aiFields={aiFields}>Product name</AiLabel>
           <Input value={data.name} onChange={(e) => onChange({ name: e.target.value })} placeholder="e.g. Classic Denim Jeans — Adult Range" />
         </div>
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <div className="space-y-1.5">
-            <Label>Internal reference / SKU</Label>
+            <AiLabel field="identity.sku" aiFields={aiFields}>Internal reference / SKU</AiLabel>
             <Input value={data.sku} onChange={(e) => onChange({ sku: e.target.value })} placeholder="e.g. TIM-DJ-001" />
           </div>
           <div className="space-y-1.5">
-            <Label>Brand / Trade name</Label>
+            <AiLabel field="identity.brandName" aiFields={aiFields}>Brand / Trade name</AiLabel>
             <Input value={data.brandName} onChange={(e) => onChange({ brandName: e.target.value })} placeholder="If different from company brand" />
           </div>
         </div>
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <div className="space-y-1.5">
-            <Label>Product family / Line</Label>
+            <AiLabel field="identity.productFamily" aiFields={aiFields}>Product family / Line</AiLabel>
             <Input value={data.productFamily} onChange={(e) => onChange({ productFamily: e.target.value })} placeholder="e.g. Classic Range, Pro Series" />
           </div>
           <div className="space-y-1.5">
-            <Label>Category</Label>
+            <AiLabel field="identity.category" aiFields={aiFields}>Category</AiLabel>
             <Input value={data.category} onChange={(e) => onChange({ category: e.target.value })} placeholder="e.g. Denim outerwear, Workwear" />
           </div>
         </div>
       </div>
 
       <div className="space-y-3">
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">Product Type <span className="text-red-500">*</span></p>
+        <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">
+          <span>Product Type <span className="text-red-500">*</span></span>
+          {aiFields?.includes('identity.productType') && <AiChip />}
+        </p>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {PRODUCT_TYPES.map((t) => {
             const sel = data.productType === t.value;
@@ -177,7 +183,7 @@ export function ProductStepIdentity({ data, onChange }: Props) {
       <div className="space-y-5">
         <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">Description &amp; Status</p>
         <div className="space-y-1.5">
-          <Label>Description</Label>
+          <AiLabel field="identity.description" aiFields={aiFields}>Description</AiLabel>
           <Textarea value={data.description} onChange={(e) => onChange({ description: e.target.value })} placeholder="Optional — brief product description for internal reference..." rows={4} />
         </div>
         <div className="space-y-1.5">

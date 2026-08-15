@@ -14,10 +14,14 @@ export interface DocumentSection {
 /** Product document profile — maps to Overview / Specifications tabs (Qleer-style UI) */
 export interface ProductBasicInformation {
   reference?: string | null;
+  modelNumber?: string | null;
+  serialNumber?: string | null;
   revision?: string | null;
   category?: string | null;
   subCategory?: string | null;
   tradeMark?: string | null;
+  manufacturer?: string | null;
+  countryOfOrigin?: string | null;
 }
 
 export interface ProductUsageInformation {
@@ -36,9 +40,64 @@ export interface QualityTraceabilityRow {
   notes?: string | null;
 }
 
+/** One product certification read off a certificate / declaration of conformity. */
+export interface ProductOnboardingCertification {
+  standardName?: string | null;
+  certifyingBody?: string | null;
+  certificateNumber?: string | null;
+  marketScope?: string | null;
+  /** ISO date (YYYY-MM-DD) when the source states one. */
+  issueDate?: string | null;
+  expiryDate?: string | null;
+}
+
+/**
+ * Wizard-shaped draft of the product profile — one key per field of the
+ * "Add product" onboarding steps, so an uploaded document can pre-fill the form
+ * for the user to verify. Every field is a suggestion, never authoritative.
+ */
+export interface ProductOnboardingDraft {
+  // Identity
+  productName?: string | null;
+  sku?: string | null;
+  brandName?: string | null;
+  productFamily?: string | null;
+  category?: string | null;
+  /** 'finished' | 'semi_finished' | 'component' | 'raw_material' | 'service' */
+  productType?: string | null;
+  description?: string | null;
+  // Technical
+  intendedUse?: string | null;
+  targetUsers?: string[] | null;
+  keyMaterials?: string[] | null;
+  /** 'Solid' | 'Liquid' | 'Gas' | 'Powder' | 'Paste' | 'Other' */
+  physicalForm?: string | null;
+  hsTariffCode?: string | null;
+  countryOfOrigin?: string | null;
+  // Markets
+  targetMarkets?: string[] | null;
+  requiredCertifications?: string[] | null;
+  applicableRegulations?: string[] | null;
+  industryLabels?: string[] | null;
+  // Manufacturing
+  productionSites?: string[] | null;
+  productionProcesses?: string[] | null;
+  criticalSuppliers?: string[] | null;
+  // Certifications
+  productCertifications?: ProductOnboardingCertification[] | null;
+}
+
 export interface ProductProfile {
   basicInformation?: ProductBasicInformation | null;
   usage?: ProductUsageInformation | null;
+  /** Certification marks / standards / approval numbers printed on the document. */
+  certifications?: {
+    marks?: string[] | null;
+    standards?: string[] | null;
+    approvalNumbers?: string[] | null;
+  } | null;
+  /** Pre-fill payload for the product onboarding wizard (see ProductOnboardingDraft). */
+  onboarding?: ProductOnboardingDraft | null;
   generalDescription?: string | null;
   applications?: string | null;
   /** Quality-focused narrative: requirements, critical characteristics, inspection relevance */

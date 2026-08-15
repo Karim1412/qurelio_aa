@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { TagInput } from '@/components/company/TagInput';
@@ -10,19 +9,9 @@ import { Info } from '@/components/icons';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
+import { AiLabel } from '@/components/products/AiFilled';
+import { COUNTRIES, PHYSICAL_FORMS, TARGET_USERS } from '@/components/products/product-options';
 import { cn } from '@/utils/cn';
-
-const TARGET_USERS = [
-  'B2B — Industrial', 'B2B — Commercial', 'B2C — General consumers',
-  'B2C — Children / Minors', 'Medical professionals', 'Food service / Catering',
-  'Government / Public sector',
-];
-
-const PHYSICAL_FORMS = ['Solid', 'Liquid', 'Gas', 'Powder', 'Paste', 'Other'];
-const COUNTRIES = [
-  'Tunisia', 'Morocco', 'Algeria', 'Egypt', 'France', 'Germany', 'Italy',
-  'Spain', 'United Kingdom', 'USA', 'China', 'India', 'Turkey', 'Saudi Arabia', 'UAE',
-];
 
 export interface ProductTechnicalData {
   intendedUse: string;
@@ -36,9 +25,11 @@ export interface ProductTechnicalData {
 interface Props {
   data: ProductTechnicalData;
   onChange: (d: Partial<ProductTechnicalData>) => void;
+  /** Field keys pre-filled from uploaded documents (see product-prefill.ts). */
+  aiFields?: string[];
 }
 
-export function ProductStepTechnical({ data, onChange }: Props) {
+export function ProductStepTechnical({ data, onChange, aiFields }: Props) {
   const toggleUser = (u: string) => {
     const next = data.targetUsers.includes(u) ? data.targetUsers.filter((x) => x !== u) : [...data.targetUsers, u];
     onChange({ targetUsers: next });
@@ -58,7 +49,7 @@ export function ProductStepTechnical({ data, onChange }: Props) {
       </div>
 
       <div className="space-y-1.5">
-        <Label>Intended use / Application <span className="text-red-500">*</span></Label>
+        <AiLabel required field="technical.intendedUse" aiFields={aiFields}>Intended use / Application</AiLabel>
         <Textarea value={data.intendedUse} onChange={(e) => onChange({ intendedUse: e.target.value })}
           placeholder="e.g. Denim jeans for adults — casual daily wear, retail-sold. 98% cotton, 2% elastane. Reactive dyes used for coloring. Stone-washed finish. Intended for EU and North African markets."
           rows={5} />
@@ -67,7 +58,7 @@ export function ProductStepTechnical({ data, onChange }: Props) {
       </div>
 
       <div className="space-y-2.5">
-        <Label>Target users <span className="text-red-500">*</span></Label>
+        <AiLabel required field="technical.targetUsers" aiFields={aiFields}>Target users</AiLabel>
         <div className="flex flex-wrap gap-2.5">
           {TARGET_USERS.map((u) => {
             const checked = data.targetUsers.includes(u);
@@ -83,13 +74,13 @@ export function ProductStepTechnical({ data, onChange }: Props) {
       </div>
 
       <div className="space-y-1.5">
-        <Label>Key materials &amp; components</Label>
+        <AiLabel field="technical.keyMaterials" aiFields={aiFields}>Key materials &amp; components</AiLabel>
         <TagInput tags={data.keyMaterials} onChange={(keyMaterials) => onChange({ keyMaterials })} placeholder="Add material..." />
       </div>
 
       <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
         <div className="space-y-1.5">
-          <Label>Physical form</Label>
+          <AiLabel field="technical.physicalForm" aiFields={aiFields}>Physical form</AiLabel>
           <Select value={data.physicalForm} onValueChange={(v) => onChange({ physicalForm: v })}>
             <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
             <SelectContent>
@@ -98,12 +89,12 @@ export function ProductStepTechnical({ data, onChange }: Props) {
           </Select>
         </div>
         <div className="space-y-1.5">
-          <Label>HS tariff code</Label>
+          <AiLabel field="technical.hsTariffCode" aiFields={aiFields}>HS tariff code</AiLabel>
           <Input value={data.hsTariffCode} onChange={(e) => onChange({ hsTariffCode: e.target.value })} placeholder="e.g. 620462" />
           <p className="text-[11px] text-[var(--muted)]">Harmonised System code. Used to match customs &amp; import regulations per export market.</p>
         </div>
         <div className="space-y-1.5">
-          <Label>Country of origin</Label>
+          <AiLabel field="technical.countryOfOrigin" aiFields={aiFields}>Country of origin</AiLabel>
           <Select value={data.countryOfOrigin} onValueChange={(v) => onChange({ countryOfOrigin: v })}>
             <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
             <SelectContent>

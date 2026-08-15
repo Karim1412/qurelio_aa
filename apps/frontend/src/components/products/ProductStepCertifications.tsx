@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Info, Plus } from '@/components/icons';
+import { AiChip } from '@/components/products/AiFilled';
 
 export interface ProductCertEntry {
   standardName: string;
@@ -22,13 +23,15 @@ export interface ProductCertificationsData {
 interface Props {
   data: ProductCertificationsData;
   onChange: (d: Partial<ProductCertificationsData>) => void;
+  /** Field keys pre-filled from uploaded documents (see product-prefill.ts). */
+  aiFields?: string[];
 }
 
 function createEmpty(): ProductCertEntry {
   return { standardName: '', certifyingBody: '', certificateNumber: '', marketScope: '', issueDate: '', expiryDate: '' };
 }
 
-export function ProductStepCertifications({ data, onChange }: Props) {
+export function ProductStepCertifications({ data, onChange, aiFields }: Props) {
   const update = (i: number, field: keyof ProductCertEntry, val: string) => {
     const next = [...data.productCertifications];
     next[i] = { ...next[i], [field]: val };
@@ -55,7 +58,10 @@ export function ProductStepCertifications({ data, onChange }: Props) {
         {data.productCertifications.map((cert, i) => (
           <div key={i} className="rounded-2xl border border-[var(--input-border)] bg-[var(--surface)] p-5">
             <div className="mb-4 flex items-center justify-between">
-              <span className="text-sm font-semibold text-[var(--text-primary)]">Product certification {i + 1}</span>
+              <span className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
+                Product certification {i + 1}
+                {aiFields?.includes(`certifications.productCertifications.${i}`) && <AiChip />}
+              </span>
               <button type="button" onClick={() => remove(i)} className="text-[var(--muted)] transition-hover hover:text-red-500">Remove</button>
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

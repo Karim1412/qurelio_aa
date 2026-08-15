@@ -362,6 +362,87 @@ def _merge_product_profiles(acc: Any, part: Any) -> Dict[str, Any]:
     if sw:
         out["safetyWarnings"] = sw
 
+    onboarding = _merge_onboarding(a.get("onboarding"), b.get("onboarding"))
+    if onboarding:
+        out["onboarding"] = onboarding
+
+    return out
+
+
+ONBOARDING_SCALARS = (
+    "productName",
+    "sku",
+    "brandName",
+    "productFamily",
+    "category",
+    "productType",
+    "description",
+    "intendedUse",
+    "physicalForm",
+    "hsTariffCode",
+    "countryOfOrigin",
+)
+
+ONBOARDING_LISTS = (
+    "targetUsers",
+    "keyMaterials",
+    "targetMarkets",
+    "requiredCertifications",
+    "applicableRegulations",
+    "industryLabels",
+    "productionSites",
+    "productionProcesses",
+    "criticalSuppliers",
+)
+
+CERT_FIELDS = ("standardName", "certifyingBody", "certificateNumber", "marketScope", "issueDate", "expiryDate")
+
+
+def _merge_onboarding(acc: Any, part: Any) -> Dict[str, Any]:
+    """Union the wizard pre-fill draft across chunks — richest scalar wins, lists are unioned."""
+    a = acc if isinstance(acc, dict) else {}
+    b = part if isinstance(part, dict) else {}
+    if not a and not b:
+        return {}
+    out: Dict[str, Any] = {}
+
+    for fld in ONBOARDING_SCALARS:
+        # Enum-ish fields must not be lengthened by concatenation — pick the richer single value.
+        picked = _str_pick_longer(a.get(fld), b.get(fld))
+        if picked:
+            out[fld] = picked
+
+    for fld in ONBOARDING_LISTS:
+        merged = _uniq_str_list(
+            [
+                *(a.get(fld) if isinstance(a.get(fld), list) else []),
+                *(b.get(fld) if isinstance(b.get(fld), list) else []),
+            ],
+            cap=60,
+        )
+        if merged:
+            out[fld] = merged
+
+    certs: List[Dict[str, Any]] = []
+    seen_certs: set[tuple[str, str]] = set()
+    for src in (a.get("productCertifications"), b.get("productCertifications")):
+        for row in src if isinstance(src, list) else []:
+            if not isinstance(row, dict):
+                continue
+            name = str(row.get("standardName") or "").strip()
+            number = str(row.get("certificateNumber") or "").strip()
+            if not name and not number:
+                continue
+            key = (name.lower(), number.lower())
+            if key in seen_certs:
+                continue
+            seen_certs.add(key)
+            certs.append({k: row.get(k) for k in CERT_FIELDS})
+            if len(certs) >= 25:
+                break
+    if certs:
+        out["productCertifications"] = certs
+
     return out
 
 
@@ -549,9 +630,18 @@ def flatten_for_search(raw_text: str, structured: Dict[str, Any]) -> str:
     return "\n\n".join(p for p in parts if p).strip()
 
 
+def _strip_code_fence(raw: str) -> str:
+    """Some providers wrap JSON in ```json … ``` despite response_format=json_object."""
+    s = (raw or "").strip()
+    if not s.startswith("```"):
+        return s
+    s = re.sub(r"^```[a-zA-Z]*\s*", "", s)
+    return re.sub(r"\s*```$", "", s).strip()
+
+
 def _parse_json(raw: str, doc_type: str) -> Dict[str, Any]:
     try:
-        o = json.loads(raw)
+        o = json.loads(_strip_code_fence(raw))
         raw_secs = o.get("sections") if isinstance(o.get("sections"), list) else []
         norm_secs: List[Dict[str, Any]] = []
         for item in raw_secs:
@@ -582,7 +672,17 @@ def _parse_json(raw: str, doc_type: str) -> Dict[str, Any]:
         if doc_type == "ISO_NORM" and isinstance(o.get("standardMetadata"), dict):
             out["standardMetadata"] = o["standardMetadata"]
         return out
-    except Exception:
+    except Exception as exc:
+        # Silent here means the document lands with no productProfile and nothing to
+        # pre-fill the product wizard with. The usual cause is STRUCTURE_MAX_TOKENS
+        # cutting the JSON mid-object, so log enough to tell truncation apart.
+        logger.warning(
+            "structure: could not parse model JSON (%s) — doc_type=%s, raw_len=%s, ends_with=%r",
+            exc,
+            doc_type,
+            len(raw or ""),
+            (raw or "")[-60:],
+        )
         base: Dict[str, Any] = {
             "title": None,
             "documentTypeGuess": None,
@@ -594,6 +694,98 @@ def _parse_json(raw: str, doc_type: str) -> Dict[str, Any]:
             base["fileSummary"] = None
             base["visualDescription"] = None
         return base
+
+
+ONBOARDING_SYSTEM = """You read a product document and pre-fill a product onboarding form that a quality manager then verifies.
+
+Return ONLY this JSON object — no prose, no markdown fence:
+{
+  "productName": string|null, "sku": string|null, "brandName": string|null,
+  "productFamily": string|null, "category": string|null,
+  "productType": "finished"|"semi_finished"|"component"|"raw_material"|"service"|null,
+  "description": string|null, "intendedUse": string|null,
+  "targetUsers": string[]|null, "keyMaterials": string[]|null,
+  "physicalForm": "Solid"|"Liquid"|"Gas"|"Powder"|"Paste"|"Other"|null,
+  "hsTariffCode": string|null, "countryOfOrigin": string|null,
+  "targetMarkets": string[]|null, "requiredCertifications": string[]|null,
+  "applicableRegulations": string[]|null, "industryLabels": string[]|null,
+  "productionSites": string[]|null, "productionProcesses": string[]|null,
+  "criticalSuppliers": string[]|null,
+  "productCertifications": [{"standardName": string, "certifyingBody": string|null, "certificateNumber": string|null, "marketScope": string|null, "issueDate": "YYYY-MM-DD"|null, "expiryDate": "YYYY-MM-DD"|null}]|null
+}
+
+Rules — a wrong value costs the user more than a missing one:
+- Use null for anything the document does not state. Never guess, never return an empty string.
+- productName = the commercial designation as printed, not the file name. sku = manufacturer reference or model number. brandName = trade mark. productFamily = range/series.
+- productType: "finished" = ready to sell, "semi_finished" = needs further processing, "component" = supplied into another product, "raw_material" = feedstock, "service" = a service.
+- intendedUse: 2-3 sentences — what it is, who uses it, how and where, and any hazard or special condition. Ground every clause in the document.
+- description: one sentence. Keep every list to at most 8 entries, shortest useful wording.
+- targetUsers ONLY from: ["B2B — Industrial","B2B — Commercial","B2C — General consumers","B2C — Children / Minors","Medical professionals","Food service / Catering","Government / Public sector"]
+- targetMarkets ONLY from: ["European Union","USA (FDA-regulated)","USA (General)","Gulf (GCC / GSO)","North Africa / Maghreb","Sub-Saharan Africa","United Kingdom","Domestic — Tunisia"] — infer from declared markets, languages, market-specific marks, or the regulations cited.
+- industryLabels ONLY from: ["CE Marking","FDA Registration","Halal","Kosher","REACH compliant","RoHS compliant","Ecolabel","OEKO-TEX"] — only what the document actually claims.
+- productionProcesses ONLY from: ["Production / Assembly","Quality Control","Procurement","Dyeing & Finishing","Packaging","Logistics / Warehousing"]
+- applicableRegulations = regulation/directive references cited (e.g. "Regulation (EU) 2017/745", "REACH", "21 CFR 820"). requiredCertifications = certification schemes required or targeted.
+- productCertifications: only certificates the document actually evidences; null otherwise."""
+
+ONBOARDING_INPUT_CHARS = 12_000
+
+
+async def extract_onboarding(
+    raw_text: str,
+    file_name: str,
+    description_hint: Optional[str] = None,
+) -> Optional[Dict[str, Any]]:
+    """
+    Product-wizard pre-fill, extracted on its own.
+
+    Kept separate from `structure_content` on purpose: the full document schema
+    already saturates the provider's max_tokens ceiling (agregatech hard-caps at
+    1000), so appending these fields there produced truncated, unparseable JSON
+    and the wizard got nothing. A dedicated small response fits comfortably.
+    """
+    cfg = get_settings()
+    if not (cfg.OPENAI_API_KEY or "").strip():
+        return None
+    text = (raw_text or "").strip()
+    if not text:
+        return None
+
+    user_text = "\n\n".join(
+        x
+        for x in [
+            f"Filename: {file_name}",
+            f"Description hint: {description_hint}" if description_hint else None,
+            f"Document text:\n{text[:ONBOARDING_INPUT_CHARS]}",
+        ]
+        if x
+    )
+
+    try:
+        res = await _client().chat.completions.create(
+            model=cfg.STRUCTURE_MODEL or cfg.OPENAI_MODEL,
+            temperature=0.1,
+            max_tokens=cfg.ONBOARDING_MAX_TOKENS,
+            response_format={"type": "json_object"},
+            messages=[
+                {"role": "system", "content": ONBOARDING_SYSTEM},
+                {"role": "user", "content": user_text},
+            ],
+        )
+        raw = (res.choices[0].message.content or "").strip()
+        parsed = json.loads(_strip_code_fence(raw))
+    except Exception as exc:
+        logger.warning("extract_onboarding failed for %s: %s", file_name, exc)
+        return None
+
+    if not isinstance(parsed, dict):
+        return None
+    # Drop nulls/empties so the merge and the UI only see fields actually found.
+    cleaned = {
+        k: v
+        for k, v in parsed.items()
+        if v not in (None, "", [], {}) and (not isinstance(v, str) or v.strip())
+    }
+    return cleaned or None
 
 
 async def structure_content(

@@ -1,21 +1,11 @@
 'use client';
 
 import React from 'react';
-import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { TagInput } from '@/components/company/TagInput';
+import { AiLabel } from '@/components/products/AiFilled';
+import { INDUSTRY_LABELS as LABELS, MARKETS } from '@/components/products/product-options';
 import { cn } from '@/utils/cn';
-
-const MARKETS = [
-  'European Union', 'USA (FDA-regulated)', 'USA (General)',
-  'Gulf (GCC / GSO)', 'North Africa / Maghreb', 'Sub-Saharan Africa',
-  'United Kingdom', 'Domestic — Tunisia',
-];
-
-const LABELS = [
-  'CE Marking', 'FDA Registration', 'Halal', 'Kosher',
-  'REACH compliant', 'RoHS compliant', 'Ecolabel', 'OEKO-TEX',
-];
 
 export interface ProductMarketsData {
   targetMarkets: string[];
@@ -27,9 +17,11 @@ export interface ProductMarketsData {
 interface Props {
   data: ProductMarketsData;
   onChange: (d: Partial<ProductMarketsData>) => void;
+  /** Field keys pre-filled from uploaded documents (see product-prefill.ts). */
+  aiFields?: string[];
 }
 
-export function ProductStepMarkets({ data, onChange }: Props) {
+export function ProductStepMarkets({ data, onChange, aiFields }: Props) {
   const toggle = (arr: string[], val: string) =>
     arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val];
 
@@ -40,7 +32,7 @@ export function ProductStepMarkets({ data, onChange }: Props) {
       </div>
 
       <div className="space-y-2.5">
-        <Label>Target markets for this product <span className="text-red-500">*</span></Label>
+        <AiLabel required field="markets.targetMarkets" aiFields={aiFields}>Target markets for this product</AiLabel>
         <p className="text-[11px] text-[var(--muted)]">Select only the markets where this specific product is sold or targeted — not the company&apos;s full market list. The monitoring engine watches regulatory families for these markets only.</p>
         <div className="flex flex-wrap gap-2.5">
           {MARKETS.map((m) => {
@@ -57,19 +49,19 @@ export function ProductStepMarkets({ data, onChange }: Props) {
       </div>
 
       <div className="space-y-1.5">
-        <Label>Required certifications</Label>
+        <AiLabel field="markets.requiredCertifications" aiFields={aiFields}>Required certifications</AiLabel>
         <TagInput tags={data.requiredCertifications} onChange={(requiredCertifications) => onChange({ requiredCertifications })} placeholder="Add a required certification..." />
         <p className="text-[11px] text-[var(--muted)]">Certifications legally required or targeted for the selected markets. These seed the compliance evaluation backlog and monitoring engine.</p>
       </div>
 
       <div className="space-y-1.5">
-        <Label>Known applicable regulations</Label>
+        <AiLabel field="markets.applicableRegulations" aiFields={aiFields}>Known applicable regulations</AiLabel>
         <TagInput tags={data.applicableRegulations} onChange={(applicableRegulations) => onChange({ applicableRegulations })} placeholder="Add a regulation name or ref..." />
         <p className="text-[11px] text-[var(--muted)]">Add any regulations you already know apply. Qurelio will suggest additional ones based on your product profile.</p>
       </div>
 
       <div className="space-y-2.5">
-        <Label>Industry labels &amp; marks needed</Label>
+        <AiLabel field="markets.industryLabels" aiFields={aiFields}>Industry labels &amp; marks needed</AiLabel>
         <div className="flex flex-wrap gap-2.5">
           {LABELS.map((l) => {
             const checked = data.industryLabels.includes(l);

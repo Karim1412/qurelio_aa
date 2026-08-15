@@ -444,13 +444,34 @@ export class DocumentService {
         throw new BadRequestException('Standard category must be ISO_NORM or EN');
       }
     }
+    /** Onboarding wizard uploads into an already-created folder by id; name lookup stays for every other caller. */
+    const productIdRaw = dto.productId != null ? String(dto.productId).trim() : '';
+
     if (t === DocumentType.PRODUCT_DOC) {
-      if (!dto.productName?.trim()) throw new BadRequestException('Product title is required');
+      if (!productIdRaw && !dto.productName?.trim()) throw new BadRequestException('Product title is required');
     }
 
     let productId: string | undefined;
     let productName: string | undefined;
-    if (dto.productName?.trim()) {
+    if (productIdRaw) {
+      const product = await this.productRepo.findOne({ where: { id: productIdRaw, companyId } });
+      if (!product) throw new NotFoundException('Product not found');
+      if (product.archivedAt) {
+        throw new ConflictException('This product is archived. Restore it before uploading files.');
+      }
+      const patch: Partial<Product> = {};
+      if (!product.reference) patch.reference = this.autoReference(product.name, 'PRD');
+      if (productCategoryRaw) {
+        const tags = new Set([...(product.categoryTags ?? [])]);
+        tags.add(productCategoryRaw);
+        patch.categoryTags = [...tags];
+      }
+      if (Object.keys(patch).length) {
+        await this.productRepo.update(product.id, patch);
+      }
+      productId = product.id;
+      productName = product.name;
+    } else if (dto.productName?.trim()) {
       const name = dto.productName.trim();
       let product = await this.findProductByNormalizedName(companyId, name);
       if (!product) {

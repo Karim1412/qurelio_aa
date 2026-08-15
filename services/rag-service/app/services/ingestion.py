@@ -12,7 +12,7 @@ from pinecone import Pinecone, ServerlessSpec
 from app.config import get_settings
 from app.models.schemas import IngestRequest
 from app.services.storage import StorageService
-from app.services.structure_openai import flatten_for_search, structure_content
+from app.services.structure_openai import extract_onboarding, flatten_for_search, structure_content
 from app.services.segment_patterns import merge_iso_sections, segment_by_numbered_headings
 
 logger = logging.getLogger(__name__)
@@ -580,6 +580,28 @@ class IngestionService:
             pattern_secs = segment_by_numbered_headings(raw_text)
             merged = merge_iso_sections(structured.get("sections"), pattern_secs)
             structured["sections"] = merged
+
+        # Product-wizard pre-fill: its own pass, so the provider's max_tokens ceiling
+        # on the main structuring response cannot truncate it away.
+        if doc_type in ("PRODUCT_DOC", "EVIDENCE"):
+            try:
+                onboarding = await extract_onboarding(
+                    raw_text=raw_text,
+                    file_name=file_name,
+                    description_hint=description or None,
+                )
+            except Exception:
+                logger.exception("Onboarding pre-fill failed for %s", doc_id)
+                onboarding = None
+            if onboarding:
+                profile = structured.get("productProfile")
+                if not isinstance(profile, dict):
+                    profile = {}
+                profile["onboarding"] = onboarding
+                structured["productProfile"] = profile
+                logger.info(
+                    "Onboarding pre-fill for %s: %s field(s)", doc_id, len(onboarding)
+                )
 
         structured = _trim_structured_for_storage(structured)
         flattened = flatten_for_search(raw_text, structured)

@@ -32,7 +32,23 @@ function gatewayUploadURL(): string {
   if (typeof window !== 'undefined') {
     const configured = (process.env.NEXT_PUBLIC_GATEWAY_URL || '').trim();
     // Same-origin '' keeps the request on the Next proxy, which always works.
-    return configured.replace(/\/$/, '');
+    if (!configured) return '';
+    try {
+      const target = new URL(configured, window.location.href);
+      /**
+       * A gateway on a different host than the page is the wrong gateway: the
+       * browser blocks the cross-origin POST (surfacing as a bare "Network
+       * Error"), and even if CORS allowed it the request would land on another
+       * deployment, which does not accept this session's JWT. This happens
+       * whenever a build carries production values but is served from
+       * localhost. Fall back to the rewrite, which always reaches the gateway
+       * this frontend is actually paired with.
+       */
+      if (target.hostname !== window.location.hostname) return '';
+      return configured.replace(/\/$/, '');
+    } catch {
+      return '';
+    }
   }
   // SSR fallback
   return process.env.INTERNAL_API_URL || 'http://127.0.0.1:3000';
