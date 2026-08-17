@@ -308,6 +308,68 @@ export const documentApi = {
     api.patch(`/api/documents/${id}/folder`, { folderId }),
 };
 
+// ─── Book a demo ─────────────────────────────────────────────────────────────
+export interface DemoSlotPublic {
+  id: string;
+  startsAt: string;
+  durationMinutes: number;
+}
+
+export interface DemoSlotAdmin extends DemoSlotPublic {
+  status: 'OPEN' | 'BOOKED' | 'BLOCKED';
+  booking: { id: string; companyName: string; email: string; status: string } | null;
+}
+
+export interface DemoBookingAdmin {
+  id: string;
+  companyName: string;
+  field: string;
+  email: string;
+  phone: string;
+  description: string;
+  companyCapacity: string;
+  status: 'PENDING' | 'CONFIRMED' | 'DECLINED' | 'CANCELLED';
+  adminNote: string | null;
+  createdAt: string;
+  respondedAt: string | null;
+  responseDueAt: string;
+  overdue: boolean;
+  slot: DemoSlotPublic | null;
+}
+
+export const demoApi = {
+  /** Public — no auth. Open, future slots only. */
+  listSlots: () => api.get<DemoSlotPublic[]>('/api/demo/slots'),
+  book: (data: {
+    slotId: string;
+    companyName: string;
+    field: string;
+    email: string;
+    phone: string;
+    description: string;
+    companyCapacity: string;
+  }) => api.post('/api/demo/bookings', data),
+
+  // Admin (SUPER_ADMIN)
+  summary: () =>
+    api.get<{ pending: number; overdue: number; upcomingSlots: number; responseHours: number }>(
+      '/api/admin/demo/summary',
+    ),
+  listBookings: (status?: string) =>
+    api.get<DemoBookingAdmin[]>('/api/admin/demo/bookings', { params: status ? { status } : {} }),
+  respond: (id: string, data: { status: string; adminNote?: string }) =>
+    api.patch(`/api/admin/demo/bookings/${id}`, data),
+  adminSlots: (from?: string, to?: string) =>
+    api.get<DemoSlotAdmin[]>('/api/admin/demo/slots', { params: { from, to } }),
+  createSlot: (data: { startsAt: string; durationMinutes?: number }) =>
+    api.post('/api/admin/demo/slots', data),
+  bulkSlots: (data: { starts: string[]; durationMinutes?: number }) =>
+    api.post('/api/admin/demo/slots/bulk', data),
+  updateSlot: (id: string, data: { status?: string; startsAt?: string; durationMinutes?: number }) =>
+    api.patch(`/api/admin/demo/slots/${id}`, data),
+  deleteSlot: (id: string) => api.delete(`/api/admin/demo/slots/${id}`),
+};
+
 // ─── File Manager (nestable folder tree) ─────────────────────────────────────
 export const folderApi = {
   list:   ()                                            => api.get('/api/documents/folders'),

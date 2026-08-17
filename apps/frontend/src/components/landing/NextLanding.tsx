@@ -221,7 +221,7 @@ export function NextLanding() {
           className="mt-10"
         >
           <a
-            href="#contact"
+            href="/demo"
             className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[var(--brand-primary)] px-7 py-3.5 text-sm font-semibold text-white ring-1 ring-inset ring-white/15 transition-all duration-300 ease-out hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
           >
             {/* Soft sheen — skew via style to avoid JSX > conflict */}

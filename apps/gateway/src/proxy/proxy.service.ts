@@ -27,6 +27,8 @@ export class ProxyService {
       { prefix: '/admin',         url: auth  },
       { prefix: '/company',       url: auth  },
       { prefix: '/auth',          url: auth  },
+      /** Public "Book a demo" calendar + request submission. */
+      { prefix: '/demo',          url: auth  },
       // Feature services
       { prefix: '/documents',     url: doc   },
       { prefix: '/evaluations',   url: ev    },

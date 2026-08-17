@@ -29,6 +29,9 @@ import { CompanyProfileController } from './company-profile/company-profile.cont
 import { InternalController } from './internal/internal.controller';
 import { HealthController }  from './health.controller';
 import { AvatarStorageService } from './avatar/avatar-storage.service';
+import { DemoSlot, DemoBooking } from './database/entities/demo.entity';
+import { DemoService }    from './demo/demo.service';
+import { DemoPublicController, DemoAdminController } from './demo/demo.controller';
 @Injectable()
 class SuperAdminInitializer implements OnModuleInit {
   constructor(
@@ -81,13 +84,13 @@ class SuperAdminInitializer implements OnModuleInit {
         username:    cfg.get('POSTGRES_USER'),
         password:    cfg.get('POSTGRES_PASSWORD'),
         database:    cfg.get('POSTGRES_DB'),
-        entities:    [User, Company, OtpCode, PendingRegistration, CompanyProfile],
+        entities:    [User, Company, OtpCode, PendingRegistration, CompanyProfile, DemoSlot, DemoBooking],
         synchronize: true,   // set false in production and use migrations
         logging:     false,
       }),
     }),
 
-    TypeOrmModule.forFeature([User, Company, OtpCode, PendingRegistration, CompanyProfile]),
+    TypeOrmModule.forFeature([User, Company, OtpCode, PendingRegistration, CompanyProfile, DemoSlot, DemoBooking]),
 
     PassportModule,
     JwtModule.registerAsync({
@@ -102,9 +105,10 @@ class SuperAdminInitializer implements OnModuleInit {
 
     MailModule,
   ],
-  controllers: [AuthController, CompanyController, CompanyProfileController, InternalController, HealthController],
+  controllers: [AuthController, CompanyController, CompanyProfileController, InternalController, HealthController, DemoPublicController, DemoAdminController],
   providers: [
     AuthService, CompanyService, CompanyProfileService, OtpService, JwtStrategy, AvatarStorageService,
+    DemoService,
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },

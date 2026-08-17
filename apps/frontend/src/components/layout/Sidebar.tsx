@@ -79,6 +79,7 @@ const NAV_MAIN: NavItem[] = [
 
 const NAV_ADMIN: NavItem[] = [
   { label: 'Company Management', icon: CompanyManagementIllustration, href: '/admin/companies', roles: ['SUPER_ADMIN'], anim: 'pulse' },
+  { label: 'Demo Requests', icon: CalendarIllustration, href: '/admin/demo', roles: ['SUPER_ADMIN'], anim: 'pulse' },
   { label: 'User Management', icon: UserManagementIllustration, href: '/company/users', roles: ['DIRECTOR'], anim: 'bounce' },
 ];
 

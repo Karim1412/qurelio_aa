@@ -338,6 +338,125 @@ ${message}
     }
   }
 
+  // ─── Demo bookings ─────────────────────────────────────────────────────────
+
+  /** Slot time rendered in a neutral, unambiguous form (emails have no locale). */
+  private formatSlot(startsAt: Date, durationMinutes?: number): string {
+    const when = startsAt.toUTCString().replace(' GMT', ' UTC');
+    return durationMinutes ? `${when} · ${durationMinutes} min` : when;
+  }
+
+  private demoShell(heading: string, bodyHtml: string): string {
+    return `
+<div style="font-family:'Segoe UI',sans-serif;color:#0d1b2a;max-width:600px;margin:0 auto;">
+  <div style="background:linear-gradient(160deg,${BRAND_DARK} 0%,#152838 100%);padding:22px 32px;border-radius:12px 12px 0 0;border-bottom:1px solid rgba(77,146,196,.2);">
+    ${this.wordmarkHtml(22)}
+    <h2 style="color:#e8f1ff;margin:14px 0 0;font-size:18px;font-weight:600;font-family:'Public Sans','Segoe UI',sans-serif;">${heading}</h2>
+  </div>
+  <div style="background:#f4f8ff;padding:28px 32px;border-radius:0 0 12px 12px;border:1px solid rgba(77,146,196,.2);line-height:1.7;">
+${bodyHtml}
+  </div>
+</div>`;
+  }
+
+  /** Sent to the visitor as soon as the request is stored. */
+  async sendDemoBookingReceived(params: {
+    to: string;
+    companyName: string;
+    startsAt: Date;
+    durationMinutes: number;
+    responseHours: number;
+  }): Promise<void> {
+    const { to, companyName, startsAt, durationMinutes, responseHours } = params;
+    await this.sendMail({
+      to,
+      subject: 'We received your Qurelio demo request',
+      html: this.demoShell(
+        'Demo request received',
+        `<p>Hi <strong>${companyName}</strong>,</p>
+         <p>Thank you for your interest in Qurelio. We have your request for this slot:</p>
+         <div style="background:#fff;border:1px solid #cce0ff;border-radius:8px;padding:16px 20px;margin:16px 0;font-weight:600;">
+           ${this.formatSlot(startsAt, durationMinutes)}
+         </div>
+         <p>Our team will confirm within <strong>${responseHours} hours</strong>. The slot is held for you until then.</p>
+         <p style="color:#546e8a;font-size:13px;">If you need to change anything, simply reply to this email.</p>`,
+      ),
+    });
+  }
+
+  /** Sent to the platform team so a pending request is not missed. */
+  async sendDemoBookingAdminAlert(params: {
+    to: string;
+    companyName: string;
+    field: string;
+    email: string;
+    phone: string;
+    companyCapacity: string;
+    description: string;
+    startsAt: Date;
+    responseHours: number;
+  }): Promise<void> {
+    const { to, companyName, field, email, phone, companyCapacity, description, startsAt, responseHours } = params;
+    const row = (label: string, value: string) =>
+      `<tr><td style="padding:6px 0;color:#546e8a;width:130px;">${label}</td><td style="padding:6px 0;font-weight:600;">${value}</td></tr>`;
+    await this.sendMail({
+      to,
+      replyTo: email,
+      subject: `[Qurelio Demo] ${companyName} — ${this.formatSlot(startsAt)}`,
+      html: this.demoShell(
+        'New demo request',
+        `<table style="width:100%;border-collapse:collapse;margin-bottom:18px;">
+           ${row('Requested slot', this.formatSlot(startsAt))}
+           ${row('Company', companyName)}
+           ${row('Field', field)}
+           ${row('Email', `<a href="mailto:${email}" style="color:${BRAND_PRIMARY};">${email}</a>`)}
+           ${row('Phone', phone)}
+           ${row('Capacity', `${companyCapacity} employees`)}
+         </table>
+         <div style="background:#fff;border:1px solid #cce0ff;border-radius:8px;padding:20px;white-space:pre-wrap;">
+${description}
+         </div>
+         <p style="margin-top:18px;color:#546e8a;font-size:13px;">Answer within ${responseHours} hours from the admin dashboard.</p>`,
+      ),
+    });
+  }
+
+  /** Sent when the admin confirms or declines. */
+  async sendDemoBookingDecision(params: {
+    to: string;
+    companyName: string;
+    startsAt: Date;
+    durationMinutes: number;
+    confirmed: boolean;
+    note?: string | null;
+  }): Promise<void> {
+    const { to, companyName, startsAt, durationMinutes, confirmed, note } = params;
+    await this.sendMail({
+      to,
+      subject: confirmed
+        ? 'Your Qurelio demo is confirmed'
+        : 'About your Qurelio demo request',
+      html: this.demoShell(
+        confirmed ? 'Demo confirmed' : 'Demo request update',
+        `<p>Hi <strong>${companyName}</strong>,</p>
+         ${
+           confirmed
+             ? `<p>Your demo is confirmed for:</p>
+                <div style="background:#fff;border:1px solid #cce0ff;border-radius:8px;padding:16px 20px;margin:16px 0;font-weight:600;">
+                  ${this.formatSlot(startsAt, durationMinutes)}
+                </div>
+                <p>We look forward to speaking with you.</p>`
+             : `<p>Unfortunately we cannot hold the slot on ${this.formatSlot(startsAt)}. The time has been released, and you are welcome to book another.</p>`
+         }
+         ${
+           note
+             ? `<div style="background:#fff;border:1px solid #cce0ff;border-radius:8px;padding:16px 20px;margin-top:16px;white-space:pre-wrap;">${note}</div>`
+             : ''
+         }`,
+      ),
+    });
+  }
+
   /**
    * YOUR CUSTOM HTML TEMPLATE
    */

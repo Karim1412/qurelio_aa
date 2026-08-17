@@ -17,6 +17,9 @@ export const PUBLIC_ROUTES: ReadonlyArray<{ method: string; path: string }> = [
   { method: 'POST', path: '/auth/reset-password' },
   { method: 'POST', path: '/auth/setup-account' },
   { method: 'POST', path: '/auth/contact' },
+  /** Public "Book a demo" page — browse open slots and submit a request. */
+  { method: 'GET', path: '/demo/slots' },
+  { method: 'POST', path: '/demo/bookings' },
 ];
 
 export function isPublicInternalPath(method: string, path: string): boolean {
