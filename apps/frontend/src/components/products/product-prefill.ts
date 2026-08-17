@@ -357,6 +357,101 @@ export function buildPrefill(structures: Array<ExtractedStructure | null | undef
   return { identity, technical, markets, manufacturing, certifications, filled };
 }
 
+/** Human labels for the fields a pre-fill can write, used by the suggestion review UI. */
+export const FIELD_LABELS: Record<string, string> = {
+  'identity.name': 'Product name',
+  'identity.sku': 'Internal reference / SKU',
+  'identity.brandName': 'Brand / Trade name',
+  'identity.productFamily': 'Product family',
+  'identity.category': 'Category',
+  'identity.productType': 'Product type',
+  'identity.description': 'Description',
+  'technical.intendedUse': 'Intended use',
+  'technical.targetUsers': 'Target users',
+  'technical.keyMaterials': 'Key materials',
+  'technical.physicalForm': 'Physical form',
+  'technical.hsTariffCode': 'HS tariff code',
+  'technical.countryOfOrigin': 'Country of origin',
+  'markets.targetMarkets': 'Target markets',
+  'markets.requiredCertifications': 'Required certifications',
+  'markets.applicableRegulations': 'Applicable regulations',
+  'markets.industryLabels': 'Industry labels',
+  'manufacturing.productionSites': 'Production sites',
+  'manufacturing.productionProcesses': 'Production processes',
+  'manufacturing.criticalSuppliers': 'Critical suppliers',
+  'certifications.productCertifications': 'Product certifications',
+};
+
+/** One field the document disagrees with, offered to the user rather than applied silently. */
+export interface PrefillSuggestion {
+  /** Fully-qualified key, e.g. `technical.intendedUse`. */
+  key: string;
+  group: string;
+  field: string;
+  label: string;
+  current: string;
+  suggested: string;
+  /** Raw value to write when the suggestion is accepted. */
+  value: unknown;
+}
+
+function preview(value: unknown): string {
+  if (Array.isArray(value)) {
+    if (value.length === 0) return '—';
+    if (typeof value[0] === 'object') return `${value.length} entr${value.length > 1 ? 'ies' : 'y'}`;
+    return value.join(', ');
+  }
+  const s = text(value);
+  return s || '—';
+}
+
+function sameValue(a: unknown, b: unknown): boolean {
+  if (Array.isArray(a) || Array.isArray(b)) {
+    const la = Array.isArray(a) ? a : [];
+    const lb = Array.isArray(b) ? b : [];
+    if (la.length !== lb.length) return false;
+    return JSON.stringify(la) === JSON.stringify(lb);
+  }
+  return text(a).trim().toLowerCase() === text(b).trim().toLowerCase();
+}
+
+/**
+ * Fields the document disagrees with.
+ *
+ * Editing an existing product means almost every field is already filled, so
+ * `applyPrefill` writes nothing and the upload looks like it did nothing at all.
+ * These are surfaced for the user to accept or ignore per field instead.
+ */
+export function diffPrefill<T extends Record<string, any>>(
+  group: string,
+  current: T,
+  incoming: Partial<T>,
+  skipKeys: string[] = [],
+): PrefillSuggestion[] {
+  const out: PrefillSuggestion[] = [];
+  for (const [field, value] of Object.entries(incoming)) {
+    if (skipKeys.includes(field)) continue;
+    const existing = current[field];
+    const existingEmpty =
+      existing === '' || existing === null || existing === undefined ||
+      (Array.isArray(existing) && existing.length === 0);
+    // Empty fields are filled outright; only real disagreements need a decision.
+    if (existingEmpty) continue;
+    if (sameValue(existing, value)) continue;
+    const key = `${group}.${field}`;
+    out.push({
+      key,
+      group,
+      field,
+      label: FIELD_LABELS[key] ?? field,
+      current: preview(existing),
+      suggested: preview(value),
+      value,
+    });
+  }
+  return out;
+}
+
 /**
  * Merge a pre-fill into current step data.
  *

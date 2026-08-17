@@ -1,21 +1,29 @@
 'use client';
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, ArrowRight, Check, Trash2, FileText, History, Loader2, Sparkles } from '@/components/icons';
+import { ArrowLeft, ArrowRight, Check, Trash2, FileText, History, Loader2, Sparkles, Info } from '@/components/icons';
 import { Stepper, type Step } from '@/components/company/Stepper';
 import { ProductStepIdentity, type ProductIdentityData } from '@/components/products/ProductStepIdentity';
 import { ProductStepTechnical, type ProductTechnicalData } from '@/components/products/ProductStepTechnical';
 import { ProductStepMarkets, type ProductMarketsData } from '@/components/products/ProductStepMarkets';
 import { ProductStepManufacturing, type ProductManufacturingData } from '@/components/products/ProductStepManufacturing';
 import { ProductStepCertifications, type ProductCertificationsData } from '@/components/products/ProductStepCertifications';
-import { ProductStepDocuments, type ProductDocumentsData, type UploadedFile } from '@/components/products/ProductStepDocuments';
+import {
+  ProductStepDocuments,
+  type ProductDocumentsData,
+  type UploadedFile,
+  type AnalysisProgress,
+} from '@/components/products/ProductStepDocuments';
 import { AiReviewBanner } from '@/components/products/AiFilled';
-import { applyPrefill, buildPrefill, type ExtractedStructure } from '@/components/products/product-prefill';
+import {
+  applyPrefill, buildPrefill, diffPrefill,
+  type ExtractedStructure, type PrefillSuggestion,
+} from '@/components/products/product-prefill';
 import { productApi, documentApi } from '@/lib/api';
 import toast from 'react-hot-toast';
 
@@ -48,6 +56,9 @@ const AUTOSAVE_LS_KEY = 'qurelio-product-wizard-autosave';
 
 /** Bumped when the step order changed — older drafts store the pre-Documents-first indices. */
 const DRAFT_SCHEMA_VERSION = 2;
+
+/** Mirrors PRODUCT_DRAFT_STATUS in document-service: hidden until activated. */
+const PRODUCT_DRAFT_STATUS = 'DRAFT';
 
 interface DraftEntry {
   /** Absent on drafts written before Documents became step 1. */
@@ -194,6 +205,27 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   /** Folder name as the server currently holds it — uploads reference the product by it. */
   const [serverProductName, setServerProductName] = useState('');
+  /** Set once "Save & activate" succeeded, so closing no longer offers to discard. */
+  const [isActivated, setIsActivated] = useState(false);
+  /** Draft folder created for uploads but never activated — offered for discard on close. */
+  const [pendingDiscard, setPendingDiscard] = useState<string | null>(null);
+  const [isDiscarding, setIsDiscarding] = useState(false);
+  /** Upload + read progress for the running analysis. */
+  const [progress, setProgress] = useState<AnalysisProgress | null>(null);
+  /** Values the document disagrees with — offered rather than applied (mainly edit mode). */
+  const [suggestions, setSuggestions] = useState<PrefillSuggestion[]>([]);
+  const [analysisMadeNoChange, setAnalysisMadeNoChange] = useState(false);
+  /** Same count as `suggestions`, readable synchronously right after an analysis run. */
+  const suggestionsPendingRef = useRef(0);
+
+  /**
+   * Each step is a full page of fields, so arriving mid-scroll hides the heading and
+   * the AI-review banner. Reset the scroll position whenever the step changes.
+   */
+  const contentRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    contentRef.current?.scrollTo({ top: 0, behavior: 'auto' });
+  }, [step, view]);
 
   // Persist autosave whenever state changes (create flow only — never pollute the create draft with an edit)
   useEffect(() => {
@@ -251,7 +283,13 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
     setCertifications({
       productCertifications: editProduct.productCertifications ?? [],
     });
+    // Only newly added files are ever processed — the folder's existing, already
+    // extracted documents are never re-read.
     setDocuments({ files: [] });
+    setSuggestions([]);
+    suggestionsPendingRef.current = 0;
+    setAnalysisMadeNoChange(false);
+    setProgress(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, editProduct?.id]);
 
@@ -305,6 +343,8 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
           name,
           description: identity.description || undefined,
           sku: identity.sku || undefined,
+          // Hidden from the library until the user activates it.
+          draft: true,
         });
         const id = res.data.id;
         setProductId(id);
@@ -336,11 +376,18 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
   ): Promise<{ uploaded: string[]; failures: string[] }> => {
     const uploaded: string[] = [];
     const failures: string[] = [];
+    const queue = documents.files.filter((f) => !f.documentId);
+    let sent = 0;
 
     for (let i = 0; i < documents.files.length; i += 1) {
       const entry = documents.files[i];
       // Only already-stored files are skipped, so pressing the button again retries failures.
       if (entry.documentId) continue;
+      setProgress({
+        done: sent,
+        total: queue.length * 2,
+        label: `Uploading ${entry.name} (${sent + 1}/${queue.length})`,
+      });
       patchFile(i, { status: 'uploading', error: undefined });
       const fd = new FormData();
       fd.append('file', entry.file);
@@ -363,6 +410,12 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
         patchFile(i, { status: 'error', error: message });
         failures.push(`${entry.name}: ${message}`);
       }
+      sent += 1;
+      setProgress({
+        done: sent,
+        total: queue.length * 2,
+        label: `Uploaded ${sent}/${queue.length}`,
+      });
     }
     return { uploaded, failures };
   };
@@ -376,6 +429,17 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
     const structures = new Map<string, ExtractedStructure | null>();
     const pending = new Set(ids);
     const deadline = Date.now() + EXTRACTION_TIMEOUT_MS;
+    // Uploads already consumed the first half of the bar; reading fills the second.
+    const total = ids.length * 2;
+    const reportRead = () => {
+      const read = ids.length - pending.size;
+      setProgress({
+        done: ids.length + read,
+        total,
+        label: `Reading with AI — ${read}/${ids.length} done`,
+      });
+    };
+    reportRead();
 
     while (pending.size > 0 && Date.now() < deadline) {
       await new Promise((resolve) => setTimeout(resolve, EXTRACTION_POLL_MS));
@@ -401,6 +465,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
           }
         } catch { /* transient — retry on the next tick */ }
       }
+      reportRead();
     }
 
     // Outrunning the budget is not a failure: the file is stored and still being read.
@@ -477,90 +542,117 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
       : [];
 
     const nextFields = [...new Set([...applied, ...rowKeys])];
-    setAiFields(nextFields);
+    setAiFields((prev) => [...new Set([...prev, ...nextFields])]);
+
+    /**
+     * Anything the document found that contradicts a value already in the form —
+     * the normal case when editing a saved product, where `applyPrefill` writes
+     * nothing at all. Offered for review instead of being dropped on the floor.
+     */
+    const nextSuggestions = [
+      ...diffPrefill('identity', identity, prefill.identity, identityMerge.applied),
+      ...diffPrefill('technical', technical, prefill.technical, technicalMerge.applied),
+      ...diffPrefill('markets', markets, prefill.markets, marketsMerge.applied),
+      ...diffPrefill('manufacturing', manufacturing, prefill.manufacturing, manufacturingMerge.applied),
+      ...diffPrefill('certifications', certifications, prefill.certifications, certificationsMerge.applied),
+    ];
+    setSuggestions(nextSuggestions);
+    suggestionsPendingRef.current = nextSuggestions.length;
 
     if (!identity.name.trim() && identityMerge.next.name?.trim()) {
       setDraftName(identityMerge.next.name.trim());
     }
 
-    return nextFields.filter((k) => !k.includes('productCertifications.')).length;
+    const filledCount = nextFields.filter((k) => !k.includes('productCertifications.')).length;
+    setAnalysisMadeNoChange(filledCount === 0 && nextSuggestions.length === 0);
+    return filledCount;
   };
 
+  /**
+   * Moving between steps never touches the server.
+   *
+   * Only "Save & activate" (or an explicit "Save as draft") commits, so abandoning
+   * the wizard leaves nothing behind — no half-filled product in the library, no
+   * archive entry. The single exception is the Documents step, which must create a
+   * hidden DRAFT folder for the files to land in so the AI can read them; that
+   * draft is discarded on cancel.
+   */
   const handleNext = async () => {
     if (!validateStep(step)) return;
-    setIsSaving(true);
-    try {
-      const { id, name } = await ensureProduct();
 
-      if (step === STEP_DOCUMENTS) {
-        const hasNewFiles = documents.files.some((f) => !f.documentId);
-        if (hasNewFiles) {
-          setIsAnalyzing(true);
-          let count: number | null = 0;
-          try {
-            count = await analyzeDocuments(id, name);
-          } finally {
-            setIsAnalyzing(false);
-          }
-          // Upload failed outright — hold on this step rather than advancing to an empty form.
-          if (count === null) return;
-          if (count > 0) {
-            toast.success(`${count} field${count > 1 ? 's' : ''} pre-filled — please verify them`);
-          }
-        }
+    if (step === STEP_DOCUMENTS && documents.files.some((f) => !f.documentId)) {
+      setIsSaving(true);
+      setIsAnalyzing(true);
+      setSuggestions([]);
+      suggestionsPendingRef.current = 0;
+      setAnalysisMadeNoChange(false);
+      let count: number | null = 0;
+      try {
+        const { id, name } = await ensureProduct();
+        count = await analyzeDocuments(id, name);
+      } catch {
+        toast.error('Could not read the documents');
+        return;
+      } finally {
+        setIsAnalyzing(false);
+        setIsSaving(false);
+        setProgress(null);
       }
+      // Upload failed outright — hold on this step rather than advancing to an empty form.
+      if (count === null) return;
+      if (count > 0) {
+        toast.success(`${count} field${count > 1 ? 's' : ''} pre-filled — please verify them`);
+      }
+      // Disagreements need a decision here; advancing would bury them.
+      if (suggestionsPendingRef.current > 0) {
+        toast(`${suggestionsPendingRef.current} suggested change${suggestionsPendingRef.current > 1 ? 's' : ''} to review below`);
+        return;
+      }
+      if (count === 0) {
+        toast.success('Document read and added to this product');
+      }
+    }
 
-      await saveStep(id);
-      setCompletedSteps((prev) => [...new Set([...prev, step])]);
-      setStep((p) => Math.min(p + 1, STEPS.length - 1));
-    } catch { toast.error('Failed to save'); }
-    finally { setIsSaving(false); }
+    setCompletedSteps((prev) => [...new Set([...prev, step])]);
+    setStep((p) => Math.min(p + 1, STEPS.length - 1));
   };
 
   const handleBack = () => {
     setStep((p) => Math.max(p - 1, 0));
   };
 
-  const saveStep = async (id: string) => {
-    const data: Record<string, any> = { currentStep: step, onboardingStatus: 'IN_PROGRESS' };
-    switch (step) {
-      // STEP_DOCUMENTS writes no profile fields: the AI pre-fill lands in React state
-      // during this same handler, so it is persisted when the user confirms Identity.
-      case STEP_IDENTITY:
-        data.name = identity.name;
-        data.sku = identity.sku || undefined;
-        data.brandName = identity.brandName || undefined;
-        data.productFamily = identity.productFamily || undefined;
-        data.description = identity.description || undefined;
-        data.productType = identity.productType;
-        data.productStatus = identity.productStatus;
-        break;
-      case STEP_TECHNICAL:
-        data.intendedUse = technical.intendedUse;
-        data.targetUsers = technical.targetUsers;
-        data.keyMaterials = technical.keyMaterials;
-        data.physicalForm = technical.physicalForm || undefined;
-        data.hsTariffCode = technical.hsTariffCode || undefined;
-        data.countryOfOrigin = technical.countryOfOrigin || undefined;
-        break;
-      case STEP_MARKETS:
-        data.targetMarkets = markets.targetMarkets;
-        data.requiredCertifications = markets.requiredCertifications;
-        data.applicableRegulations = markets.applicableRegulations;
-        data.industryLabels = markets.industryLabels;
-        break;
-      case STEP_MANUFACTURING:
-        data.productionSites = manufacturing.productionSites;
-        data.productionProcesses = manufacturing.productionProcesses;
-        data.criticalSuppliers = manufacturing.criticalSuppliers;
-        break;
-      case STEP_CERTIFICATIONS:
-        data.productCertifications = certifications.productCertifications;
-        break;
-    }
-    await productApi.updateProfile(id, data);
+  /** Every field of every step, written in one request. */
+  const buildProfilePayload = (status: string): Record<string, any> => ({
+    currentStep: step,
+    onboardingStatus: status,
+    name: identity.name,
+    sku: identity.sku || undefined,
+    brandName: identity.brandName || undefined,
+    productFamily: identity.productFamily || undefined,
+    description: identity.description || undefined,
+    productType: identity.productType,
+    productStatus: identity.productStatus,
+    intendedUse: technical.intendedUse,
+    targetUsers: technical.targetUsers,
+    keyMaterials: technical.keyMaterials,
+    physicalForm: technical.physicalForm || undefined,
+    hsTariffCode: technical.hsTariffCode || undefined,
+    countryOfOrigin: technical.countryOfOrigin || undefined,
+    targetMarkets: markets.targetMarkets,
+    requiredCertifications: markets.requiredCertifications,
+    applicableRegulations: markets.applicableRegulations,
+    industryLabels: markets.industryLabels,
+    productionSites: manufacturing.productionSites,
+    productionProcesses: manufacturing.productionProcesses,
+    criticalSuppliers: manufacturing.criticalSuppliers,
+    productCertifications: certifications.productCertifications,
+  });
+
+  const persistProfile = async (id: string, status: string) => {
+    const payload = buildProfilePayload(status);
+    await productApi.updateProfile(id, payload);
     // Identity may rename the folder — keep the name uploads reference in sync.
-    if (data.name) setServerProductName(data.name);
+    if (payload.name) setServerProductName(payload.name);
   };
 
   const handleSaveAndDraft = async () => {
@@ -568,7 +660,8 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
     setIsSaving(true);
     try {
       const { id } = await ensureProduct();
-      await saveStep(id);
+      // Stays a DRAFT: saved so it can be resumed, still invisible in the library.
+      await persistProfile(id, isEditMode ? 'IN_PROGRESS' : PRODUCT_DRAFT_STATUS);
 
       const entry: DraftEntry = {
         v: DRAFT_SCHEMA_VERSION,
@@ -596,7 +689,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
       saveDrafts(drafts);
       clearAutosave();
       toast.success('Draft saved');
-      handleClose();
+      resetAndClose();
     } catch { toast.error('Failed to save'); }
     finally { setIsSaving(false); }
   };
@@ -614,6 +707,9 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
     setCertifications(draft.certifications);
     setDocuments({ files: [] });
     setAiFields(draft.aiFields ?? []);
+    setSuggestions([]);
+    suggestionsPendingRef.current = 0;
+    setAnalysisMadeNoChange(false);
     setView('wizard');
   };
 
@@ -628,7 +724,6 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
     setIsSaving(true);
     try {
       const { id, name } = await ensureProduct();
-      await saveStep(id);
 
       // Files added after the Documents step still need sending; extraction runs in the
       // background here (the profile is already filled, so there is nothing to wait for).
@@ -638,7 +733,10 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
       );
       if (failures.length > 0) toast.error(failures[0], { duration: 8000 });
 
+      // The one commit point: every step's data, then activation.
+      await persistProfile(id, 'IN_PROGRESS');
       await productApi.completeProduct(id);
+      setIsActivated(true);
 
       if (uploadedIds.length > 0) {
         onExtractionStarted?.(uploadedIds);
@@ -654,13 +752,14 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
       toast.success(uploadedIds.length > 0
         ? `Product ${isEditMode ? 'updated' : 'activated'} — ${uploadedIds.length} file${uploadedIds.length > 1 ? 's' : ''} sent for AI extraction`
         : isEditMode ? 'Product updated successfully!' : 'Product activated successfully!');
-      handleClose();
+      // Activated — close directly, there is no draft left to discard.
+      resetAndClose();
       onCreated?.();
     } catch { toast.error('Failed to complete'); }
     finally { setIsSaving(false); }
   };
 
-  const handleClose = () => {
+  const resetAndClose = () => {
     setStep(0);
     setCompletedSteps([]);
     setProductId(null);
@@ -674,8 +773,51 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
     setDocuments({ files: [] });
     setAiFields([]);
     setIsAnalyzing(false);
+    setIsActivated(false);
+    setPendingDiscard(null);
+    setProgress(null);
+    setSuggestions([]);
+    suggestionsPendingRef.current = 0;
+    setAnalysisMadeNoChange(false);
     setView('wizard');
     onClose();
+  };
+
+  /**
+   * Closing without activating must leave nothing behind. If the Documents step
+   * created a hidden draft folder (the only server write before activation), ask
+   * whether to throw it away or keep it as a resumable draft.
+   */
+  const handleClose = () => {
+    const hasUnactivatedDraft = !isEditMode && !isActivated && !!productId;
+    if (hasUnactivatedDraft) {
+      setPendingDiscard(productId);
+      return;
+    }
+    resetAndClose();
+  };
+
+  /** Discard: delete the draft folder and every file uploaded into it. */
+  const confirmDiscard = async () => {
+    if (!pendingDiscard) return;
+    setIsDiscarding(true);
+    try {
+      await productApi.delete(pendingDiscard);
+      clearAutosave();
+    } catch {
+      toast.error('Could not discard the draft — it stays hidden until you activate it');
+    } finally {
+      setIsDiscarding(false);
+      setPendingDiscard(null);
+      resetAndClose();
+      onCreated?.();
+    }
+  };
+
+  /** Keep: leave the hidden draft in place and remember it locally so it can be resumed. */
+  const keepAsDraft = async () => {
+    setPendingDiscard(null);
+    await handleSaveAndDraft();
   };
 
   const isLast = step === STEPS.length - 1;
@@ -687,6 +829,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
   ).length;
   const analyzedDocCount = documents.files.filter((f) => f.status === 'done').length;
   const hasFilesToAnalyze = documents.files.some((f) => !f.documentId);
+  const uploadedDocCount = documents.files.filter((f) => !!f.documentId).length;
 
   /**
    * Editing a field clears its AI flag — the value is the user's now, so it no
@@ -715,6 +858,32 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
 
   const stepAiFields = (group: string) => aiFields.filter((f) => f.startsWith(`${group}.`));
 
+  const SETTERS: Record<string, React.Dispatch<React.SetStateAction<any>>> = {
+    identity: setIdentity,
+    technical: setTechnical,
+    markets: setMarkets,
+    manufacturing: setManufacturing,
+    certifications: setCertifications,
+  };
+
+  /** Accept one suggested value: write it and flag it as AI-sourced so it still gets verified. */
+  const applySuggestion = (s: PrefillSuggestion) => {
+    const setter = SETTERS[s.group];
+    if (!setter) return;
+    setter((prev: Record<string, unknown>) => ({ ...prev, [s.field]: s.value }));
+    setAiFields((prev) => [...new Set([...prev, s.key])]);
+    setSuggestions((prev) => prev.filter((x) => x.key !== s.key));
+  };
+
+  const ignoreSuggestion = (s: PrefillSuggestion) => {
+    setSuggestions((prev) => prev.filter((x) => x.key !== s.key));
+  };
+
+  const applyAllSuggestions = () => {
+    suggestions.forEach(applySuggestion);
+    toast.success(`${suggestions.length} value${suggestions.length > 1 ? 's' : ''} applied — verify them before saving`);
+  };
+
   const renderStep = () => {
     switch (step) {
       case STEP_DOCUMENTS:
@@ -724,6 +893,12 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
             onChange={(d) => setDocuments((p) => ({ ...p, ...d }))}
             isAnalyzing={isAnalyzing}
             prefilledCount={aiFields.filter((f) => !f.includes('productCertifications.')).length}
+            progress={progress}
+            suggestions={suggestions}
+            onApplySuggestion={applySuggestion}
+            onIgnoreSuggestion={ignoreSuggestion}
+            onApplyAllSuggestions={applyAllSuggestions}
+            analysisMadeNoChange={analysisMadeNoChange}
           />
         );
       case STEP_IDENTITY:
@@ -774,7 +949,8 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
   };
 
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
+    <>
+    <Dialog open={open && !pendingDiscard} onOpenChange={(v) => !v && handleClose()}>
       <DialogContent className="flex h-[90vh] max-w-5xl flex-col overflow-hidden p-0"
         onPointerDownOutside={(e) => e.preventDefault()}
         onInteractOutside={(e) => e.preventDefault()}
@@ -820,7 +996,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto px-8 py-6">
+            <div ref={contentRef} className="flex-1 overflow-y-auto px-8 py-6">
               {step !== STEP_DOCUMENTS && currentStepAiCount > 0 && (
                 <AiReviewBanner
                   count={currentStepAiCount}
@@ -834,7 +1010,22 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
             {/* Footer */}
             <div className="flex items-center justify-between border-t border-[var(--border)] px-6 py-3">
               <div className="flex items-center gap-2 text-[13px] text-[var(--muted)]">
-                <Check className="h-4 w-4 text-emerald-500" />Progress saved automatically
+                {isEditMode ? (
+                  <>
+                    <Info className="h-4 w-4 text-[var(--brand-primary)]" />
+                    Changes apply when you click <span className="font-medium">Save changes</span>
+                  </>
+                ) : isLast ? (
+                  <>
+                    <Check className="h-4 w-4 text-emerald-500" />
+                    Ready — <span className="font-medium">Save &amp; activate</span> creates the product
+                  </>
+                ) : (
+                  <>
+                    <Info className="h-4 w-4 text-[var(--brand-primary)]" />
+                    Nothing is saved until you click <span className="font-medium">Save &amp; activate</span>
+                  </>
+                )}
               </div>
               <div className="flex items-center gap-3">
                 {step > 0 && (
@@ -866,6 +1057,40 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
         )}
       </DialogContent>
     </Dialog>
+
+      {/* Closing before activation — the hidden draft folder must not survive silently. */}
+      <Dialog open={!!pendingDiscard} onOpenChange={(v) => !v && setPendingDiscard(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Discard this product?</DialogTitle>
+            <DialogDescription className="text-[13px]">
+              You have not activated it, so it was never added to your products. Discarding
+              deletes it and {uploadedDocCount > 0
+                ? `the ${uploadedDocCount} uploaded file${uploadedDocCount > 1 ? 's' : ''}`
+                : 'anything uploaded'}{' '}
+              for good.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-2 flex flex-col gap-2">
+            <Button variant="outline" onClick={() => setPendingDiscard(null)} disabled={isDiscarding}>
+              Keep editing
+            </Button>
+            <Button variant="outline" onClick={keepAsDraft} disabled={isDiscarding} className="gap-2">
+              <FileText className="h-4 w-4" />
+              Save as draft &amp; close
+            </Button>
+            <Button
+              onClick={confirmDiscard}
+              disabled={isDiscarding}
+              className="gap-2 bg-red-600 text-white hover:bg-red-700"
+            >
+              {isDiscarding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+              Discard everything
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 

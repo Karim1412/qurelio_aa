@@ -19,7 +19,7 @@ export class DocumentController {
 
   @Post('products')
   async createProduct(
-    @Body() body: { name: string; description?: string; sku?: string; reference?: string; revision?: string; categoryTags?: string[] },
+    @Body() body: { name: string; description?: string; sku?: string; reference?: string; revision?: string; categoryTags?: string[]; draft?: boolean },
     @Req() req: any,
   ): Promise<any> {
     return this.svc.createProduct(req.user.companyId, body);

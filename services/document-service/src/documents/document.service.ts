@@ -46,6 +46,13 @@ const ALLOWED_EXTS = new Set([
 ]);
 const MAX_BYTES = 50 * 1024 * 1024;
 
+/**
+ * Onboarding wizard folder that the user has not activated yet. Such a product is
+ * invisible everywhere (library, archive, pickers) and is deleted if the wizard is
+ * cancelled — only "Save & activate" turns it into a real product.
+ */
+export const PRODUCT_DRAFT_STATUS = 'DRAFT';
+
 function fileExt(name: string): string {
   const i = name.lastIndexOf('.');
   return i >= 0 ? name.slice(i + 1).toLowerCase() : '';
@@ -95,7 +102,8 @@ export class DocumentService {
   // ────────────────────────────────────────────────────────────
 
   async createProduct(companyId: string, dto: {
-    name: string; description?: string; sku?: string; reference?: string; revision?: string; categoryTags?: string[];
+    name: string; description?: string; sku?: string; reference?: string; revision?: string;
+    categoryTags?: string[]; draft?: boolean;
   }) {
     const name = dto.name?.trim();
     if (!name) throw new BadRequestException('Product name is required');
@@ -111,9 +119,16 @@ export class DocumentService {
       reference: dto.reference,
       revision: dto.revision,
       categoryTags: dto.categoryTags ?? [],
+      /**
+       * The onboarding wizard must create the folder up front so uploaded files have
+       * somewhere to land and can be AI-read. Until the user activates, the product is
+       * a DRAFT: hidden from the library, the archive and every product picker, and
+       * discarded if the wizard is cancelled.
+       */
+      onboardingStatus: dto.draft ? PRODUCT_DRAFT_STATUS : undefined,
     });
     await this.productRepo.save(product);
-    this.logger.log(`Product created: ${product.id} (${name})`);
+    this.logger.log(`Product created: ${product.id} (${name})${dto.draft ? ' [draft]' : ''}`);
     return { id: product.id, name: product.name, sku: product.sku, createdAt: product.createdAt };
   }
 
@@ -125,6 +140,10 @@ export class DocumentService {
       .createQueryBuilder('p')
       .leftJoinAndSelect('p.documents', 'd')
       .where('p.companyId = :companyId', { companyId })
+      // Wizard drafts are not products yet — they appear nowhere until activated.
+      .andWhere('(p.onboardingStatus IS NULL OR p.onboardingStatus != :draft)', {
+        draft: PRODUCT_DRAFT_STATUS,
+      })
       .orderBy('p.createdAt', 'DESC');
     // archivedOnly → the Archived list; default → active library only (archivedAt IS NULL).
     if (opts.archivedOnly) qb.andWhere('p.archivedAt IS NOT NULL');
@@ -914,6 +933,16 @@ export class DocumentService {
       .createQueryBuilder('d')
       .leftJoinAndSelect('d.product', 'product')
       .where('d.companyId = :companyId', { companyId });
+
+    /**
+     * Files uploaded into an unactivated onboarding draft are not part of the library
+     * yet — the product itself does not exist as far as the user is concerned. Applied
+     * unconditionally so they stay out of the trash view too.
+     */
+    qb.andWhere(
+      '(d.productId IS NULL OR product.onboardingStatus IS NULL OR product.onboardingStatus != :draftStatus)',
+      { draftStatus: PRODUCT_DRAFT_STATUS },
+    );
 
     const incArchived = filter.includeArchived === true || filter.includeArchived === 'true';
     if (!incArchived) {

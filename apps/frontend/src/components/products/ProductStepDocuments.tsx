@@ -2,8 +2,9 @@
 
 import React, { useRef, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Upload, FileText, Trash2, Sparkles, CircleCheck, CircleAlert, Loader2 } from '@/components/icons';
+import { Upload, FileText, Trash2, Sparkles, CircleCheck, CircleAlert, Loader2, Check, X } from '@/components/icons';
 import { Info } from '@/components/icons';
+import type { PrefillSuggestion } from '@/components/products/product-prefill';
 import { cn } from '@/utils/cn';
 
 /**
@@ -35,6 +36,13 @@ export interface ProductDocumentsData {
   files: UploadedFile[];
 }
 
+/** Upload + read progress across every file of the current analysis run. */
+export interface AnalysisProgress {
+  done: number;
+  total: number;
+  label: string;
+}
+
 interface Props {
   data: ProductDocumentsData;
   onChange: (d: Partial<ProductDocumentsData>) => void;
@@ -42,6 +50,14 @@ interface Props {
   isAnalyzing?: boolean;
   /** Number of fields the last analysis pre-filled — shown as the result of this step. */
   prefilledCount?: number;
+  progress?: AnalysisProgress | null;
+  /** Fields the document disagrees with; the user accepts or ignores each one. */
+  suggestions?: PrefillSuggestion[];
+  onApplySuggestion?: (s: PrefillSuggestion) => void;
+  onIgnoreSuggestion?: (s: PrefillSuggestion) => void;
+  onApplyAllSuggestions?: () => void;
+  /** True once an analysis has run but changed nothing — reported instead of staying silent. */
+  analysisMadeNoChange?: boolean;
 }
 
 const STATUS_STYLES: Record<UploadedFileStatus, { label: string; cls: string }> = {
@@ -65,7 +81,18 @@ function StatusPill({ status }: { status: UploadedFileStatus }) {
   );
 }
 
-export function ProductStepDocuments({ data, onChange, isAnalyzing = false, prefilledCount = 0 }: Props) {
+export function ProductStepDocuments({
+  data,
+  onChange,
+  isAnalyzing = false,
+  prefilledCount = 0,
+  progress = null,
+  suggestions = [],
+  onApplySuggestion,
+  onIgnoreSuggestion,
+  onApplyAllSuggestions,
+  analysisMadeNoChange = false,
+}: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -95,6 +122,10 @@ export function ProductStepDocuments({ data, onChange, isAnalyzing = false, pref
   };
 
   const analyzed = data.files.filter((f) => f.status === 'done').length;
+  const pct =
+    progress && progress.total > 0
+      ? Math.min(100, Math.round((progress.done / progress.total) * 100))
+      : 0;
 
   return (
     <div className="space-y-8">
@@ -182,10 +213,24 @@ export function ProductStepDocuments({ data, onChange, isAnalyzing = false, pref
       )}
 
       {isAnalyzing && (
-        <p className="flex items-center gap-2 text-[13px] text-[var(--muted)]">
-          <Loader2 className="h-4 w-4 animate-spin text-[var(--brand-primary)]" />
-          Reading your documents — this takes about a minute for a large technical file. You can keep this dialog open.
-        </p>
+        <div className="space-y-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
+          <div className="flex items-center gap-2 text-[13px] font-medium text-[var(--text-primary)]">
+            <Loader2 className="h-4 w-4 animate-spin text-[var(--brand-primary)]" />
+            {progress?.label || 'Reading your documents…'}
+          </div>
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--page-bg)]">
+            <div
+              className="h-full bg-[var(--brand-primary)] transition-all duration-500"
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+          <div className="flex items-center justify-between text-[11px] text-[var(--muted)]">
+            <span>Large technical files take about a minute each. Keep this dialog open.</span>
+            {progress && progress.total > 0 && (
+              <span className="shrink-0 font-medium">{pct}%</span>
+            )}
+          </div>
+        </div>
       )}
 
       {!isAnalyzing && prefilledCount > 0 && (
@@ -193,6 +238,78 @@ export function ProductStepDocuments({ data, onChange, isAnalyzing = false, pref
           <CircleCheck className="h-4 w-4" />
           {analyzed} document{analyzed > 1 ? 's' : ''} read · {prefilledCount} field
           {prefilledCount > 1 ? 's' : ''} pre-filled for review in the next steps
+        </p>
+      )}
+
+      {/* Editing an existing product: the document disagrees with values already saved. */}
+      {!isAnalyzing && suggestions.length > 0 && (
+        <div className="space-y-3 rounded-2xl border border-[var(--brand-primary)]/25 bg-[var(--brand-primary)]/5 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="flex items-center gap-2 text-[13px] font-semibold text-[var(--text-primary)]">
+              <Sparkles className="h-4 w-4 text-[var(--brand-primary)]" />
+              This document suggests {suggestions.length} different value
+              {suggestions.length > 1 ? 's' : ''}
+            </p>
+            {onApplyAllSuggestions && suggestions.length > 1 && (
+              <Button type="button" size="sm" variant="outline" onClick={onApplyAllSuggestions}>
+                Apply all
+              </Button>
+            )}
+          </div>
+          <p className="text-[11px] text-[var(--muted)]">
+            Your saved values are kept unless you accept a suggestion. Nothing is written until you
+            save.
+          </p>
+          <div className="space-y-2">
+            {suggestions.map((s) => (
+              <div
+                key={s.key}
+                className="rounded-xl border border-[var(--input-border)] bg-[var(--surface)] p-3"
+              >
+                <p className="text-[12px] font-semibold text-[var(--text-primary)]">{s.label}</p>
+                <div className="mt-1.5 space-y-1 text-[11px]">
+                  <p className="text-[var(--muted)]">
+                    <span className="font-medium">Current:</span>{' '}
+                    <span className="line-clamp-2">{s.current}</span>
+                  </p>
+                  <p className="text-[var(--text-primary)]">
+                    <span className="font-medium text-[var(--brand-primary)]">Suggested:</span>{' '}
+                    <span className="line-clamp-3">{s.suggested}</span>
+                  </p>
+                </div>
+                <div className="mt-2.5 flex items-center gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="h-7 gap-1.5 px-2.5 text-[11px]"
+                    onClick={() => onApplySuggestion?.(s)}
+                  >
+                    <Check className="h-3 w-3" />
+                    Use this
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    className="h-7 gap-1.5 px-2.5 text-[11px]"
+                    onClick={() => onIgnoreSuggestion?.(s)}
+                  >
+                    <X className="h-3 w-3" />
+                    Keep mine
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Read successfully but nothing to change — say so rather than looking like a failure. */}
+      {!isAnalyzing && analysisMadeNoChange && suggestions.length === 0 && prefilledCount === 0 && (
+        <p className="flex items-start gap-2 text-[13px] text-[var(--muted)]">
+          <CircleCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+          Document read and added to this product&apos;s Compliance Memory. It agreed with what you
+          already have, so no field was changed.
         </p>
       )}
     </div>
