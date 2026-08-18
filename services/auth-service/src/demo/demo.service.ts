@@ -194,6 +194,30 @@ export class DemoService {
     return this.presentBooking(fresh!);
   }
 
+  /**
+   * Remove a request for good. The slot it was holding is released so the time
+   * does not stay silently unbookable; a slot already in the past is blocked
+   * instead, since re-publishing it would be pointless.
+   */
+  async deleteBooking(id: string) {
+    const booking = await this.bookings.findOne({ where: { id }, relations: ['slot'] });
+    if (!booking) throw new NotFoundException('Booking not found');
+
+    const slotId = booking.slotId;
+    const slotWasHeld = booking.slot?.status === DemoSlotStatus.BOOKED;
+    const stillFuture = booking.slot ? booking.slot.startsAt.getTime() > Date.now() : false;
+
+    await this.bookings.delete(id);
+
+    if (slotWasHeld) {
+      await this.slots.update(slotId, {
+        status: stillFuture ? DemoSlotStatus.OPEN : DemoSlotStatus.BLOCKED,
+      });
+    }
+    this.logger.log(`Demo booking ${id} deleted (slot ${slotWasHeld ? 'released' : 'untouched'})`);
+    return { message: 'Request deleted', slotReleased: slotWasHeld && stillFuture };
+  }
+
   // ── Admin: calendar ───────────────────────────────────────────────────────
 
   /** Every slot in a window, with the booking that holds it (admin view). */

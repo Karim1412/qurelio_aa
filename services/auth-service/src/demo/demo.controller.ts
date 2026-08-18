@@ -66,6 +66,12 @@ export class DemoAdminController {
     return this.demo.respondToBooking(id, dto);
   }
 
+  @Delete('bookings/:id')
+  @HttpCode(HttpStatus.OK)
+  deleteBooking(@Param('id') id: string) {
+    return this.demo.deleteBooking(id);
+  }
+
   @Get('slots')
   slots(@Query('from') from?: string, @Query('to') to?: string) {
     return this.demo.listSlots(from, to);

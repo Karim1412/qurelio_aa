@@ -12,6 +12,7 @@ import { evaluationApi, documentApi, productApi } from '@/lib/api';
 import { formatEvaluationPair } from '@/lib/evaluation-pair-label';
 import { formatEvaluationRetryError } from '@/lib/evaluation-retry-error';
 import { formatIsoNormSelectLabel, isoNormEvalReference, slicePage, totalPages } from '@/lib/file-library-helpers';
+import { collectProductStandards, standardMatchesRef } from '@/lib/product-standards';
 import { useAuthStore } from '@/lib/auth-store';
 import { usePermissions } from '@/hooks/usePermissions';
 import { SectionPagination, DEFAULT_SECTION_PAGE_SIZE } from '@/components/ui/section-pagination';
@@ -95,6 +96,8 @@ export default function EvaluationsPage() {
     productId: '',
     evidenceDocumentIds: [] as string[],
     isoStandard: '',
+    /** Declared standard/regulation picked from the product's own profile. */
+    productStandardRef: '',
   });
   const [creating, setCreating] = useState(false);
   const [evalListPage, setEvalListPage] = useState(1);
@@ -106,6 +109,52 @@ export default function EvaluationsPage() {
   );
 
   const evalLastPage = totalPages(evaluations.length, evalPageSize);
+
+  /** Standards & regulations the selected product declared in the product wizard. */
+  const declaredStandards = useMemo(
+    () => collectProductStandards(products.find((p) => p.id === form.productId)),
+    [products, form.productId],
+  );
+
+  /**
+   * Options for the standard dropdown, built from what the product declares.
+   *
+   * Each declared certificate / standard / regulation is resolved to the library
+   * document that satisfies it. A declaration with no activated document is still
+   * listed, disabled, so the gap is visible rather than silently absent — an
+   * evaluation needs a real document with clauses to score against.
+   *
+   * `value` is `documentId::declaration` so choosing an entry records both the
+   * document to run and the obligation it was chosen for.
+   */
+  const { declaredOptions, unmatchedDeclarations, otherNorms } = useMemo(() => {
+    const declared: Array<{ value: string; label: string; sourceLabel: string }> = [];
+    const unmatched: Array<{ value: string; sourceLabel: string }> = [];
+    const usedNormIds = new Set<string>();
+
+    for (const s of declaredStandards) {
+      const hits = isoNorms.filter((n) => standardMatchesRef(n, s.value));
+      if (hits.length === 0) {
+        unmatched.push({ value: s.value, sourceLabel: s.sourceLabel });
+        continue;
+      }
+      for (const n of hits) {
+        usedNormIds.add(n.id);
+        declared.push({
+          value: `${n.id}::${s.value}`,
+          label: `${s.value} → ${formatIsoNormSelectLabel(n)}`,
+          sourceLabel: s.sourceLabel,
+        });
+      }
+    }
+
+    return {
+      declaredOptions: declared,
+      unmatchedDeclarations: unmatched,
+      // Never a dead end: any other activated standard stays selectable.
+      otherNorms: isoNorms.filter((n) => !usedNormIds.has(n.id)),
+    };
+  }, [isoNorms, declaredStandards]);
 
   useEffect(() => {
     loadAll();
@@ -164,7 +213,8 @@ export default function EvaluationsPage() {
   };
 
   const handleCreate = async () => {
-    if (!form.isoDocumentId || !form.productDocumentId) return toast.error('Select standard and product');
+    if (!form.productId || !form.productDocumentId) return toast.error('Select a product document first');
+    if (!form.isoDocumentId) return toast.error('Select the standard document to evaluate against');
     setCreating(true);
     try {
       const norm = isoNorms.find((n) => n.id === form.isoDocumentId);
@@ -188,6 +238,8 @@ export default function EvaluationsPage() {
           productName: pr?.name ?? null,
           productId: form.productId || null,
           productDocumentName: docMeta?.name ?? null,
+          /** Which declared obligation this run was started for, when one was chosen. */
+          productDeclaredStandard: form.productStandardRef || null,
           companyName: user?.company?.name?.trim() || null,
         },
         reportContext: {
@@ -214,6 +266,7 @@ export default function EvaluationsPage() {
         productId: '',
         evidenceDocumentIds: [],
         isoStandard: '',
+        productStandardRef: '',
       });
       loadEvaluations();
     } catch (err: unknown) {
@@ -512,32 +565,11 @@ export default function EvaluationsPage() {
             <DialogTitle>New conformity evaluation</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-2">
+            {/* 1 — the product drives which standards are relevant below. */}
             <div>
-              <Label>Standard document </Label>
-              <select
-                className="mt-1 flex h-10 w-full rounded-xl border border-[var(--input-border)] bg-[var(--surface)] px-3 text-sm"
-                value={form.isoDocumentId}
-                onChange={(e) => {
-                  const doc = isoNorms.find((n) => n.id === e.target.value);
-                  setForm((p) => ({
-                    ...p,
-                    isoDocumentId: e.target.value,
-                    isoStandard: isoNormEvalReference(doc ?? null),
-                  }));
-                }}
-              >
-                <option value="">
-                  {isoNorms.length === 0 ? 'No ISO norms uploaded yet' : 'Select a standard…'}
-                </option>
-                {isoNorms.map((n) => (
-                  <option key={n.id} value={n.id}>
-                    {formatIsoNormSelectLabel(n)}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <Label>Product Document</Label>
+              <Label>
+                <span className="mr-1.5 text-[var(--brand-primary)]">1.</span>Product document
+              </Label>
               <select
                 className="mt-1 flex h-10 w-full rounded-xl border border-[var(--input-border)] bg-[var(--surface)] px-3 text-sm"
                 value={form.productId}
@@ -547,11 +579,15 @@ export default function EvaluationsPage() {
                   const docs = (pr?.documents ?? []) as { id: string }[];
                   const ids = docs.map((d) => d.id).filter(Boolean);
                   const primary = ids[0] || '';
+                  // A standard chosen for the previous product no longer applies.
                   setForm((p) => ({
                     ...p,
                     productId: pid,
                     productDocumentId: primary,
                     evidenceDocumentIds: ids,
+                    productStandardRef: '',
+                    isoDocumentId: '',
+                    isoStandard: '',
                   }));
                 }}
               >
@@ -571,7 +607,87 @@ export default function EvaluationsPage() {
                   </>
                 )}
               </select>
-              
+            </div>
+
+            {/* 2 — the standard to evaluate against, listed from what the product declares. */}
+            <div>
+              <Label>
+                <span className="mr-1.5 text-[var(--brand-primary)]">2.</span>Standard document
+              </Label>
+              <select
+                className="mt-1 flex h-10 w-full rounded-xl border border-[var(--input-border)] bg-[var(--surface)] px-3 text-sm disabled:opacity-60"
+                value={
+                  form.isoDocumentId
+                    ? `${form.isoDocumentId}::${form.productStandardRef}`
+                    : ''
+                }
+                disabled={!form.productId}
+                onChange={(e) => {
+                  const [docId, declaredRef = ''] = e.target.value.split('::');
+                  const doc = isoNorms.find((n) => n.id === docId);
+                  setForm((p) => ({
+                    ...p,
+                    isoDocumentId: docId,
+                    productStandardRef: declaredRef,
+                    isoStandard: isoNormEvalReference(doc ?? null),
+                  }));
+                }}
+              >
+                <option value="">
+                  {!form.productId
+                    ? 'Select a product first…'
+                    : isoNorms.length === 0
+                      ? 'No standards activated yet'
+                      : 'Select a standard…'}
+                </option>
+
+                {declaredOptions.length > 0 && (
+                  <optgroup label="Declared by this product">
+                    {declaredOptions.map((o) => (
+                      <option key={o.value} value={o.value} title={o.label}>
+                        {o.sourceLabel} — {o.label.length > 95 ? `${o.label.slice(0, 95)}…` : o.label}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+
+                {/* Declared but not in the library: shown so the gap is obvious, not selectable. */}
+                {unmatchedDeclarations.length > 0 && (
+                  <optgroup label="Declared — not in Standards Library">
+                    {unmatchedDeclarations.map((o) => (
+                      <option key={o.value} value="" disabled title={o.value}>
+                        {o.sourceLabel} — {o.value.length > 80 ? `${o.value.slice(0, 80)}…` : o.value}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+
+                {otherNorms.length > 0 && (
+                  <optgroup
+                    label={declaredOptions.length > 0 ? 'Other standards in the library' : 'Standards library'}
+                  >
+                    {otherNorms.map((n) => (
+                      <option key={n.id} value={`${n.id}::`}>
+                        {formatIsoNormSelectLabel(n)}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+              </select>
+
+              {form.productId && declaredStandards.length === 0 && (
+                <p className="mt-1 text-[11px] text-[var(--muted)]">
+                  This product declares no certifications or regulations yet — add them in the
+                  product form (Markets and Certifications steps) to see them listed here.
+                </p>
+              )}
+              {form.productId && declaredOptions.length === 0 && unmatchedDeclarations.length > 0 && (
+                <p className="mt-1 text-[11px] text-amber-600">
+                  This product declares {unmatchedDeclarations.length} standard
+                  {unmatchedDeclarations.length > 1 ? 's' : ''}, but none is activated in the
+                  Standards Library yet. Upload and activate them, or pick another document.
+                </p>
+              )}
             </div>
             {form.isoStandard && (
               <div className="rounded-lg bg-[var(--nav-hover)] px-3 py-2 text-xs font-semibold text-[var(--brand-primary)]">

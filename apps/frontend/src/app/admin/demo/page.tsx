@@ -72,6 +72,7 @@ export default function AdminDemoPage() {
   const [bulkOpen, setBulkOpen] = useState(false);
   const [respondTo, setRespondTo] = useState<DemoBookingAdmin | null>(null);
   const [respondNote, setRespondNote] = useState('');
+  const [deleteTarget, setDeleteTarget] = useState<DemoBookingAdmin | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -153,6 +154,20 @@ export default function AdminDemoPage() {
       await load();
     } catch (e: any) {
       toast.error(e?.response?.data?.message ?? 'Could not update the request');
+    } finally { setBusy(false); }
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    setBusy(true);
+    try {
+      const res = await demoApi.deleteBooking(deleteTarget.id);
+      const released = (res.data as { slotReleased?: boolean })?.slotReleased;
+      toast.success(released ? 'Request deleted — slot released' : 'Request deleted');
+      setDeleteTarget(null);
+      await load();
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message ?? 'Could not delete the request');
     } finally { setBusy(false); }
   };
 
@@ -293,19 +308,30 @@ export default function AdminDemoPage() {
                       </p>
                     )}
 
-                    {b.status === 'PENDING' && (
-                      <div className="mt-4 flex flex-wrap items-center gap-2">
-                        <Button size="sm" className="gap-1.5" onClick={() => { setRespondTo(b); setRespondNote(''); }}>
-                          <CircleCheck className="h-3.5 w-3.5" />
-                          Answer request
-                        </Button>
-                        <span className="text-[11px] text-[var(--muted)]">
-                          Reply by {new Date(b.responseDueAt).toLocaleString(undefined, {
-                            day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
-                          })}
-                        </span>
-                      </div>
-                    )}
+                    <div className="mt-4 flex flex-wrap items-center gap-2">
+                      {b.status === 'PENDING' && (
+                        <>
+                          <Button size="sm" className="gap-1.5" onClick={() => { setRespondTo(b); setRespondNote(''); }}>
+                            <CircleCheck className="h-3.5 w-3.5" />
+                            Answer request
+                          </Button>
+                          <span className="text-[11px] text-[var(--muted)]">
+                            Reply by {new Date(b.responseDueAt).toLocaleString(undefined, {
+                              day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+                            })}
+                          </span>
+                        </>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setDeleteTarget(b)}
+                        className="ml-auto gap-1.5 text-[var(--muted)] hover:bg-red-50 hover:text-red-600"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        Delete
+                      </Button>
+                    </div>
                   </article>
                 ))}
               </div>
@@ -473,6 +499,40 @@ export default function AdminDemoPage() {
         fromDay={selectedDay}
         onDone={() => { setBulkOpen(false); void load(); }}
       />
+
+      {/* Delete a request — permanent, so it is confirmed */}
+      <Dialog open={!!deleteTarget} onOpenChange={(v) => !v && setDeleteTarget(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete this request?</DialogTitle>
+            <DialogDescription className="text-[13px]">
+              {deleteTarget?.companyName}&apos;s request will be removed permanently. The requester
+              is not notified.
+              {deleteTarget?.status === 'PENDING' && deleteTarget?.slot && (
+                <> Their slot on{' '}
+                  <strong>
+                    {new Date(deleteTarget.slot.startsAt).toLocaleString(undefined, {
+                      day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+                    })}
+                  </strong>{' '}
+                  goes back on the public calendar.
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:justify-end">
+            <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={busy}>Cancel</Button>
+            <Button
+              onClick={confirmDelete}
+              disabled={busy}
+              className="gap-2 bg-red-600 text-white hover:bg-red-700"
+            >
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+              Delete permanently
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Answer a request */}
       <Dialog open={!!respondTo} onOpenChange={(v) => !v && setRespondTo(null)}>

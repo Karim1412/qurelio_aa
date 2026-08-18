@@ -359,6 +359,8 @@ export const demoApi = {
     api.get<DemoBookingAdmin[]>('/api/admin/demo/bookings', { params: status ? { status } : {} }),
   respond: (id: string, data: { status: string; adminNote?: string }) =>
     api.patch(`/api/admin/demo/bookings/${id}`, data),
+  /** Permanent — releases the slot it was holding if that time is still ahead. */
+  deleteBooking: (id: string) => api.delete(`/api/admin/demo/bookings/${id}`),
   adminSlots: (from?: string, to?: string) =>
     api.get<DemoSlotAdmin[]>('/api/admin/demo/slots', { params: { from, to } }),
   createSlot: (data: { startsAt: string; durationMinutes?: number }) =>

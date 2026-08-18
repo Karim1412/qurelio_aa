@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Loader2, LineChart } from '@/components/icons';
 import {
@@ -24,6 +24,9 @@ import {
 import { documentApi, evaluationApi, productApi } from '@/lib/api';
 import { parseClauseRefListToWeights } from '@/lib/evaluation-clause-refs';
 import { formatIsoNormSelectLabel } from '@/lib/file-library-helpers';
+import {
+  collectProductStandards, standardMatchesRef, type ProductStandardRef,
+} from '@/lib/product-standards';
 import { useAuthStore } from '@/lib/auth-store';
 
 interface RunEvaluationDialogProps {
@@ -49,6 +52,11 @@ interface ProductDocOption {
 interface ProductOption {
   id: string;
   name?: string | null;
+  /** Standards & regulations declared in the product wizard. */
+  requiredCertifications?: string[] | null;
+  applicableRegulations?: string[] | null;
+  industryLabels?: string[] | null;
+  productCertifications?: Array<{ standardName?: string | null }> | null;
 }
 
 function apiMessage(err: unknown, fallback: string): string {
@@ -72,6 +80,8 @@ export function RunEvaluationDialog({ open, onOpenChange, onCreated }: RunEvalua
 
   const [isoDocumentId, setIsoDocumentId] = useState('');
   const [productDocumentId, setProductDocumentId] = useState('');
+  /** Declared standard/regulation chosen from the product's own profile. */
+  const [productStandardRef, setProductStandardRef] = useState('');
   const [clauseRefsList, setClauseRefsList] = useState('');
 
   useEffect(() => {
@@ -107,8 +117,59 @@ export function RunEvaluationDialog({ open, onOpenChange, onCreated }: RunEvalua
   const reset = () => {
     setIsoDocumentId('');
     setProductDocumentId('');
+    setProductStandardRef('');
     setClauseRefsList('');
   };
+
+  /** Product behind the chosen document — the source of the declared standards. */
+  const selectedProduct = useMemo(() => {
+    const doc = productDocs.find((d) => d.id === productDocumentId);
+    if (!doc?.productId) return null;
+    return products.find((p) => p.id === doc.productId) ?? null;
+  }, [productDocumentId, productDocs, products]);
+
+  const declaredStandards: ProductStandardRef[] = useMemo(
+    () => collectProductStandards(selectedProduct),
+    [selectedProduct],
+  );
+
+  /**
+   * Standard options built from the product's declarations — same model as the
+   * Compliance Engine form. Declarations with no activated document are listed
+   * but disabled, since an evaluation needs real clauses to score against.
+   */
+  const { declaredOptions, unmatchedDeclarations, otherNorms } = useMemo(() => {
+    const declared: Array<{ value: string; label: string; sourceLabel: string }> = [];
+    const unmatched: Array<{ value: string; sourceLabel: string }> = [];
+    const usedNormIds = new Set<string>();
+
+    for (const s of declaredStandards) {
+      const hits = isoNorms.filter((n) => standardMatchesRef(n, s.value));
+      if (hits.length === 0) {
+        unmatched.push({ value: s.value, sourceLabel: s.sourceLabel });
+        continue;
+      }
+      for (const n of hits) {
+        usedNormIds.add(n.id);
+        declared.push({
+          value: `${n.id}::${s.value}`,
+          label: `${s.value} → ${formatIsoNormSelectLabel(n)}`,
+          sourceLabel: s.sourceLabel,
+        });
+      }
+    }
+    return {
+      declaredOptions: declared,
+      unmatchedDeclarations: unmatched,
+      otherNorms: isoNorms.filter((n) => !usedNormIds.has(n.id)),
+    };
+  }, [isoNorms, declaredStandards]);
+
+  // Changing the product invalidates a standard picked for the previous one.
+  useEffect(() => {
+    setProductStandardRef('');
+    setIsoDocumentId('');
+  }, [productDocumentId]);
 
   const handleClose = (next: boolean) => {
     if (creating) return;
@@ -117,8 +178,12 @@ export function RunEvaluationDialog({ open, onOpenChange, onCreated }: RunEvalua
   };
 
   const onSubmit = async () => {
-    if (!isoDocumentId || !productDocumentId) {
-      toast.error('Select a standard and a product document');
+    if (!productDocumentId) {
+      toast.error('Select a product document first');
+      return;
+    }
+    if (!isoDocumentId) {
+      toast.error('Select the standard document to evaluate against');
       return;
     }
     setCreating(true);
@@ -142,6 +207,8 @@ export function RunEvaluationDialog({ open, onOpenChange, onCreated }: RunEvalua
           productName: product?.name ?? null,
           productId: product?.id ?? productDoc?.productId ?? null,
           productDocumentName: productDoc?.name ?? productDoc?.fileName ?? null,
+          /** Which of the product's declared obligations this run was started for. */
+          productDeclaredStandard: productStandardRef || null,
           companyName: user?.company?.name?.trim() || null,
         },
         reportContext: {
@@ -178,7 +245,8 @@ export function RunEvaluationDialog({ open, onOpenChange, onCreated }: RunEvalua
         <DialogHeader>
           <DialogTitle>Run a new evaluation</DialogTitle>
           <DialogDescription>
-            Pick the standard and the product document to compare. Clauses are optional.
+            Start from the product, then choose which of its declared standards to assess it
+            against. Clauses are optional.
           </DialogDescription>
         </DialogHeader>
 
@@ -189,30 +257,11 @@ export function RunEvaluationDialog({ open, onOpenChange, onCreated }: RunEvalua
           </div>
         ) : (
           <div className="grid gap-4">
+            {/* 1 — the product being assessed drives everything below it. */}
             <div>
-              <Label>Standard document</Label>
-              <Select value={isoDocumentId} onValueChange={setIsoDocumentId} disabled={creating}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Choose a standard" />
-                </SelectTrigger>
-                <SelectContent>
-                  {isoNorms.length === 0 ? (
-                    <div className="px-2 py-3 text-xs text-[var(--muted)]">
-                      No active standards yet. Activate one from the file library.
-                    </div>
-                  ) : (
-                    isoNorms.map((n) => (
-                      <SelectItem key={n.id} value={n.id}>
-                        {formatIsoNormSelectLabel(n)}
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label>Product document</Label>
+              <Label>
+                <span className="mr-1.5 text-[var(--brand-primary)]">1.</span>Product document
+              </Label>
               <Select
                 value={productDocumentId}
                 onValueChange={setProductDocumentId}
@@ -237,8 +286,96 @@ export function RunEvaluationDialog({ open, onOpenChange, onCreated }: RunEvalua
               </Select>
             </div>
 
+            {/* 2 — the standard, listed from the certificates the product declares. */}
             <div>
-              <Label htmlFor="run-eval-clauses">Optional clauses</Label>
+              <Label>
+                <span className="mr-1.5 text-[var(--brand-primary)]">2.</span>Standard document
+              </Label>
+              <Select
+                value={isoDocumentId ? `${isoDocumentId}::${productStandardRef}` : ''}
+                onValueChange={(v) => {
+                  const [docId, declaredRef = ''] = v.split('::');
+                  setIsoDocumentId(docId);
+                  setProductStandardRef(declaredRef);
+                }}
+                disabled={creating || !productDocumentId}
+              >
+                <SelectTrigger>
+                  <SelectValue
+                    placeholder={productDocumentId ? 'Choose a standard' : 'Select a product document first'}
+                  />
+                </SelectTrigger>
+                <SelectContent className="max-w-[min(30rem,90vw)]">
+                  {isoNorms.length === 0 ? (
+                    <div className="px-2 py-3 text-xs text-[var(--muted)]">
+                      No active standards yet. Activate one from the file library.
+                    </div>
+                  ) : (
+                    <>
+                      {declaredOptions.length > 0 && (
+                        <div className="px-2 pb-1 pt-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--brand-primary)]">
+                          Declared by this product
+                        </div>
+                      )}
+                      {declaredOptions.map((o) => (
+                        <SelectItem key={o.value} value={o.value}>
+                          <span className="block max-w-[26rem]" title={o.label}>
+                            <span className="line-clamp-2 text-[13px] leading-snug">{o.label}</span>
+                            <span className="mt-0.5 block text-[10px] uppercase tracking-wide text-[var(--muted)]">
+                              {o.sourceLabel}
+                            </span>
+                          </span>
+                        </SelectItem>
+                      ))}
+
+                      {unmatchedDeclarations.length > 0 && (
+                        <div className="px-2 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-wide text-[var(--muted)]">
+                          Declared — not in Standards Library
+                        </div>
+                      )}
+                      {unmatchedDeclarations.map((o) => (
+                        <div
+                          key={o.value}
+                          title={o.value}
+                          className="px-2 py-1.5 text-[12px] leading-snug text-[var(--muted)] opacity-70"
+                        >
+                          <span className="line-clamp-2">{o.value}</span>
+                        </div>
+                      ))}
+
+                      {otherNorms.length > 0 && (
+                        <div className="px-2 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-wide text-[var(--muted)]">
+                          {declaredOptions.length > 0 ? 'Other standards in the library' : 'Standards library'}
+                        </div>
+                      )}
+                      {otherNorms.map((n) => (
+                        <SelectItem key={n.id} value={`${n.id}::`}>
+                          {formatIsoNormSelectLabel(n)}
+                        </SelectItem>
+                      ))}
+                    </>
+                  )}
+                </SelectContent>
+              </Select>
+              {productDocumentId && declaredStandards.length === 0 && (
+                <p className="mt-1 text-[11px] text-[var(--muted)]">
+                  {selectedProduct?.name?.trim() || 'This product'} declares no certifications or
+                  regulations yet — add them in the product form to see them listed here.
+                </p>
+              )}
+              {productDocumentId && declaredOptions.length === 0 && unmatchedDeclarations.length > 0 && (
+                <p className="mt-1 text-[11px] text-amber-600">
+                  This product declares {unmatchedDeclarations.length} standard
+                  {unmatchedDeclarations.length > 1 ? 's' : ''}, but none is activated in the
+                  Standards Library yet.
+                </p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="run-eval-clauses">
+                <span className="mr-1.5 text-[var(--brand-primary)]">3.</span>Optional clauses
+              </Label>
               <Input
                 id="run-eval-clauses"
                 value={clauseRefsList}
