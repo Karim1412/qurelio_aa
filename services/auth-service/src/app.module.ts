@@ -31,6 +31,7 @@ import { HealthController }  from './health.controller';
 import { AvatarStorageService } from './avatar/avatar-storage.service';
 import { DemoSlot, DemoBooking } from './database/entities/demo.entity';
 import { DemoService }    from './demo/demo.service';
+import { GoogleMeetService } from './demo/google-meet.service';
 import { DemoPublicController, DemoAdminController } from './demo/demo.controller';
 @Injectable()
 class SuperAdminInitializer implements OnModuleInit {
@@ -108,7 +109,7 @@ class SuperAdminInitializer implements OnModuleInit {
   controllers: [AuthController, CompanyController, CompanyProfileController, InternalController, HealthController, DemoPublicController, DemoAdminController],
   providers: [
     AuthService, CompanyService, CompanyProfileService, OtpService, JwtStrategy, AvatarStorageService,
-    DemoService,
+    DemoService, GoogleMeetService,
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },

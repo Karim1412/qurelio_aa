@@ -178,6 +178,14 @@ export class DemoBooking {
   @Column({ name: 'responded_at', type: 'timestamp with time zone', nullable: true })
   respondedAt?: Date | null;
 
+  /** Google Meet URL sent with the confirmation — generated, or pasted by the admin. */
+  @Column({ name: 'meeting_link', type: 'text', nullable: true })
+  meetingLink?: string | null;
+
+  /** Calendar event backing the Meet link, so it can be cancelled if the demo is. */
+  @Column({ name: 'calendar_event_id', nullable: true })
+  calendarEventId?: string | null;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;
 

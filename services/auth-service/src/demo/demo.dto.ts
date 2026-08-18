@@ -229,6 +229,10 @@ export class RespondDemoBookingDto {
   @IsEnum(DemoBookingStatus)
   status!: DemoBookingStatus;
 
+  /** Overrides the auto-generated Google Meet link when the admin supplies one. */
+  @IsOptional() @IsString() @MaxLength(500)
+  meetingLink?: string;
+
   @IsOptional()
   @IsString()
   @MaxLength(2000)

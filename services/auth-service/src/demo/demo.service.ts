@@ -12,6 +12,7 @@ import {
   RespondDemoBookingDto, UpdateDemoSlotDto,
 } from './demo.dto';
 import { MailService } from '../mail/mail.service';
+import { GoogleMeetService } from './google-meet.service';
 
 /** Stated turnaround on the public page and in the confirmation email. */
 export const DEMO_RESPONSE_TARGET_HOURS = 48;
@@ -25,6 +26,7 @@ export class DemoService {
     @InjectRepository(DemoBooking) private bookings: Repository<DemoBooking>,
     private readonly dataSource: DataSource,
     private readonly mail: MailService,
+    private readonly meet: GoogleMeetService,
     private readonly config: ConfigService,
   ) {}
 
@@ -210,7 +212,46 @@ export class DemoService {
     booking.status = dto.status;
     booking.adminNote = dto.adminNote?.trim() || null;
     booking.respondedAt = new Date();
+
+    if (dto.status === DemoBookingStatus.CONFIRMED) {
+      // A pasted link always wins — it is the admin's explicit choice, and the
+      // fallback when Google is unconfigured or failing.
+      const manual = dto.meetingLink?.trim();
+      if (manual) {
+        booking.meetingLink = manual;
+      } else if (!booking.meetingLink) {
+        const created = await this.meet.createMeeting({
+          summary: `Qurelio demo — ${booking.companyName}`,
+          description: [
+            `Demo for ${booking.companyName}.`,
+            booking.fullName ? `Contact: ${booking.fullName} <${booking.email}>` : `Contact: ${booking.email}`,
+            booking.description ? `\nThey asked to see:\n${booking.description}` : '',
+          ].filter(Boolean).join('\n'),
+          startsAt: booking.slot.startsAt,
+          durationMinutes: booking.slot.durationMinutes,
+          attendeeEmail: booking.email,
+        });
+        if (created) {
+          booking.meetingLink = created.meetingLink;
+          booking.calendarEventId = created.calendarEventId;
+        } else {
+          // Confirmation still goes out; it simply carries no join link.
+          this.logger.warn(
+            `Booking ${booking.id} confirmed without a meeting link — add one manually if needed`,
+          );
+        }
+      }
+    }
+
     await this.bookings.save(booking);
+
+    // Declining or cancelling a confirmed demo should not leave a live calendar invite.
+    if (
+      booking.calendarEventId &&
+      (dto.status === DemoBookingStatus.DECLINED || dto.status === DemoBookingStatus.CANCELLED)
+    ) {
+      void this.meet.cancelMeeting(booking.calendarEventId);
+    }
 
     // Declining or cancelling frees the slot so someone else can take it.
     const releases = dto.status === DemoBookingStatus.DECLINED || dto.status === DemoBookingStatus.CANCELLED;
@@ -229,6 +270,7 @@ export class DemoService {
         durationMinutes: booking.slot.durationMinutes,
         confirmed: dto.status === DemoBookingStatus.CONFIRMED,
         note: booking.adminNote,
+        meetingLink: booking.meetingLink,
       })
       .catch((e) => this.logger.warn(`Decision email failed: ${e?.message ?? e}`));
 
@@ -409,6 +451,7 @@ export class DemoService {
       consentMarketing: !!b.consentMarketing,
       status: b.status,
       adminNote: b.adminNote ?? null,
+      meetingLink: b.meetingLink ?? null,
       createdAt: b.createdAt.toISOString(),
       respondedAt: b.respondedAt ? b.respondedAt.toISOString() : null,
       /** When the 48 h target expires; the UI flags anything past this. */

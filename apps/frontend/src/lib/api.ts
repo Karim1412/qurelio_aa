@@ -345,6 +345,7 @@ export interface DemoBookingAdmin {
   consentMarketing: boolean;
   status: 'PENDING' | 'CONFIRMED' | 'DECLINED' | 'CANCELLED';
   adminNote: string | null;
+  meetingLink: string | null;
   createdAt: string;
   respondedAt: string | null;
   responseDueAt: string;
@@ -366,7 +367,7 @@ export const demoApi = {
     ),
   listBookings: (status?: string) =>
     api.get<DemoBookingAdmin[]>('/api/admin/demo/bookings', { params: status ? { status } : {} }),
-  respond: (id: string, data: { status: string; adminNote?: string }) =>
+  respond: (id: string, data: { status: string; adminNote?: string; meetingLink?: string }) =>
     api.patch(`/api/admin/demo/bookings/${id}`, data),
   /** Permanent — releases the slot it was holding if that time is still ahead. */
   deleteBooking: (id: string) => api.delete(`/api/admin/demo/bookings/${id}`),

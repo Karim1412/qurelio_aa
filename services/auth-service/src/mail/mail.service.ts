@@ -514,8 +514,9 @@ ${bodyHtml}
     durationMinutes: number;
     confirmed: boolean;
     note?: string | null;
+    meetingLink?: string | null;
   }): Promise<void> {
-    const { to, companyName, startsAt, durationMinutes, confirmed, note } = params;
+    const { to, companyName, startsAt, durationMinutes, confirmed, note, meetingLink } = params;
     await this.sendMail({
       to,
       subject: confirmed
@@ -530,6 +531,12 @@ ${bodyHtml}
                 <div style="background:#f4f8ff;border:1px solid #cce0ff;border-radius:8px;padding:18px 22px;margin:0 0 20px;font-weight:700;color:#1c252e;font-size:16px;">
                   ${this.formatSlot(startsAt, durationMinutes)}
                 </div>
+                ${
+                  meetingLink
+                    ? `<p style="margin:0 0 8px;">Join the demo with this link:</p>
+                       <p style="margin:0 0 20px;word-break:break-all;"><a href="${meetingLink}" style="color:${BRAND_PRIMARY};font-weight:600;">${meetingLink}</a></p>`
+                    : ''
+                }
                 <p style="margin:0;">We look forward to speaking with you.</p>`
              : `<p style="margin:0;">Unfortunately we cannot hold the slot on ${this.formatSlot(startsAt)}. The time has been released, and you are welcome to book another.</p>`
          }
@@ -543,7 +550,9 @@ ${bodyHtml}
           heroSub: confirmed
             ? 'Your slot is booked. Everything you need is below.'
             : 'That time is no longer available — you can pick another whenever you like.',
-          cta: confirmed ? undefined : { label: 'Choose another slot', url: this.bookingUrl() },
+          cta: confirmed
+            ? (meetingLink ? { label: 'Join the demo', url: meetingLink } : undefined)
+            : { label: 'Choose another slot', url: this.bookingUrl() },
         },
       ),
     });

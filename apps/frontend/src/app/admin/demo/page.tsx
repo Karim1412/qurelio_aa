@@ -72,6 +72,7 @@ export default function AdminDemoPage() {
   const [bulkOpen, setBulkOpen] = useState(false);
   const [respondTo, setRespondTo] = useState<DemoBookingAdmin | null>(null);
   const [respondNote, setRespondNote] = useState('');
+  const [respondLink, setRespondLink] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<DemoBookingAdmin | null>(null);
   const [answersOpen, setAnswersOpen] = useState<DemoBookingAdmin | null>(null);
 
@@ -149,10 +150,22 @@ export default function AdminDemoPage() {
     if (!respondTo) return;
     setBusy(true);
     try {
-      await demoApi.respond(respondTo.id, { status, adminNote: respondNote.trim() || undefined });
-      toast.success(status === 'CONFIRMED' ? 'Demo confirmed — requester notified' : 'Requester notified');
+      const res = await demoApi.respond(respondTo.id, {
+        status,
+        adminNote: respondNote.trim() || undefined,
+        meetingLink: respondLink.trim() || undefined,
+      });
+      const link = (res.data as { meetingLink?: string | null })?.meetingLink;
+      toast.success(
+        status !== 'CONFIRMED'
+          ? 'Requester notified'
+          : link
+            ? 'Demo confirmed — Meet link sent'
+            : 'Demo confirmed — no meeting link (add one and re-confirm if needed)',
+      );
       setRespondTo(null);
       setRespondNote('');
+      setRespondLink('');
       await load();
     } catch (e: any) {
       toast.error(e?.response?.data?.message ?? 'Could not update the request');
@@ -304,6 +317,14 @@ export default function AdminDemoPage() {
                       {b.description}
                     </p>
 
+                    {b.meetingLink && (
+                      <p className="mt-2 truncate text-[12px]">
+                        <span className="font-semibold text-[var(--muted)]">Meeting:</span>{' '}
+                        <a href={b.meetingLink} target="_blank" rel="noreferrer" className="text-[var(--brand-primary)] hover:underline">
+                          {b.meetingLink}
+                        </a>
+                      </p>
+                    )}
                     {b.adminNote && (
                       <p className="mt-2 text-[12px] text-[var(--muted)]">
                         <span className="font-semibold">Your note:</span> {b.adminNote}
@@ -313,7 +334,7 @@ export default function AdminDemoPage() {
                     <div className="mt-4 flex flex-wrap items-center gap-2">
                       {b.status === 'PENDING' && (
                         <>
-                          <Button size="sm" className="gap-1.5" onClick={() => { setRespondTo(b); setRespondNote(''); }}>
+                          <Button size="sm" className="gap-1.5" onClick={() => { setRespondTo(b); setRespondNote(''); setRespondLink(b.meetingLink ?? ''); }}>
                             <CircleCheck className="h-3.5 w-3.5" />
                             Answer request
                           </Button>
@@ -696,6 +717,18 @@ export default function AdminDemoPage() {
               The requester is emailed either way. Declining releases the slot back to the public calendar.
             </DialogDescription>
           </DialogHeader>
+          <div className="space-y-1.5">
+            <Label htmlFor="meet-link">Meeting link (optional)</Label>
+            <Input
+              id="meet-link"
+              value={respondLink}
+              onChange={(e) => setRespondLink(e.target.value)}
+              placeholder="Leave blank to generate a Google Meet link automatically"
+            />
+            <p className="text-[11px] text-[var(--muted)]">
+              A Google Meet link is created on confirm. Paste one here to use it instead.
+            </p>
+          </div>
           <div className="space-y-1.5">
             <Label htmlFor="note">Note to the requester (optional)</Label>
             <Textarea
