@@ -346,17 +346,69 @@ ${message}
     return durationMinutes ? `${when} · ${durationMinutes} min` : when;
   }
 
-  private demoShell(heading: string, bodyHtml: string): string {
+  /**
+   * Branded shell shared by every demo email — client and admin alike.
+   *
+   * Mirrors the account-activation template (top bar with wordmark + slogan,
+   * gradient hero, white body, dark footer) so a visitor booking a demo gets the
+   * same Qurelio-looking email as someone activating an account. Styles are
+   * inline rather than in a <style> block: several clients (Gmail on mobile,
+   * Outlook web) drop embedded stylesheets, which would strip the whole design.
+   */
+  /** Public booking calendar, used by demo email CTAs. */
+  private bookingUrl(): string {
+    const configured = this.config.get<string>('DEMO_BOOKING_URL')?.trim();
+    if (configured) return configured;
+    const base = this.config.get<string>('FRONTEND_URL')?.trim().replace(/\/$/, '') ?? '';
+    return `${base}/demo`;
+  }
+
+  private demoShell(
+    heading: string,
+    bodyHtml: string,
+    opts: { eyebrow?: string; heroSub?: string; cta?: { label: string; url: string } } = {},
+  ): string {
+    const { eyebrow = 'QURELIO PLATFORM', heroSub, cta } = opts;
+    const font = "'Sora','Public Sans','Segoe UI',Helvetica,Arial,sans-serif";
     return `
-<div style="font-family:'Segoe UI',sans-serif;color:#0d1b2a;max-width:600px;margin:0 auto;">
-  <div style="background:linear-gradient(160deg,${BRAND_DARK} 0%,#152838 100%);padding:22px 32px;border-radius:12px 12px 0 0;border-bottom:1px solid rgba(77,146,196,.2);">
-    ${this.wordmarkHtml(22)}
-    <h2 style="color:#e8f1ff;margin:14px 0 0;font-size:18px;font-weight:600;font-family:'Public Sans','Segoe UI',sans-serif;">${heading}</h2>
-  </div>
-  <div style="background:#f4f8ff;padding:28px 32px;border-radius:0 0 12px 12px;border:1px solid rgba(77,146,196,.2);line-height:1.7;">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${heading} — Qurelio</title>
+</head>
+<body style="background-color:#f4f8ff;font-family:${font};color:#0d1b2a;margin:0;padding:0;">
+  <div style="max-width:600px;margin:0 auto;background:#ffffff;">
+
+    <div style="background:${BRAND_DARK};padding:22px 36px;border-bottom:1px solid rgba(77,146,196,.25);text-align:center;">
+      ${this.wordmarkHtml(26)}
+      <p style="margin:10px 0 0;font-size:11px;color:${BRAND_SLOGAN};font-family:'Public Sans','Segoe UI',sans-serif;letter-spacing:0.02em;line-height:1.4;">Empowering tomorrow&apos;s systems, today.</p>
+    </div>
+
+    <div style="background:linear-gradient(160deg,#1c252e 0%,#152838 100%);padding:40px 28px;text-align:center;">
+      <div style="font-size:10px;letter-spacing:4px;text-transform:uppercase;color:${BRAND_PRIMARY};font-weight:600;margin-bottom:14px;">${eyebrow}</div>
+      <h1 style="font-size:30px;font-weight:700;color:#e8f1ff;margin:0;line-height:1.25;">${heading}</h1>
+      ${heroSub ? `<p style="font-size:15px;color:rgba(200,220,255,.65);line-height:1.75;max-width:440px;margin:16px auto 0;">${heroSub}</p>` : ''}
+    </div>
+
+    <div style="padding:36px 36px 28px;font-size:15px;color:#546e8a;line-height:1.8;">
 ${bodyHtml}
+      ${
+        cta
+          ? `<div style="text-align:center;margin:32px 0 8px;">
+               <a href="${cta.url}" style="display:inline-block;background:${BRAND_PRIMARY};color:#fff;padding:15px 42px;border-radius:8px;text-decoration:none;font-weight:700;font-size:15px;letter-spacing:.3px;">${cta.label}</a>
+             </div>`
+          : ''
+      }
+    </div>
+
+    <div style="background:${BRAND_DARK};padding:20px;text-align:center;color:rgba(200,220,255,.35);font-size:11px;">
+      <p style="margin:0;">© 2026 Pura Solutions. All rights reserved. · Qurelio</p>
+    </div>
   </div>
-</div>`;
+</body>
+</html>`;
   }
 
   /** Sent to the visitor as soon as the request is stored. */
@@ -373,13 +425,18 @@ ${bodyHtml}
       subject: 'We received your Qurelio demo request',
       html: this.demoShell(
         'Demo request received',
-        `<p>Hi <strong>${companyName}</strong>,</p>
-         <p>Thank you for your interest in Qurelio. We have your request for this slot:</p>
-         <div style="background:#fff;border:1px solid #cce0ff;border-radius:8px;padding:16px 20px;margin:16px 0;font-weight:600;">
+        `<p style="font-size:17px;font-weight:600;color:#1c252e;margin:0 0 12px;">Hi ${companyName},</p>
+         <p style="margin:0 0 20px;">Thank you for your interest in Qurelio. We have your request for this slot:</p>
+         <div style="background:#f4f8ff;border:1px solid #cce0ff;border-radius:8px;padding:18px 22px;margin:0 0 20px;font-weight:700;color:#1c252e;font-size:16px;">
            ${this.formatSlot(startsAt, durationMinutes)}
          </div>
-         <p>Our team will confirm within <strong>${responseHours} hours</strong>. The slot is held for you until then.</p>
-         <p style="color:#546e8a;font-size:13px;">If you need to change anything, simply reply to this email.</p>`,
+         <p style="margin:0 0 20px;">Our team will confirm within <strong>${responseHours} hours</strong>. The slot is held for you until then.</p>
+         <hr style="border:none;border-top:1px solid #e3eeff;margin:0 0 20px;">
+         <p style="font-size:13px;color:#90a4ae;line-height:1.7;margin:0;">
+           Nothing to prepare in the meantime — the demo will be built on what you told us.<br>
+           If you need to change anything, simply reply to this email.
+         </p>`,
+        { eyebrow: 'DEMO REQUEST', heroSub: 'We have your slot on hold. Here is what happens next.' },
       ),
     });
   }
@@ -387,36 +444,64 @@ ${bodyHtml}
   /** Sent to the platform team so a pending request is not missed. */
   async sendDemoBookingAdminAlert(params: {
     to: string;
-    companyName: string;
-    field: string;
-    email: string;
-    phone: string;
-    companyCapacity: string;
-    description: string;
+    booking: {
+      fullName?: string | null; companyName: string; field: string; email: string;
+      phone?: string | null; role?: string | null; roleOther?: string | null;
+      consultingScope?: string | null; companyCapacity: string;
+      marketsActive?: string[] | null; marketsTargeting?: string[] | null;
+      certifications?: string[] | null; certificationsOther?: string | null;
+      productCount?: string | null; complianceToday?: string | null; qmsName?: string | null;
+      challenges?: string[] | null; challengesOther?: string | null; timeline?: string | null;
+      decisionRole?: string | null; pilotInterest?: string | null;
+      description?: string | null; preferredLanguage?: string | null; consentMarketing?: boolean;
+    };
     startsAt: Date;
     responseHours: number;
   }): Promise<void> {
-    const { to, companyName, field, email, phone, companyCapacity, description, startsAt, responseHours } = params;
-    const row = (label: string, value: string) =>
-      `<tr><td style="padding:6px 0;color:#546e8a;width:130px;">${label}</td><td style="padding:6px 0;font-weight:600;">${value}</td></tr>`;
+    const { to, booking: b, startsAt, responseHours } = params;
+    const row = (label: string, value?: string | null) =>
+      value ? `<tr><td style="padding:5px 0;color:#546e8a;width:180px;vertical-align:top;">${label}</td><td style="padding:5px 0;font-weight:600;">${value}</td></tr>` : '';
+    const list = (items?: string[] | null) => (items && items.length ? items.join('<br>') : '');
+    const withOther = (items?: string[] | null, other?: string | null) =>
+      other?.trim() ? [...(items ?? []).filter((x) => x !== 'Other'), other] : items ?? [];
+
     await this.sendMail({
       to,
-      replyTo: email,
-      subject: `[Qurelio Demo] ${companyName} — ${this.formatSlot(startsAt)}`,
+      replyTo: b.email,
+      subject: `[Qurelio Demo] ${b.companyName} — ${this.formatSlot(startsAt)}`,
       html: this.demoShell(
         'New demo request',
-        `<table style="width:100%;border-collapse:collapse;margin-bottom:18px;">
+        `<table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:14px;">
            ${row('Requested slot', this.formatSlot(startsAt))}
-           ${row('Company', companyName)}
-           ${row('Field', field)}
-           ${row('Email', `<a href="mailto:${email}" style="color:${BRAND_PRIMARY};">${email}</a>`)}
-           ${row('Phone', phone)}
-           ${row('Capacity', `${companyCapacity} employees`)}
+           ${row('Name', b.fullName)}
+           ${row('Email', `<a href="mailto:${b.email}" style="color:${BRAND_PRIMARY};">${b.email}</a>`)}
+           ${row('Company', b.companyName)}
+           ${row('Role', b.roleOther?.trim() ? `${b.role} — ${b.roleOther}` : b.role)}
+           ${row('Phone', b.phone)}
+           ${row('Industry', b.field)}
+           ${row('Consulting for', b.consultingScope)}
+           ${row('Company size', b.companyCapacity)}
+           ${row('Active markets', list(b.marketsActive))}
+           ${row('Targeting', list(b.marketsTargeting))}
+           ${row('Certifications', list(withOther(b.certifications, b.certificationsOther)))}
+           ${row('Products managed', b.productCount)}
+           ${row('Compliance today', b.qmsName?.trim() ? `${b.complianceToday} — ${b.qmsName}` : b.complianceToday)}
+           ${row('Main challenges', list(withOther(b.challenges, b.challengesOther)))}
+           ${row('Timeline', b.timeline)}
+           ${row('Decision role', b.decisionRole)}
+           ${row('Pilot programme', b.pilotInterest)}
+           ${row('Demo language', b.preferredLanguage)}
+           ${row('Marketing opt-in', b.consentMarketing ? 'Yes' : 'No')}
          </table>
-         <div style="background:#fff;border:1px solid #cce0ff;border-radius:8px;padding:20px;white-space:pre-wrap;">
-${description}
-         </div>
-         <p style="margin-top:18px;color:#546e8a;font-size:13px;">Answer within ${responseHours} hours from the admin dashboard.</p>`,
+         ${
+           b.description?.trim()
+             ? `<p style="color:#546e8a;margin-bottom:6px;font-size:13px;">Wants to see in the demo</p>
+                <div style="background:#fff;border:1px solid #cce0ff;border-radius:8px;padding:18px;white-space:pre-wrap;">${b.description}</div>`
+             : ''
+         }
+         <hr style="border:none;border-top:1px solid #e3eeff;margin:22px 0 18px;">
+         <p style="font-size:13px;color:#90a4ae;line-height:1.7;margin:0;">Answer within ${responseHours} hours from the admin dashboard.</p>`,
+        { eyebrow: 'ADMIN NOTIFICATION', heroSub: `${b.companyName} asked for a demo — full answers below.` },
       ),
     });
   }
@@ -438,21 +523,28 @@ ${description}
         : 'About your Qurelio demo request',
       html: this.demoShell(
         confirmed ? 'Demo confirmed' : 'Demo request update',
-        `<p>Hi <strong>${companyName}</strong>,</p>
+        `<p style="font-size:17px;font-weight:600;color:#1c252e;margin:0 0 12px;">Hi ${companyName},</p>
          ${
            confirmed
-             ? `<p>Your demo is confirmed for:</p>
-                <div style="background:#fff;border:1px solid #cce0ff;border-radius:8px;padding:16px 20px;margin:16px 0;font-weight:600;">
+             ? `<p style="margin:0 0 20px;">Your demo is confirmed for:</p>
+                <div style="background:#f4f8ff;border:1px solid #cce0ff;border-radius:8px;padding:18px 22px;margin:0 0 20px;font-weight:700;color:#1c252e;font-size:16px;">
                   ${this.formatSlot(startsAt, durationMinutes)}
                 </div>
-                <p>We look forward to speaking with you.</p>`
-             : `<p>Unfortunately we cannot hold the slot on ${this.formatSlot(startsAt)}. The time has been released, and you are welcome to book another.</p>`
+                <p style="margin:0;">We look forward to speaking with you.</p>`
+             : `<p style="margin:0;">Unfortunately we cannot hold the slot on ${this.formatSlot(startsAt)}. The time has been released, and you are welcome to book another.</p>`
          }
          ${
            note
-             ? `<div style="background:#fff;border:1px solid #cce0ff;border-radius:8px;padding:16px 20px;margin-top:16px;white-space:pre-wrap;">${note}</div>`
+             ? `<div style="background:#f4f8ff;border:1px solid #cce0ff;border-radius:8px;padding:18px 22px;margin-top:20px;white-space:pre-wrap;color:#1c252e;">${note}</div>`
              : ''
          }`,
+        {
+          eyebrow: confirmed ? 'DEMO CONFIRMED' : 'DEMO REQUEST',
+          heroSub: confirmed
+            ? 'Your slot is booked. Everything you need is below.'
+            : 'That time is no longer available — you can pick another whenever you like.',
+          cta: confirmed ? undefined : { label: 'Choose another slot', url: this.bookingUrl() },
+        },
       ),
     });
   }

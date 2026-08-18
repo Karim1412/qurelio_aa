@@ -72,28 +72,99 @@ export class DemoBooking {
   @JoinColumn({ name: 'slot_id' })
   slot!: DemoSlot;
 
-  // ── Request form (mirrors the company registration fields) ────────────────
+  /**
+   * Request form — the Early Access questionnaire, filled in the booking popup.
+   *
+   * A booking and its qualification answers are one record: the visitor picks a
+   * slot and answers in the same step, so there is no separate request to
+   * reconcile. `field` and `companyCapacity` keep their column names for the
+   * rows created before the questionnaire existed.
+   */
 
   @Column({ name: 'company_name' })
   companyName!: string;
 
-  /** Industry / field, from the same list as company registration. */
+  /** Field / Industry — Pharmaceutical / Cosmetic / MedTech. */
   @Column()
   field!: string;
 
+  /** Work email. */
   @Column()
   email!: string;
 
-  /** E.164, produced by the same phone input as registration. */
-  @Column()
-  phone!: string;
+  /** E.164, produced by the same phone input as registration. Optional. */
+  @Column({ nullable: true })
+  phone?: string | null;
 
-  @Column({ type: 'text' })
-  description!: string;
+  /** What they want to see in the demo. Optional since the questionnaire replaced it. */
+  @Column({ type: 'text', nullable: true })
+  description?: string | null;
 
-  /** Employee band, e.g. "11-50" — same values as company registration. */
+  /** Company size band. */
   @Column({ name: 'company_capacity' })
   companyCapacity!: string;
+
+  // ── Qualification answers ─────────────────────────────────────────────────
+
+  @Column({ name: 'full_name', nullable: true })
+  fullName?: string | null;
+
+  @Column({ nullable: true })
+  role?: string | null;
+
+  @Column({ name: 'role_other', nullable: true })
+  roleOther?: string | null;
+
+  /** Own firm / clients / both — asked only of consultants. */
+  @Column({ name: 'consulting_scope', nullable: true })
+  consultingScope?: string | null;
+
+  @Column({ name: 'markets_active', type: 'jsonb', default: '[]' })
+  marketsActive!: string[];
+
+  @Column({ name: 'markets_targeting', type: 'jsonb', default: '[]' })
+  marketsTargeting!: string[];
+
+  @Column({ type: 'jsonb', default: '[]' })
+  certifications!: string[];
+
+  @Column({ name: 'certifications_other', nullable: true })
+  certificationsOther?: string | null;
+
+  @Column({ name: 'product_count', nullable: true })
+  productCount?: string | null;
+
+  @Column({ name: 'compliance_today', nullable: true })
+  complianceToday?: string | null;
+
+  @Column({ name: 'qms_name', nullable: true })
+  qmsName?: string | null;
+
+  /** Up to three. */
+  @Column({ type: 'jsonb', default: '[]' })
+  challenges!: string[];
+
+  @Column({ name: 'challenges_other', nullable: true })
+  challengesOther?: string | null;
+
+  @Column({ nullable: true })
+  timeline?: string | null;
+
+  @Column({ name: 'decision_role', nullable: true })
+  decisionRole?: string | null;
+
+  @Column({ name: 'pilot_interest', nullable: true })
+  pilotInterest?: string | null;
+
+  @Column({ name: 'preferred_language', nullable: true })
+  preferredLanguage?: string | null;
+
+  /** Required to submit — recorded as evidence of consent. */
+  @Column({ name: 'consent_contact', default: false })
+  consentContact!: boolean;
+
+  @Column({ name: 'consent_marketing', default: false })
+  consentMarketing!: boolean;
 
   // ── Lifecycle ─────────────────────────────────────────────────────────────
 

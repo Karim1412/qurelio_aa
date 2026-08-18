@@ -325,9 +325,24 @@ export interface DemoBookingAdmin {
   companyName: string;
   field: string;
   email: string;
-  phone: string;
-  description: string;
+  phone: string | null;
+  description: string | null;
   companyCapacity: string;
+  // Questionnaire answers captured in the booking popup.
+  fullName: string | null;
+  role: string | null;
+  consultingScope: string | null;
+  marketsActive: string[];
+  marketsTargeting: string[];
+  certifications: string[];
+  productCount: string | null;
+  complianceToday: string | null;
+  challenges: string[];
+  timeline: string | null;
+  decisionRole: string | null;
+  pilotInterest: string | null;
+  preferredLanguage: string | null;
+  consentMarketing: boolean;
   status: 'PENDING' | 'CONFIRMED' | 'DECLINED' | 'CANCELLED';
   adminNote: string | null;
   createdAt: string;
@@ -337,18 +352,12 @@ export interface DemoBookingAdmin {
   slot: DemoSlotPublic | null;
 }
 
+
 export const demoApi = {
   /** Public — no auth. Open, future slots only. */
   listSlots: () => api.get<DemoSlotPublic[]>('/api/demo/slots'),
-  book: (data: {
-    slotId: string;
-    companyName: string;
-    field: string;
-    email: string;
-    phone: string;
-    description: string;
-    companyCapacity: string;
-  }) => api.post('/api/demo/bookings', data),
+  /** Books the slot and records the questionnaire in one request. */
+  book: (data: Record<string, unknown>) => api.post('/api/demo/bookings', data),
 
   // Admin (SUPER_ADMIN)
   summary: () =>
@@ -361,6 +370,7 @@ export const demoApi = {
     api.patch(`/api/admin/demo/bookings/${id}`, data),
   /** Permanent — releases the slot it was holding if that time is still ahead. */
   deleteBooking: (id: string) => api.delete(`/api/admin/demo/bookings/${id}`),
+
   adminSlots: (from?: string, to?: string) =>
     api.get<DemoSlotAdmin[]>('/api/admin/demo/slots', { params: { from, to } }),
   createSlot: (data: { startsAt: string; durationMinutes?: number }) =>

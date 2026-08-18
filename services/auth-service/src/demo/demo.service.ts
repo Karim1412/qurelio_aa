@@ -48,12 +48,40 @@ export class DemoService {
   }
 
   /**
-   * Take a slot and record the request.
+   * Conditional questions are only required once their trigger is chosen, so they
+   * cannot be expressed with field-level decorators alone.
+   */
+  private assertConditionals(dto: CreateDemoBookingDto) {
+    const missing: string[] = [];
+    if (dto.role === 'Other' && !dto.roleOther?.trim()) missing.push('Please specify your role');
+    if (dto.role === 'Quality & regulatory consultant' && !dto.consultingScope) {
+      missing.push('Tell us whether Qurelio is for your own firm, your clients, or both');
+    }
+    if (dto.certifications?.includes('Other') && !dto.certificationsOther?.trim()) {
+      missing.push('Please specify the other certification');
+    }
+    if (dto.complianceToday === 'A QMS or eQMS already in place' && !dto.qmsName?.trim()) {
+      missing.push('Which QMS or eQMS do you use?');
+    }
+    if (dto.challenges.includes('Other') && !dto.challengesOther?.trim()) {
+      missing.push('Please specify the other challenge');
+    }
+    if (dto.marketsActive.length === 0 && dto.marketsTargeting.length === 0) {
+      missing.push('Select at least one market you are active in or targeting');
+    }
+    if (!dto.consentContact) missing.push('Consent is required to process your request');
+    if (missing.length > 0) throw new BadRequestException(missing);
+  }
+
+  /**
+   * Take a slot and record the request, questionnaire answers included.
    *
    * The slot claim runs in a transaction with a row lock so two visitors
    * submitting the same slot at the same moment cannot both win it.
    */
   async createBooking(dto: CreateDemoBookingDto) {
+    this.assertConditionals(dto);
+
     const booking = await this.dataSource.transaction(async (tx) => {
       const slot = await tx.getRepository(DemoSlot).findOne({
         where: { id: dto.slotId },
@@ -74,9 +102,28 @@ export class DemoService {
         companyName: dto.companyName.trim(),
         field: dto.field,
         email: dto.email.trim().toLowerCase(),
-        phone: dto.phone.trim(),
-        description: dto.description.trim(),
+        phone: dto.phone?.trim() || null,
+        description: dto.description?.trim() || null,
         companyCapacity: dto.companyCapacity,
+        fullName: dto.fullName.trim(),
+        role: dto.role,
+        roleOther: dto.roleOther?.trim() || null,
+        consultingScope: dto.consultingScope || null,
+        marketsActive: dto.marketsActive,
+        marketsTargeting: dto.marketsTargeting,
+        certifications: dto.certifications ?? [],
+        certificationsOther: dto.certificationsOther?.trim() || null,
+        productCount: dto.productCount || null,
+        complianceToday: dto.complianceToday,
+        qmsName: dto.qmsName?.trim() || null,
+        challenges: dto.challenges,
+        challengesOther: dto.challengesOther?.trim() || null,
+        timeline: dto.timeline,
+        decisionRole: dto.decisionRole,
+        pilotInterest: dto.pilotInterest,
+        preferredLanguage: dto.preferredLanguage || null,
+        consentContact: true,
+        consentMarketing: !!dto.consentMarketing,
         status: DemoBookingStatus.PENDING,
       });
       const saved = await tx.getRepository(DemoBooking).save(row);
@@ -101,12 +148,7 @@ export class DemoService {
       void this.mail
         .sendDemoBookingAdminAlert({
           to: adminTo,
-          companyName: booking.companyName,
-          field: booking.field,
-          email: booking.email,
-          phone: booking.phone,
-          companyCapacity: booking.companyCapacity,
-          description: booking.description,
+          booking,
           startsAt: booking.slot.startsAt,
           responseHours: DEMO_RESPONSE_TARGET_HOURS,
         })
@@ -346,6 +388,25 @@ export class DemoService {
       phone: b.phone,
       description: b.description,
       companyCapacity: b.companyCapacity,
+      // Qualification answers, folded in from the booking form.
+      fullName: b.fullName ?? null,
+      role: b.roleOther?.trim() ? `${b.role} — ${b.roleOther}` : b.role ?? null,
+      consultingScope: b.consultingScope ?? null,
+      marketsActive: b.marketsActive ?? [],
+      marketsTargeting: b.marketsTargeting ?? [],
+      certifications: b.certificationsOther?.trim()
+        ? [...(b.certifications ?? []).filter((c) => c !== 'Other'), b.certificationsOther]
+        : b.certifications ?? [],
+      productCount: b.productCount ?? null,
+      complianceToday: b.qmsName?.trim() ? `${b.complianceToday} — ${b.qmsName}` : b.complianceToday ?? null,
+      challenges: b.challengesOther?.trim()
+        ? [...(b.challenges ?? []).filter((c) => c !== 'Other'), b.challengesOther]
+        : b.challenges ?? [],
+      timeline: b.timeline ?? null,
+      decisionRole: b.decisionRole ?? null,
+      pilotInterest: b.pilotInterest ?? null,
+      preferredLanguage: b.preferredLanguage ?? null,
+      consentMarketing: !!b.consentMarketing,
       status: b.status,
       adminNote: b.adminNote ?? null,
       createdAt: b.createdAt.toISOString(),

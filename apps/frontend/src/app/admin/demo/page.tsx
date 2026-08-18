@@ -73,6 +73,7 @@ export default function AdminDemoPage() {
   const [respondTo, setRespondTo] = useState<DemoBookingAdmin | null>(null);
   const [respondNote, setRespondNote] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<DemoBookingAdmin | null>(null);
+  const [answersOpen, setAnswersOpen] = useState<DemoBookingAdmin | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -91,6 +92,7 @@ export default function AdminDemoPage() {
       setLoading(false);
     }
   }, [statusFilter]);
+
 
   useEffect(() => { void load(); }, [load]);
 
@@ -209,13 +211,13 @@ export default function AdminDemoPage() {
               type="button"
               onClick={() => setTab(t)}
               className={cn(
-                '-mb-px border-b-2 px-4 py-2.5 text-sm font-medium capitalize transition-colors',
+                '-mb-px flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition-colors',
                 tab === t
                   ? 'border-[var(--brand-primary)] text-[var(--brand-primary)]'
                   : 'border-transparent text-[var(--muted)] hover:text-[var(--text-primary)]',
               )}
             >
-              {t === 'requests' ? 'Requests' : 'Calendar'}
+              {t === 'requests' ? 'Demo requests' : 'Calendar'}
             </button>
           ))}
         </div>
@@ -322,6 +324,9 @@ export default function AdminDemoPage() {
                           </span>
                         </>
                       )}
+                      <Button size="sm" variant="outline" onClick={() => setAnswersOpen(b)}>
+                        View full answers
+                      </Button>
                       <Button
                         size="sm"
                         variant="ghost"
@@ -534,6 +539,154 @@ export default function AdminDemoPage() {
         </DialogContent>
       </Dialog>
 
+      {/* Delete a request — permanent, so it is confirmed */}
+      <Dialog open={!!deleteTarget} onOpenChange={(v) => !v && setDeleteTarget(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete this request?</DialogTitle>
+            <DialogDescription className="text-[13px]">
+              {deleteTarget?.companyName}&apos;s request will be removed permanently. The requester
+              is not notified.
+              {deleteTarget?.status === 'PENDING' && deleteTarget?.slot && (
+                <> Their slot on{' '}
+                  <strong>
+                    {new Date(deleteTarget.slot.startsAt).toLocaleString(undefined, {
+                      day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+                    })}
+                  </strong>{' '}
+                  goes back on the public calendar.
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:justify-end">
+            <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={busy}>Cancel</Button>
+            <Button
+              onClick={confirmDelete}
+              disabled={busy}
+              className="gap-2 bg-red-600 text-white hover:bg-red-700"
+            >
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+              Delete permanently
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Full questionnaire answers for a demo request */}
+      <Dialog open={!!answersOpen} onOpenChange={(v) => !v && setAnswersOpen(null)}>
+        <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{answersOpen?.companyName}</DialogTitle>
+            <DialogDescription className="text-[13px]">
+              {answersOpen?.fullName ?? '—'}{answersOpen?.role ? ` · ${answersOpen.role}` : ''}
+            </DialogDescription>
+          </DialogHeader>
+          {answersOpen && (
+            <dl className="space-y-3 text-[13px]">
+              <Answer label="Requested slot" value={answersOpen.slot ? new Date(answersOpen.slot.startsAt).toLocaleString() : null} />
+              <Answer label="Work email" value={answersOpen.email} />
+              <Answer label="Phone" value={answersOpen.phone} />
+              <Answer label="Industry" value={answersOpen.field} />
+              <Answer label="Consulting for" value={answersOpen.consultingScope} />
+              <Answer label="Company size" value={answersOpen.companyCapacity} />
+              <Answer label="Active markets" value={(answersOpen.marketsActive ?? []).join(', ')} />
+              <Answer label="Targeting" value={(answersOpen.marketsTargeting ?? []).join(', ')} />
+              <Answer label="Certifications" value={(answersOpen.certifications ?? []).join(', ')} />
+              <Answer label="Products managed" value={answersOpen.productCount} />
+              <Answer label="Compliance today" value={answersOpen.complianceToday} />
+              <Answer label="Main challenges" value={(answersOpen.challenges ?? []).join(' · ')} />
+              <Answer label="Timeline" value={answersOpen.timeline} />
+              <Answer label="Decision role" value={answersOpen.decisionRole} />
+              <Answer label="Pilot programme" value={answersOpen.pilotInterest} />
+              <Answer label="Demo language" value={answersOpen.preferredLanguage} />
+              <Answer label="Marketing opt-in" value={answersOpen.consentMarketing ? 'Yes' : 'No'} />
+              {answersOpen.description && (
+                <div>
+                  <dt className="text-[11px] font-semibold uppercase tracking-wide text-[var(--muted)]">
+                    Wants to see in the demo
+                  </dt>
+                  <dd className="mt-1 whitespace-pre-wrap rounded-xl bg-[var(--page-bg)]/60 p-3 leading-relaxed">
+                    {answersOpen.description}
+                  </dd>
+                </div>
+              )}
+            </dl>
+          )}
+          <div className="mt-3 flex justify-end">
+            <Button variant="outline" onClick={() => setAnswersOpen(null)}>Close</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete a request — permanent, so it is confirmed */}
+      <Dialog open={!!deleteTarget} onOpenChange={(v) => !v && setDeleteTarget(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete this request?</DialogTitle>
+            <DialogDescription className="text-[13px]">
+              {deleteTarget?.companyName}&apos;s request will be removed permanently. The requester
+              is not notified.
+              {deleteTarget?.status === 'PENDING' && deleteTarget?.slot && (
+                <> Their slot on{' '}
+                  <strong>
+                    {new Date(deleteTarget.slot.startsAt).toLocaleString(undefined, {
+                      day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+                    })}
+                  </strong>{' '}
+                  goes back on the public calendar.
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:justify-end">
+            <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={busy}>Cancel</Button>
+            <Button
+              onClick={confirmDelete}
+              disabled={busy}
+              className="gap-2 bg-red-600 text-white hover:bg-red-700"
+            >
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+              Delete permanently
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete a request — permanent, so it is confirmed */}
+      <Dialog open={!!deleteTarget} onOpenChange={(v) => !v && setDeleteTarget(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete this request?</DialogTitle>
+            <DialogDescription className="text-[13px]">
+              {deleteTarget?.companyName}&apos;s request will be removed permanently. The requester
+              is not notified.
+              {deleteTarget?.status === 'PENDING' && deleteTarget?.slot && (
+                <> Their slot on{' '}
+                  <strong>
+                    {new Date(deleteTarget.slot.startsAt).toLocaleString(undefined, {
+                      day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+                    })}
+                  </strong>{' '}
+                  goes back on the public calendar.
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:justify-end">
+            <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={busy}>Cancel</Button>
+            <Button
+              onClick={confirmDelete}
+              disabled={busy}
+              className="gap-2 bg-red-600 text-white hover:bg-red-700"
+            >
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+              Delete permanently
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Answer a request */}
       <Dialog open={!!respondTo} onOpenChange={(v) => !v && setRespondTo(null)}>
         <DialogContent className="max-w-lg">
@@ -564,6 +717,19 @@ export default function AdminDemoPage() {
         </DialogContent>
       </Dialog>
     </DashboardLayout>
+  );
+}
+
+/** One label/value row in the full-answers dialog; blank answers are skipped. */
+function Answer({ label, value }: { label: string; value?: string | null }) {
+  if (!value) return null;
+  return (
+    <div className="flex flex-wrap gap-x-3 border-b border-[var(--border)]/50 pb-2">
+      <dt className="w-40 shrink-0 text-[11px] font-semibold uppercase tracking-wide text-[var(--muted)]">
+        {label}
+      </dt>
+      <dd className="min-w-0 flex-1 text-[var(--text-primary)]">{value}</dd>
+    </div>
   );
 }
 

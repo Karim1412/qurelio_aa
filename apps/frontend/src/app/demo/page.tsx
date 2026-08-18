@@ -6,7 +6,7 @@ import { ArrowLeft, Calendar, ChevronLeft, ChevronRight, Loader2 } from '@/compo
 import { Button } from '@/components/ui/button';
 import { demoApi, type DemoSlotPublic } from '@/lib/api';
 import { DemoBookingModal } from '@/components/demo/DemoBookingModal';
-import { DEMO_RESPONSE_HOURS } from '@/components/demo/demo-options';
+import { EA_RESPONSE_HOURS as DEMO_RESPONSE_HOURS } from '@/components/demo/demo-form-options';
 import { cn } from '@/utils/cn';
 
 /** Local calendar-day key (YYYY-MM-DD) — slots are grouped in the visitor's timezone. */
@@ -43,7 +43,7 @@ export default function BookDemoPage() {
   const [month, setMonth] = useState(() => startOfMonth(new Date()));
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [activeSlot, setActiveSlot] = useState<DemoSlotPublic | null>(null);
-  const [booked, setBooked] = useState<DemoSlotPublic | null>(null);
+  const [booked, setBooked] = useState<{ slot: DemoSlotPublic; pilot: boolean } | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -87,8 +87,8 @@ export default function BookDemoPage() {
   const todayKey = dayKey(new Date());
   const daySlots = selectedDay ? byDay.get(selectedDay) ?? [] : [];
 
-  const handleBooked = () => {
-    setBooked(activeSlot);
+  const handleBooked = (pilot: boolean) => {
+    if (activeSlot) setBooked({ slot: activeSlot, pilot });
     setActiveSlot(null);
     void load();
   };
@@ -104,13 +104,29 @@ export default function BookDemoPage() {
           <p className="mt-2 text-sm text-[var(--muted)]">
             We have your request for{' '}
             <span className="font-semibold text-[var(--text-primary)]">
-              {new Date(booked.startsAt).toLocaleString(undefined, {
+              {new Date(booked.slot.startsAt).toLocaleString(undefined, {
                 weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit',
               })}
             </span>
             . Our team will confirm by email within {DEMO_RESPONSE_HOURS} hours, and the slot is held
             for you until then.
           </p>
+          <p className="mt-3 text-[13px] text-[var(--muted)]">
+            Nothing to prepare in the meantime. The demo will be built on what you&apos;ve just told us.
+          </p>
+
+          {booked.pilot && (
+            <div className="mt-6 rounded-xl border border-[var(--brand-primary)]/25 bg-[var(--brand-primary)]/5 p-4 text-left">
+              <p className="text-[13px] font-semibold text-[var(--text-primary)]">
+                About the pilot programme
+              </p>
+              <p className="mt-1.5 text-[13px] leading-relaxed text-[var(--muted)]">
+                Participants get early access, a locked-in launch price, and a monthly session with
+                the product team. In return, we expect regular feedback on actual usage. We&apos;ll
+                tell you more when we talk.
+              </p>
+            </div>
+          )}
           <div className="mt-7 flex flex-col gap-2 sm:flex-row sm:justify-center">
             <Link href="/">
               <Button variant="outline" className="w-full gap-2 sm:w-auto">

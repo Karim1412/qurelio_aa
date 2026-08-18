@@ -24,6 +24,7 @@ import { Public, Roles } from '../auth/decorators/index';
 export class DemoPublicController {
   constructor(private demo: DemoService) {}
 
+
   /** Bookable slots, future and unclaimed only. */
   @Public()
   @Get('slots')
@@ -49,6 +50,7 @@ export class DemoPublicController {
 @Roles('SUPER_ADMIN')
 export class DemoAdminController {
   constructor(private demo: DemoService) {}
+
 
   /** Pending / overdue counts for the dashboard badge. */
   @Get('summary')
