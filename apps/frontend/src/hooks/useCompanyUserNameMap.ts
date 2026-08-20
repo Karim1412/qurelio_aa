@@ -7,12 +7,12 @@ import { companyApi, normalizeCompanyUsersResponse } from '@/lib/api';
 
 function accountLabel(u: Pick<User, 'firstName' | 'lastName' | 'email'>) {
   const n = `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim();
-  return n || u.email || '—';
+  return n || u.email || '-';
 }
 
 function teamMemberLabel(u: { firstName?: string; lastName?: string; email?: string }) {
   const n = `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim();
-  return n || u.email || '—';
+  return n || u.email || '-';
 }
 
 /**

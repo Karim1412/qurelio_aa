@@ -7,9 +7,9 @@ class Settings(BaseSettings):
     OPENAI_API_KEY:      str  = ""
     OPENAI_BASE_URL:     str  = "https://openai.agregatech.com/v1"
     OPENAI_MODEL:        str  = "gpt-4o-mini"
-    # Completion cap — OpenRouter free/low credits reject very high max_tokens (e.g. 16384).
+    # Completion cap: OpenRouter free/low credits reject very high max_tokens (e.g. 16384).
     LLM_MAX_TOKENS:      int  = 1000
-    # JSON extraction completions — separate cap (often needs more than chat).
+    # JSON extraction completions: separate cap (often needs more than chat).
     STRUCTURE_MAX_TOKENS: int = 4096
     # Product-wizard pre-fill runs as its own compact pass, so it fits under providers
     # that hard-cap max_tokens (agregatech rejects anything above 1000).

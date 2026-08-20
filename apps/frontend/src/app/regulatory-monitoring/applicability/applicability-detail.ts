@@ -2,20 +2,20 @@
  * Resolver behind the applicability reason modal.
  *
  * The results table lists compliance labels exactly as they sit on the product
- * record (`requiredCertifications` + `applicableRegulations`) — long, human-written
+ * record (`requiredCertifications` + `applicableRegulations`), long, human-written
  * strings that cite one or several instruments. This module turns one of those
  * labels into everything the modal renders, from three sources in priority order:
  *
- *   1. the applicability matrix — a per-product engine assessment (verdict,
+ *   1. the applicability matrix: a per-product engine assessment (verdict,
  *      scores, why, obligations, evidence, version drift);
- *   2. the global reference catalog — instrument metadata, when the engine has
+ *   2. the global reference catalog: instrument metadata, when the engine has
  *      no assessment for this product/reference pair;
- *   3. the product's own `productCertifications` — for the certificate labels,
+ *   3. the product's own `productCertifications`: for the certificate labels,
  *      which are not regulatory instruments at all.
  *
  * Anything that matches none of the three still resolves: the modal falls back to
  * the product's attributes and says plainly that nothing is assessed yet. Scores
- * are never invented — they are present only when the matrix supplies them.
+ * are never invented: they are present only when the matrix supplies them.
  */
 
 import catalogData from '@/data/regulatory_reference_catalog.json';
@@ -124,7 +124,7 @@ export interface ApplicabilityDetail {
   engineNote?: string;
   assessedAt?: string;
   assignmentSource?: string;
-  /** Other instruments cited by the same label — switchable in the modal. */
+  /** Other instruments cited by the same label: switchable in the modal. */
   alternates: { key: string; label: string }[];
 }
 
@@ -224,9 +224,9 @@ const TIER_LABEL: Record<LegalTier, string> = {
 const TIER_CAPABILITY: Record<LegalTier, string> = {
   INGESTIBLE: 'Full text ingested and AI-analysed',
   REFERENCE_ONLY:
-    'Number, scope and edition only — the licensed text is never hosted. Upload your own licensed copy to analyse it.',
+    'Number, scope and edition only. The licensed text is never hosted. Upload your own licensed copy to analyse it.',
   USER_UPLOAD:
-    'Not hosted by Qurelio — the tenant uploads the text and accepts legal liability before any analysis.',
+    'Not hosted by Qurelio. The tenant uploads the text and accepts legal liability before any analysis.',
 };
 
 /* ── Label → instrument anchors ────────────────────────────────────────────────
@@ -392,7 +392,7 @@ function versionCheckFor(productKey: string | undefined, regulationId: string) {
   return uc?.version_check_detail?.find((v) => v.regulation_id === regulationId);
 }
 
-/* ── Signals — the product attributes the verdict rests on ─────────────────── */
+/* ── Signals: the product attributes the verdict rests on ─────────────────── */
 
 function productSignals(product: ApplicabilityProduct): Signal[] {
   const s: Signal[] = [];
@@ -405,7 +405,7 @@ function productSignals(product: ApplicabilityProduct): Signal[] {
   if (product.targetMarkets?.length)
     s.push({
       k: 'Markets',
-      v: `${product.targetMarkets.length} — ${product.targetMarkets.slice(0, 3).join(', ')}${
+      v: `${product.targetMarkets.length}: ${product.targetMarkets.slice(0, 3).join(', ')}${
         product.targetMarkets.length > 3 ? '…' : ''
       }`,
     });
@@ -481,9 +481,9 @@ function certificateDetail(
   const expiringSoon = daysLeft !== undefined && daysLeft >= 0 && daysLeft <= 180;
 
   const verdict = expired
-    ? 'Required — certificate expired'
+    ? 'Required: certificate expired'
     : expiringSoon
-      ? 'Required — renewal due'
+      ? 'Required: renewal due'
       : 'Required and held for this product';
   const tone: VerdictTone = expired ? 'must' : expiringSoon ? 'review' : 'applicable';
 
@@ -503,13 +503,13 @@ function certificateDetail(
     verdictTone: tone,
     verdictText,
     meta: [
-      { label: 'Certifying body', value: cert.certifyingBody ?? '—' },
-      { label: 'Certificate number', value: cert.certificateNumber ?? '—', mono: true },
-      { label: 'Market scope', value: cert.marketScope ?? '—' },
-      { label: 'Issued', value: formatDate(cert.issueDate) ?? '—' },
+      { label: 'Certifying body', value: cert.certifyingBody ?? '-' },
+      { label: 'Certificate number', value: cert.certificateNumber ?? '-', mono: true },
+      { label: 'Market scope', value: cert.marketScope ?? '-' },
+      { label: 'Issued', value: formatDate(cert.issueDate) ?? '-' },
       {
         label: 'Expires',
-        value: formatDate(cert.expiryDate) ?? '—',
+        value: formatDate(cert.expiryDate) ?? '-',
         tone: expired ? 'bad' : expiringSoon ? 'warn' : 'default',
       },
       {
@@ -524,11 +524,11 @@ function certificateDetail(
     ],
     signals: productSignals(product),
     reason:
-      'This entry is a certification held on the product record, not a regulatory instrument. It is required because of what the product is and where it is placed on the market — the attributes below are what put it in scope.',
+      'This entry is a certification held on the product record, not a regulatory instrument. It is required because of what the product is and where it is placed on the market. The attributes below are what put it in scope.',
     evidence: [
       {
         kind: 'attribute',
-        label: 'Product record — productCertifications',
+        label: 'Product record: productCertifications',
         detail: [cert.standardName, cert.certificateNumber, cert.certifyingBody]
           .filter(Boolean)
           .join(' · '),
@@ -606,8 +606,8 @@ export function buildDetail(
         'This entry is recorded on the product but does not resolve to an instrument in the reference catalog, so the engine has produced no applicability verdict for it. It is shown as written on the product record.',
       meta: [
         { label: 'Recorded on', value: product.name },
-        { label: 'Product reference', value: product.reference || product.sku || '—', mono: true },
-        { label: 'Source', value: 'Product record — compliance list' },
+        { label: 'Product reference', value: product.reference || product.sku || '-', mono: true },
+        { label: 'Source', value: 'Product record: compliance list' },
       ],
       signals: productSignals(product),
       reason:
@@ -638,16 +638,16 @@ export function buildDetail(
   const presentation = verdictPresentation(mref?.verdict);
 
   const metaCells: MetaCell[] = [
-    { label: 'Issuing authority', value: meta?.authority ?? '—' },
-    { label: 'Instrument type', value: meta?.type ?? '—' },
-    { label: 'Jurisdiction', value: meta?.jurisdiction ?? meta?.country_region ?? '—' },
-    { label: 'Category', value: meta?.category ?? '—' },
-    { label: 'Version in force', value: versionInForce ?? '—' },
+    { label: 'Issuing authority', value: meta?.authority ?? '-' },
+    { label: 'Instrument type', value: meta?.type ?? '-' },
+    { label: 'Jurisdiction', value: meta?.jurisdiction ?? meta?.country_region ?? '-' },
+    { label: 'Category', value: meta?.category ?? '-' },
+    { label: 'Version in force', value: versionInForce ?? '-' },
     {
       label: 'Version on this product',
       value: versionHeld
         ? outdated && drift
-          ? `${versionHeld} — ${drift} days behind`
+          ? `${versionHeld}, ${drift} days behind`
           : versionHeld
         : 'Not assigned',
       tone: outdated ? 'warn' : versionHeld ? 'default' : 'bad',
@@ -656,9 +656,9 @@ export function buildDetail(
     { label: 'Engine capability', value: meta?.engine_capability ?? TIER_CAPABILITY[tier] },
     {
       label: 'Source',
-      value: [meta?.source, meta?.source_url].filter(Boolean).join(' · ') || '—',
+      value: [meta?.source, meta?.source_url].filter(Boolean).join(' · ') || '-',
     },
-    { label: 'Role on this product', value: mref?.role ?? '—' },
+    { label: 'Role on this product', value: mref?.role ?? '-' },
     {
       label: 'Assignment',
       value: mref
@@ -685,7 +685,7 @@ export function buildDetail(
     if (e.type === 'product_attribute')
       return {
         kind: 'attribute',
-        label: `Product attribute — ${e.field ?? 'unknown field'}`,
+        label: `Product attribute: ${e.field ?? 'unknown field'}`,
         detail: e.value,
       };
     return { kind: 'external', label: e.type ?? 'Signal', detail: e.value ?? e.ref };
@@ -693,7 +693,7 @@ export function buildDetail(
 
   const obligations: Obligation[] = (mref?.key_obligations ?? []).map((o) => {
     const m = o.match(/^\s*(§?[^—–-]{1,28}?)\s*[—–-]\s*(.+)$/);
-    return m ? { clause: m[1].trim(), text: m[2].trim() } : { clause: '—', text: o };
+    return m ? { clause: m[1].trim(), text: m[2].trim() } : { clause: '-', text: o };
   });
 
   const isRuledOut = mref?.verdict === 'NOT_APPLICABLE';
@@ -701,7 +701,7 @@ export function buildDetail(
     mref?.why_applicable ??
     mref?.reason ??
     (meta
-      ? `The engine has no assessment recorded for ${reference} against ${product.name}. The instrument is in the catalog, so it can be assigned and assessed — the attributes below are what the assessment would run against.`
+      ? `The engine has no assessment recorded for ${reference} against ${product.name}. The instrument is in the catalog, so it can be assigned and assessed. The attributes below are what the assessment would run against.`
       : 'No assessment recorded.');
 
   let verdictText: string;
@@ -711,7 +711,7 @@ export function buildDetail(
   } else if (mref?.condition) {
     verdictText = mref.condition;
   } else if (outdated) {
-    verdictText = `Applicable at high confidence — the problem is the edition. The product record holds ${versionHeld}, ${
+    verdictText = `Applicable at high confidence. The problem is the edition. The product record holds ${versionHeld}, ${
       drift ? `${drift} days ` : ''
     }behind the text in force, so obligations added since have never entered scope.`;
   } else if (mref) {

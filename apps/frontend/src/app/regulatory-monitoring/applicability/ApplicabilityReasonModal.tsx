@@ -25,7 +25,7 @@ import {
   type VerdictTone,
 } from './applicability-detail';
 
-/* ── Scoped stylesheet — faithful to the mockup, prefixed under .qar ───────── */
+/* ── Scoped stylesheet: faithful to the mockup, prefixed under .qar ───────── */
 const STYLES = `
 .qar-overlay{position:fixed;inset:0;z-index:60;background:rgba(11,22,32,.42);backdrop-filter:blur(2px)}
 .qar{
@@ -91,7 +91,7 @@ const STYLES = `
 .qar .sec-label.must .num{background:var(--danger-soft);color:var(--danger)}
 .qar .sec-gap{margin-top:24px}
 
-/* instrument switcher — a label can cite several instruments */
+/* instrument switcher: a label can cite several instruments */
 .qar .cswitch{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;align-items:center}
 .qar .cs-hint{font-size:.73rem;color:var(--slate);margin-right:2px}
 .qar .cs-chip{font-family:inherit;font-size:.75rem;font-weight:600;padding:6px 12px;border-radius:100px;
@@ -336,7 +336,7 @@ export function ApplicabilityReasonModal({ product, label, onOpenChange }: Props
 
           {/* Body */}
           <div className="m-body">
-            {/* The clicked label may cite several instruments — let the reviewer switch. */}
+            {/* The clicked label may cite several instruments, let the reviewer switch. */}
             {d.alternates.length > 1 && (
               <div className="cswitch">
                 <span className="cs-hint">This entry cites several instruments:</span>
@@ -476,7 +476,7 @@ export function ApplicabilityReasonModal({ product, label, onOpenChange }: Props
             ) : (
               <div className="empty">
                 No evidence trail recorded for this entry. The verdict above rests on the product
-                attributes only — no document has been read against this reference yet.
+                attributes only. No document has been read against this reference yet.
               </div>
             )}
 
@@ -534,7 +534,7 @@ export function ApplicabilityReasonModal({ product, label, onOpenChange }: Props
                 <Lock />
                 <div className="legal-txt">
                   <b>{d.reference} is not hosted by Qurelio.</b> {d.engineCapability} Version tracking
-                  compares edition numbers only — the engine knows a newer edition exists and when it
+                  compares edition numbers only. The engine knows a newer edition exists and when it
                   applies, never what it says.
                 </div>
               </div>

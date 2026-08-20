@@ -11,12 +11,12 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Public, Roles } from '../auth/decorators/index';
 
 /**
- * Public "Book a demo" endpoints — no authentication.
+ * Public "Book a demo" endpoints: no authentication.
  *
  * Deliberately a separate controller from the admin one: class-level guards
  * cannot then be widened onto these routes by accident.
  *
- * `@Public()` is required — JwtAuthGuard is registered globally as an APP_GUARD,
+ * `@Public()` is required: JwtAuthGuard is registered globally as an APP_GUARD,
  * so without it these routes would demand a token. The gateway must also list
  * them in PUBLIC_ROUTES to be reachable unauthenticated.
  */

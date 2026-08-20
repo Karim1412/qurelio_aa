@@ -118,7 +118,7 @@ export default function ApplicabilityPage() {
         .map((p) => ({
           id: p.id,
           name: p.name,
-          reference: p.reference || p.sku || '—',
+          reference: p.reference || p.sku || '-',
           compliances: complianceList(p),
           product: p,
         }));
@@ -262,7 +262,7 @@ export default function ApplicabilityPage() {
                               {p.name}
                             </span>
                             <span className="block truncate font-mono text-[11px] text-[var(--muted)]">
-                              {p.reference || p.sku || '—'}
+                              {p.reference || p.sku || '-'}
                             </span>
                           </span>
                         </button>
@@ -311,7 +311,7 @@ export default function ApplicabilityPage() {
             <div className="border-b border-[var(--border)] px-5 py-4">
               <h2 className="text-sm font-bold text-[var(--text-primary)]">Applicability results</h2>
               <p className="text-[13px] text-[var(--muted)]">
-                {results.length} product(s) analyzed — click any compliance to see why it applies to
+                {results.length} product(s) analyzed. Click any compliance to see why it applies to
                 that product
               </p>
             </div>

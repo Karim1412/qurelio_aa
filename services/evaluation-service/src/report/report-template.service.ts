@@ -71,7 +71,7 @@ export class ReportTemplateService {
 
     const saved = await this.templateRepository.save(template);
 
-    // Create version history (save plain object — same pattern as ReportVersion in report.service)
+    // Create version history (save plain object: same pattern as ReportVersion in report.service)
     await this.versionRepository.save({
       templateId: saved.id,
       versionNumber: 1,

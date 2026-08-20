@@ -33,7 +33,7 @@ export interface User {
   avatarUrl?: string | null;
   /** True when a custom photo exists (load via GET /api/auth/profile/avatar/image with JWT). */
   hasCustomAvatar?: boolean;
-  /** MinIO key; changes when photo is replaced — used to refetch the blob URL. */
+  /** MinIO key; changes when photo is replaced: used to refetch the blob URL. */
   avatarKey?: string | null;
 }
 

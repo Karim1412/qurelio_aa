@@ -60,13 +60,13 @@ function formatAbsoluteDateTime(ts: number) {
   try {
     return format(new Date(ts), 'MMM d, yyyy HH:mm');
   } catch {
-    return '—';
+    return '-';
   }
 }
 
 function accountLabel(u: Pick<User, 'firstName' | 'lastName' | 'email'>) {
   const n = `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim();
-  return n || u.email || '—';
+  return n || u.email || '-';
 }
 
 function teamMemberLabel(u: {
@@ -75,7 +75,7 @@ function teamMemberLabel(u: {
   email?: string;
 }) {
   const n = `${u.firstName ?? ''} ${u.lastName ?? ''}`.trim();
-  return n || u.email || '—';
+  return n || u.email || '-';
 }
 
 async function buildUserIdToNameMap(authUser: User | null): Promise<Map<string, string>> {
@@ -86,7 +86,7 @@ async function buildUserIdToNameMap(authUser: User | null): Promise<Map<string, 
   if (!authUser?.companyId) return map;
   /**
    * Director (company-login) JWT uses `sub` = company id, not a `users` row. Document audit
-   * stores that id as uploadedBy / actorUserId — map it so QM and others see a label.
+   * stores that id as uploadedBy / actorUserId: map it so QM and others see a label.
    */
   const companyIdKey = normActorId(authUser.companyId);
   const companyName = (authUser.company?.name ?? '').trim();
@@ -113,7 +113,7 @@ function resolveActor(
   authUser: User | null,
 ): string {
   if (raw == null || String(raw).trim() === '') {
-    return '—';
+    return '-';
   }
   const s = String(raw).trim();
   const key = normActorId(s);
@@ -134,37 +134,37 @@ function formatDocumentActivityEvent(ev: DocumentActivityRow): string {
   const name = ev.documentName;
   switch (ev.action) {
     case 'UPLOAD':
-      return `Document · Upload — ${name}`;
+      return `Document · Upload: ${name}`;
     case 'VERSION':
-      return `Document · New version uploaded — ${name}`;
+      return `Document · New version uploaded: ${name}`;
     case 'UPDATE':
-      return `Document · Details updated — ${name}`;
+      return `Document · Details updated: ${name}`;
     case 'ARCHIVE':
-      return `Document · Archived — ${name}`;
+      return `Document · Archived: ${name}`;
     case 'RESTORE':
-      return `Document · Restored — ${name}`;
+      return `Document · Restored: ${name}`;
     case 'DELETE_HARD':
-      return `Document · Permanently deleted — ${name}`;
+      return `Document · Permanently deleted: ${name}`;
     case 'EXTRACTION_EDIT':
-      return `Document · Extraction edited — ${name}`;
+      return `Document · Extraction edited: ${name}`;
     case 'MANUAL_TEXT':
-      return `Document · Manual text updated — ${name}`;
+      return `Document · Manual text updated: ${name}`;
     case 'SHARE_COMPANY':
-      return `Document · Shared with company — ${name}`;
+      return `Document · Shared with company: ${name}`;
     case 'ACL_CHANGE':
-      return `Document · Access rules updated — ${name}`;
+      return `Document · Access rules updated: ${name}`;
     case 'OWNER_CHANGE':
-      return `Document · Owner changed — ${name}`;
+      return `Document · Owner changed: ${name}`;
     case 'APPROVAL':
-      return `Document · Approval updated — ${name}`;
+      return `Document · Approval updated: ${name}`;
     case 'SUBMIT_REVIEW':
-      return `Document · Submitted for review — ${name}`;
+      return `Document · Submitted for review: ${name}`;
     case 'STANDARD_ACTIVATED':
-      return `Standard · Activated — ${name}`;
+      return `Standard · Activated: ${name}`;
     case 'PROCESSING_COMPLETE':
-      return `Document · Processing complete — ${name}`;
+      return `Document · Processing complete: ${name}`;
     default:
-      return `Document · ${ev.action} — ${name}`;
+      return `Document · ${ev.action}: ${name}`;
   }
 }
 
@@ -223,7 +223,7 @@ export function useActivityLog(start: number, end: number) {
           const at = new Date(row.createdAt || Date.now()).getTime();
           acts.push({
             at,
-            event: `Organization · ${row.status} — ${row.name}`,
+            event: `Organization · ${row.status}: ${row.name}`,
             byWho: row.email,
             status: row.status === 'ACTIVE' ? 'success' : 'warning',
           });

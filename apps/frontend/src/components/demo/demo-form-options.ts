@@ -1,5 +1,5 @@
 /**
- * Early Access Request form — option lists and copy.
+ * Early Access Request form: option lists and copy.
  *
  * Mirrors `services/auth-service/src/demo/early-access.dto.ts`, which validates
  * every answer against these exact strings. Change both together.
@@ -17,7 +17,7 @@ export const EA_ROLES = [
 ];
 
 /**
- * Field / Industry — the three sectors Qurelio targets.
+ * Field / Industry: the three sectors Qurelio targets.
  * Scoped to this form; company registration and the product wizard keep their own list.
  */
 export const EA_INDUSTRIES = [
@@ -37,7 +37,7 @@ export const EA_COMPANY_SIZES = [
 ];
 
 export const EA_MARKETS = [
-  'Tunisia — domestic market',
+  'Tunisia (domestic market)',
   'European Union',
   'United Kingdom',
   'United States',
@@ -89,8 +89,8 @@ export const EA_CHALLENGES = [
 ];
 
 export const EA_TIMELINES = [
-  'Immediately — within a month',
-  'This quarter — 1 to 3 months',
+  'Immediately (within a month)',
+  'This quarter (1 to 3 months)',
   'In 3 to 6 months',
   'Beyond 6 months / just gathering information for now',
 ];
@@ -103,7 +103,7 @@ export const EA_DECISION_ROLES = [
 
 export const EA_PILOT_ANSWERS = [
   "Yes, I'm interested",
-  "Maybe — I'd like to know more",
+  "Maybe, I'd like to know more",
   "No, I'd just like to see the product",
 ];
 

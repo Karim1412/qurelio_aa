@@ -65,7 +65,7 @@ function apiMessage(err: unknown, fallback: string): string {
 }
 
 function productDocLabel(d: ProductDocOption, products: ProductOption[]): string {
-  const file = d.name?.trim() || d.fileName?.trim() || '—';
+  const file = d.name?.trim() || d.fileName?.trim() || '-';
   const productName = products.find((p) => p.id === d.productId)?.name?.trim();
   return productName ? `${productName} · ${file}` : file;
 }
@@ -121,7 +121,7 @@ export function RunEvaluationDialog({ open, onOpenChange, onCreated }: RunEvalua
     setClauseRefsList('');
   };
 
-  /** Product behind the chosen document — the source of the declared standards. */
+  /** Product behind the chosen document: the source of the declared standards. */
   const selectedProduct = useMemo(() => {
     const doc = productDocs.find((d) => d.id === productDocumentId);
     if (!doc?.productId) return null;
@@ -134,7 +134,7 @@ export function RunEvaluationDialog({ open, onOpenChange, onCreated }: RunEvalua
   );
 
   /**
-   * Standard options built from the product's declarations — same model as the
+   * Standard options built from the product's declarations, same model as the
    * Compliance Engine form. Declarations with no activated document are listed
    * but disabled, since an evaluation needs real clauses to score against.
    */
@@ -226,7 +226,7 @@ export function RunEvaluationDialog({ open, onOpenChange, onCreated }: RunEvalua
         },
         clauseWeights: parseClauseRefListToWeights(clauseRefsList),
       });
-      toast.success('Evaluation queued — visible on the Compliance engine page');
+      toast.success('Evaluation queued. Visible on the Compliance engine page');
       onCreated?.();
       onOpenChange(false);
       setTimeout(reset, 220);
@@ -257,7 +257,7 @@ export function RunEvaluationDialog({ open, onOpenChange, onCreated }: RunEvalua
           </div>
         ) : (
           <div className="grid gap-4">
-            {/* 1 — the product being assessed drives everything below it. */}
+            {/* 1: the product being assessed drives everything below it. */}
             <div>
               <Label>
                 <span className="mr-1.5 text-[var(--brand-primary)]">1.</span>Product document
@@ -286,7 +286,7 @@ export function RunEvaluationDialog({ open, onOpenChange, onCreated }: RunEvalua
               </Select>
             </div>
 
-            {/* 2 — the standard, listed from the certificates the product declares. */}
+            {/* 2: the standard, listed from the certificates the product declares. */}
             <div>
               <Label>
                 <span className="mr-1.5 text-[var(--brand-primary)]">2.</span>Standard document
@@ -330,7 +330,7 @@ export function RunEvaluationDialog({ open, onOpenChange, onCreated }: RunEvalua
 
                       {unmatchedDeclarations.length > 0 && (
                         <div className="px-2 pb-1 pt-3 text-[10px] font-semibold uppercase tracking-wide text-[var(--muted)]">
-                          Declared — not in Standards Library
+                          Declared: not in Standards Library
                         </div>
                       )}
                       {unmatchedDeclarations.map((o) => (
@@ -360,7 +360,7 @@ export function RunEvaluationDialog({ open, onOpenChange, onCreated }: RunEvalua
               {productDocumentId && declaredStandards.length === 0 && (
                 <p className="mt-1 text-[11px] text-[var(--muted)]">
                   {selectedProduct?.name?.trim() || 'This product'} declares no certifications or
-                  regulations yet — add them in the product form to see them listed here.
+                  regulations yet. Add them in the product form to see them listed here.
                 </p>
               )}
               {productDocumentId && declaredOptions.length === 0 && unmatchedDeclarations.length > 0 && (

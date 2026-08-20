@@ -38,7 +38,7 @@ import { useSidebarPreviewStore } from '@/lib/sidebar-preview-store';
 export const SIDEBAR_WIDTH = 280;
 export const SIDEBAR_COLLAPSED_WIDTH = 110;
 
-// Apple's signature easing for sheets / sidebars — soft start, long glide.
+// Apple's signature easing for sheets / sidebars, soft start, long glide.
 const SIDEBAR_EASE = 'cubic-bezier(0.32, 0.72, 0, 1)';
 const SIDEBAR_DURATION = 620;
 // Smaller, faster easing for content fades that should ride *inside* the width animation.
@@ -46,13 +46,13 @@ const SIDEBAR_FADE_EASE = 'cubic-bezier(0.4, 0, 0.2, 1)';
 export const SIDEBAR_TRANSITION = `${SIDEBAR_DURATION}ms ${SIDEBAR_EASE}`;
 
 // DashboardLayout (and thus this Sidebar) is mounted per-page, not in a shared
-// Next.js layout — so every route change remounts the nav and would reset its
+// Next.js layout: so every route change remounts the nav and would reset its
 // scroll. We keep the last scroll offset at module scope (survives remounts for
 // the session) and restore it synchronously before paint to avoid any jump.
 let savedNavScrollTop = 0;
 
 // Run the entrance animation only the first time the permanent sidebar shows in
-// this session — route changes that remount the layout should feel instant, not
+// this session: route changes that remount the layout should feel instant, not
 // re-trigger the slide-in every time.
 let sidebarHasEnteredOnce = false;
 
@@ -147,7 +147,7 @@ function NavLink({
         className={cn(
           'relative z-[1] flex shrink-0 items-center justify-center',
           collapsed ? 'h-10 w-10 rounded-xl' : 'h-10 w-10',
-          // Collapsed: only the icon pill carries the active/hover background — no big "square" filling the cell.
+          // Collapsed: only the icon pill carries the active/hover background, no big "square" filling the cell.
           collapsed && active && 'bg-[var(--nav-hover)] ring-1 ring-inset ring-[var(--brand-primary)]/15',
           collapsed && !active && 'group-hover/nav:bg-[var(--nav-hover)]/70',
         )}
@@ -161,7 +161,7 @@ function NavLink({
       <span
         style={{
           // Fade out fast on collapse (before the rail shrinks fully). Fade in late on expand
-          // (after the rail has opened) — so labels never overlap a shrinking column.
+          // (after the rail has opened): so labels never overlap a shrinking column.
           transition: collapsed
             ? `opacity 200ms ${SIDEBAR_FADE_EASE} 0ms, transform 320ms ${SIDEBAR_EASE} 0ms, font-size ${SIDEBAR_DURATION}ms ${SIDEBAR_EASE}`
             : `opacity 280ms ${SIDEBAR_FADE_EASE} 320ms, transform 380ms ${SIDEBAR_EASE} 280ms, font-size ${SIDEBAR_DURATION}ms ${SIDEBAR_EASE}`,
@@ -267,7 +267,7 @@ function TreeSvg({
   const totalH = padTop * 2 + count * ITEM_H + (count - 1) * GAP;
   const gradId = `tree-trunk-${count}-${itemH}`;
 
-  // Branches (one path per item — no active special-case here; active gets layered on top below)
+  // Branches (one path per item: no active special-case here; active gets layered on top below)
   const branches: string[] = [];
   for (let i = 0; i < count; i++) {
     const cy = centerY(i);
@@ -295,7 +295,7 @@ function TreeSvg({
         </linearGradient>
       </defs>
 
-      {/* Trunk — soft monochrome line, faded at top/bottom */}
+      {/* Trunk: soft monochrome line, faded at top/bottom */}
       <line
         x1={TRUNK_X}
         y1={trunkTop}
@@ -306,7 +306,7 @@ function TreeSvg({
         strokeLinecap="round"
       />
 
-      {/* Inactive branches — hairline, soft */}
+      {/* Inactive branches: hairline, soft */}
       <path
         d={inactiveBranches}
         fill="none"
@@ -331,7 +331,7 @@ function TreeSvg({
           />
         ))}
 
-      {/* Active branch — brand color, slightly thicker, drawn last so it always sits on top */}
+      {/* Active branch: brand color, slightly thicker, drawn last so it always sits on top */}
       {activeBranch && (
         <>
           <path
@@ -800,7 +800,7 @@ function SidebarNav({ onNavigate, collapsed }: { onNavigate?: () => void; collap
   const showFileLibrary =
     showWorkspaceNav &&
     (perms.uploadEvidenceDocuments || perms.uploadStandards);
-  /** Company owner (Director) — team & workspace settings at /company/users */
+  /** Company owner (Director): team & workspace settings at /company/users */
   const showMyCompanyNav = showWorkspaceNav && perms.inviteRemoveMembers;
   const showKanbanCalendarTraining =
     showWorkspaceNav && !perms.isReadOnly && !perms.isLimitedReports;
@@ -826,7 +826,7 @@ function SidebarNav({ onNavigate, collapsed }: { onNavigate?: () => void; collap
   const productActive = inLibrary && view === 'product' && !cf;
   const standardActive = inLibrary && view === 'standard' && searchParams.get('archive') !== '1' && !cf;
   const fileLibraryRootActive = inLibrary && !view && !cf;
-  // /reports server-redirects to /docs?view=reports — keep the tab lit on that marker.
+  // /reports server-redirects to /docs?view=reports, keep the tab lit on that marker.
   const reportsActive = onReports || (inLibrary && view === 'reports' && !cf);
 
   return (
@@ -1055,7 +1055,7 @@ function SidebarChrome({
           className="relative flex h-16 shrink-0 items-center justify-center"
           aria-label="Qurelio home"
         >
-          {/* Cross-fade between full logo and mini icon — no hard swap */}
+          {/* Cross-fade between full logo and mini icon: no hard swap */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/brand/querlio-logo.png"
@@ -1081,7 +1081,7 @@ function SidebarChrome({
         </Link>
       </div>
 
-      {/* ── Floating toggle button — always at the right edge ── */}
+      {/* ── Floating toggle button: always at the right edge ── */}
       {onToggleCollapsed && (
         <button
           type="button"
@@ -1161,7 +1161,7 @@ function SidebarPermanentShell({
   collapsed?: boolean;
   children: React.ReactNode;
 }) {
-  // Only animate the first mount in the session — subsequent route remounts
+  // Only animate the first mount in the session: subsequent route remounts
   // shouldn't replay the slide-in.
   const shouldAnimate = !sidebarHasEnteredOnce;
   useEffect(() => {

@@ -119,7 +119,7 @@ export function ExtractionProgressProvider({ children }: { children: React.React
     return () => clearTimeout(t);
   }, [done]);
 
-  // Polling — every 4s; pauses when `paused` is true
+  // Polling: every 4s; pauses when `paused` is true
   useEffect(() => {
     if (ids.length === 0 || paused) return;
     let cancelled = false;
@@ -192,7 +192,7 @@ export function ExtractionProgressProvider({ children }: { children: React.React
     <ExtractionProgressContext.Provider value={value}>
       {children}
 
-      {/* Persistent extraction widget (bottom-right) — iOS-style transitions */}
+      {/* Persistent extraction widget (bottom-right): iOS-style transitions */}
       {visible && (
         <div className="pointer-events-none fixed bottom-6 right-6 z-[60] flex justify-end">
           <AnimatePresence mode="wait" initial={false}>
@@ -421,7 +421,7 @@ export function ExtractionProgressProvider({ children }: { children: React.React
         </div>
       )}
 
-      {/* Detail dialog — shown on click */}
+      {/* Detail dialog: shown on click */}
       <Dialog open={detailOpen} onOpenChange={setDetailOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>

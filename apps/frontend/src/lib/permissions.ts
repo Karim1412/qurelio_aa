@@ -9,7 +9,7 @@ export type TenantRole = Exclude<UserRole, 'SUPER_ADMIN'>;
 export const PERMISSIONS = {
   inviteRemoveMembers: ['DIRECTOR'],
   configureTenantSettings: ['DIRECTOR'],
-  /** Company Admin + Quality Manager — ISO library upload, archive, activate, edit clauses */
+  /** Company Admin + Quality Manager: ISO library upload, archive, activate, edit clauses */
   uploadStandards: ['DIRECTOR', 'QUALITY_MANAGER'],
   uploadEvidenceDocuments: ['DIRECTOR', 'QUALITY_MANAGER', 'AUDITOR', 'OPERATOR'],
   approveRejectDocuments: ['DIRECTOR', 'QUALITY_MANAGER', 'AUDITOR'],

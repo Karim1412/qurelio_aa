@@ -1,5 +1,5 @@
 """
-Copyright guardrail — content-level scan.
+Copyright guardrail: content-level scan.
 
 The upload form already checks the title and filename, but a scanned copy of a
 licensed standard saved as ``scan001.pdf`` and titled "Quality manual" passes
@@ -10,7 +10,7 @@ Pinecone.
 Precision matters more than recall here. A company's own quality manual cites
 "ISO 13485" on nearly every page and must NOT be flagged; the reproduced
 standard itself carries publisher boilerplate that a manual never does. So a
-bare designation is not enough on its own — the scan looks for the boilerplate,
+bare designation is not enough on its own: the scan looks for the boilerplate,
 and only treats designations as corroborating evidence.
 """
 from __future__ import annotations
@@ -32,7 +32,7 @@ class CopyrightFinding:
     body: Optional[str] = None  # standards body when identifiable
 
 
-# Publisher boilerplate. Any single hit is decisive — these phrases do not occur
+# Publisher boilerplate. Any single hit is decisive: these phrases do not occur
 # in a company's own documentation.
 STRONG_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ("iso_copyright_office", re.compile(r"ISO\s+copyright\s+office", re.I)),

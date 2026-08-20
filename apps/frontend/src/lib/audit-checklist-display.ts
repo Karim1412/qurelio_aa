@@ -72,7 +72,7 @@ export function formatCriterionAsYesNoQuestion(
 
   if (!q) {
     const std = (isoStandard || 'the standard').trim();
-    return `Is clause ${isoClause || '—'} applied in your product or process per ${std}?`;
+    return `Is clause ${isoClause || '-'} applied in your product or process per ${std}?`;
   }
 
   if (/^(is|are|does|do|has|have|can|was|were)\b/i.test(q)) {
@@ -81,7 +81,7 @@ export function formatCriterionAsYesNoQuestion(
 
   if (/^assess\b/i.test(q) || /^verify\b/i.test(q)) {
     const std = (isoStandard || 'this standard').trim();
-    return `Is ${std} applied in your product or process for clause ${isoClause || '—'}?`;
+    return `Is ${std} applied in your product or process for clause ${isoClause || '-'}?`;
   }
 
   if (/^chapter\s+\d+/i.test(q) || /^\d+(\.\d+)*\s+[A-Z]/.test(q)) {

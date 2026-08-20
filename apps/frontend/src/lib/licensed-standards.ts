@@ -8,7 +8,7 @@
  * use that copy.
  *
  * Detection is deliberately conservative and runs on the **title and filename**
- * only — short, user-supplied text. Scanning full document text would flag any
+ * only: short, user-supplied text. Scanning full document text would flag any
  * file that merely *cites* a standard, which is legitimate and extremely common
  * in quality manuals.
  *
@@ -16,7 +16,7 @@
  * a given copy was licensed, so it informs and records rather than judges.
  *
  * Mirrors `services/document-service/src/documents/licensed-standards.ts`, which
- * enforces the same rule server-side — the dialog here is the explanation, the
+ * enforces the same rule server-side: the dialog here is the explanation, the
  * server is the gate. Keep the two in step.
  */
 
@@ -41,24 +41,24 @@ interface BodyPattern {
  * "REGULATION".
  */
 const LICENSED_BODIES: BodyPattern[] = [
-  { body: 'ISO', label: 'ISO — International Organization for Standardization', pattern: /\bISO(?:\/[A-Z]{2,4})?[\s\-]?\d{3,5}\b|\bISO\b(?=[\s\-]*\d)/i },
-  { body: 'IEC', label: 'IEC — International Electrotechnical Commission', pattern: /\bIEC[\s\-]?\d{3,5}\b/i },
-  { body: 'EN', label: 'EN — European Standard (CEN / CENELEC)', pattern: /\bEN[\s\-]?(?:ISO[\s\-]?)?\d{2,5}\b/i },
+  { body: 'ISO', label: 'ISO: International Organization for Standardization', pattern: /\bISO(?:\/[A-Z]{2,4})?[\s\-]?\d{3,5}\b|\bISO\b(?=[\s\-]*\d)/i },
+  { body: 'IEC', label: 'IEC: International Electrotechnical Commission', pattern: /\bIEC[\s\-]?\d{3,5}\b/i },
+  { body: 'EN', label: 'EN: European Standard (CEN / CENELEC)', pattern: /\bEN[\s\-]?(?:ISO[\s\-]?)?\d{2,5}\b/i },
   { body: 'ASTM', label: 'ASTM International', pattern: /\bASTM\b/i },
-  { body: 'ANSI', label: 'ANSI — American National Standards Institute', pattern: /\bANSI\b/i },
-  { body: 'BSI', label: 'BSI — British Standards Institution', pattern: /\bBS[\s\-]?(?:EN[\s\-]?)?\d{3,5}\b|\bBSI\b/i },
-  { body: 'DIN', label: 'DIN — Deutsches Institut für Normung', pattern: /\bDIN\b/i },
-  { body: 'NF', label: 'NF — Norme Française (AFNOR)', pattern: /\bNF[\s\-]?(?:EN[\s\-]?)?\d{2,5}\b|\bAFNOR\b/i },
+  { body: 'ANSI', label: 'ANSI: American National Standards Institute', pattern: /\bANSI\b/i },
+  { body: 'BSI', label: 'BSI: British Standards Institution', pattern: /\bBS[\s\-]?(?:EN[\s\-]?)?\d{3,5}\b|\bBSI\b/i },
+  { body: 'DIN', label: 'DIN: Deutsches Institut für Normung', pattern: /\bDIN\b/i },
+  { body: 'NF', label: 'NF: Norme Française (AFNOR)', pattern: /\bNF[\s\-]?(?:EN[\s\-]?)?\d{2,5}\b|\bAFNOR\b/i },
   { body: 'UL', label: 'UL Solutions', pattern: /\bUL[\s\-]?\d{2,4}\b/i },
   { body: 'IEEE', label: 'IEEE', pattern: /\bIEEE\b/i },
-  { body: 'JIS', label: 'JIS — Japanese Industrial Standards', pattern: /\bJIS\b/i },
+  { body: 'JIS', label: 'JIS: Japanese Industrial Standards', pattern: /\bJIS\b/i },
   { body: 'GOST', label: 'GOST', pattern: /\bGOST\b/i },
   { body: 'SAE', label: 'SAE International', pattern: /\bSAE\b/i },
   { body: 'AAMI', label: 'AAMI', pattern: /\bAAMI\b/i },
-  { body: 'IPC', label: 'IPC — Association Connecting Electronics Industries', pattern: /\bIPC[\s\-]?[A-Z]?\d{3,4}\b/i },
-  { body: 'ISPE', label: 'ISPE — Baseline / Good Practice Guides', pattern: /\bISPE\b/i },
-  { body: 'Ph. Eur.', label: 'European Pharmacopoeia (EDQM) — subscription', pattern: /\bPh\.?\s?Eur\b|\bEuropean Pharmacopoeia\b|\bEDQM\b/i },
-  { body: 'USP', label: 'United States Pharmacopeia — subscription', pattern: /\bUSP\b(?![A-Z])/i },
+  { body: 'IPC', label: 'IPC: Association Connecting Electronics Industries', pattern: /\bIPC[\s\-]?[A-Z]?\d{3,4}\b/i },
+  { body: 'ISPE', label: 'ISPE: Baseline / Good Practice Guides', pattern: /\bISPE\b/i },
+  { body: 'Ph. Eur.', label: 'European Pharmacopoeia (EDQM), subscription', pattern: /\bPh\.?\s?Eur\b|\bEuropean Pharmacopoeia\b|\bEDQM\b/i },
+  { body: 'USP', label: 'United States Pharmacopeia, subscription', pattern: /\bUSP\b(?![A-Z])/i },
   { body: 'ICS', label: 'ICH Q7-style purchased compendium', pattern: /\bBSI Standards Publication\b/i },
 ];
 

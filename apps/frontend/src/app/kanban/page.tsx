@@ -258,9 +258,9 @@ function saveBoard(state: BoardState) {
 }
 
 function initials(name?: string): string {
-  if (!name) return '—';
+  if (!name) return '-';
   const parts = name.trim().split(/\s+/).slice(0, 2);
-  return parts.map((p) => p.charAt(0).toUpperCase()).join('') || '—';
+  return parts.map((p) => p.charAt(0).toUpperCase()).join('') || '-';
 }
 
 interface DraftTask {
@@ -711,8 +711,8 @@ export default function KanbanPage() {
               </h1>
               <p className="mt-1 max-w-3xl text-sm leading-relaxed text-[var(--muted)]">
                 {USE_NC_BOARD
-                  ? 'Non-conformities by workflow stage — drag between Open, RCA, CAPA, and verification when allowed.'
-                  : 'Plan, track, and ship work — drag tasks across columns to update their status.'}
+                  ? 'Non-conformities by workflow stage. Drag between Open, RCA, CAPA, and verification when allowed.'
+                  : 'Plan, track, and ship work. Drag tasks across columns to update their status.'}
                 {boardLoading ? ' Loading…' : ''}
               </p>
             </div>
@@ -1927,7 +1927,7 @@ function ImageDropzone({
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  Tiny three-dot icon (kebab) — kept local to avoid touching the icon wrapper
+//  Tiny three-dot icon (kebab): kept local to avoid touching the icon wrapper
 // ─────────────────────────────────────────────────────────────────────────────
 
 function DotsIcon() {

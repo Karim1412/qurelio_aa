@@ -8,7 +8,7 @@ import axios from 'axios';
 export class HealthController {
   constructor(private cfg: ConfigService) {}
 
-  /** Liveness only — for Docker/K8s probes. Does not call upstream services. */
+  /** Liveness only: for Docker/K8s probes. Does not call upstream services. */
   @Get('live')
   live(): { status: string; timestamp: string } {
     return { status: 'ok', timestamp: new Date().toISOString() };

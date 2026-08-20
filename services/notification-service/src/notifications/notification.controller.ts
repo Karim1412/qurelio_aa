@@ -62,7 +62,7 @@ export class NotificationController {
     return this.svc.remove(id, req.user.id);
   }
 
-  // Internal — called by other services (optional X-Internal-Token when NOTIFICATION_INTERNAL_TOKEN is set)
+  // Internal: called by other services (optional X-Internal-Token when NOTIFICATION_INTERNAL_TOKEN is set)
   @Public()
   @UseGuards(InternalTokenGuard)
   @Post('internal/create')

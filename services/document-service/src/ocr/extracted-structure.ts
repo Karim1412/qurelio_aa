@@ -11,7 +11,7 @@ export interface DocumentSection {
   importantNotes?: string[] | null;
 }
 
-/** Product document profile — maps to Overview / Specifications tabs (Qleer-style UI) */
+/** Product document profile: maps to Overview / Specifications tabs (Qleer-style UI) */
 export interface ProductBasicInformation {
   reference?: string | null;
   modelNumber?: string | null;
@@ -31,7 +31,7 @@ export interface ProductUsageInformation {
   ipRating?: string | null;
 }
 
-/** Single row for quality traceability (specs, materials, regulatory — one table in UI). */
+/** Single row for quality traceability (specs, materials, regulatory, one table in UI). */
 export interface QualityTraceabilityRow {
   category?: string | null;
   parameter?: string | null;
@@ -52,7 +52,7 @@ export interface ProductOnboardingCertification {
 }
 
 /**
- * Wizard-shaped draft of the product profile — one key per field of the
+ * Wizard-shaped draft of the product profile: one key per field of the
  * "Add product" onboarding steps, so an uploaded document can pre-fill the form
  * for the user to verify. Every field is a suggestion, never authoritative.
  */
@@ -108,7 +108,7 @@ export interface ProductProfile {
   technicalCharacteristics?: string | null;
   /** Legacy bullets; avoid duplicating traceabilityRows */
   technicalBullets?: string[] | null;
-  /** Unified table: specifications, materials/BOM, dimensions — category distinguishes rows */
+  /** Unified table: specifications, materials/BOM, dimensions, category distinguishes rows */
   traceabilityRows?: QualityTraceabilityRow[] | null;
 }
 
@@ -120,9 +120,9 @@ export interface ExtractedStructure {
   keyPoints?: string[];
   /** PDF/Office: one-paragraph summary of what this file establishes (purpose + key facts). */
   fileSummary?: string | null;
-  /** Images: what is visible (objects, labels, warnings, packaging text) — “visual understanding”. */
+  /** Images: what is visible (objects, labels, warnings, packaging text), “visual understanding”. */
   visualDescription?: string | null;
-  /** Populated for PRODUCT_DOC / EVIDENCE — UI Overview + Specifications */
+  /** Populated for PRODUCT_DOC / EVIDENCE: UI Overview + Specifications */
   productProfile?: ProductProfile | null;
   /** Normative standard metadata (ISO, EN, IEC, etc.) from cover / title block (Standards Library) */
   standardMetadata?: {

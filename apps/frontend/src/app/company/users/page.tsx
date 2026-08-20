@@ -76,7 +76,7 @@ function mapUser(u: {
     firstName: u.firstName,
     lastName: u.lastName,
     email: u.email,
-    phone: u.phone || '—',
+    phone: u.phone || '-',
     role: u.role,
     isActive: u.isActive,
     isEmailVerified: u.isEmailVerified,
@@ -153,7 +153,7 @@ export default function CompanyUsersPage() {
         phone: data.phone,
         role: data.role,
       });
-      toast.success('Invitation sent — the user will receive an email to set their password.');
+      toast.success('Invitation sent. The user will receive an email to set their password.');
       setAddOpen(false);
       reset();
       await loadUsers();
@@ -242,7 +242,7 @@ export default function CompanyUsersPage() {
                 {seats.used} / {seats.max}
               </span>{' '}
               <span className="text-[var(--muted)]">
-                seats — includes you as company owner and every active team account.
+                seats, including you as company owner and every active team account.
               </span>
             </p>
             {(atSeatLimit || nearSeatLimit) && (

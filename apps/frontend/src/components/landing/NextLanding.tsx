@@ -224,7 +224,7 @@ export function NextLanding() {
             href="/demo"
             className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[var(--brand-primary)] px-7 py-3.5 text-sm font-semibold text-white ring-1 ring-inset ring-white/15 transition-all duration-300 ease-out hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
           >
-            {/* Soft sheen — skew via style to avoid JSX > conflict */}
+            {/* Soft sheen: skew via style to avoid JSX > conflict */}
             <span
               aria-hidden
               className="pointer-events-none absolute inset-0 bg-white/20 transition-transform duration-700 ease-out group-hover:translate-x-[200%]"

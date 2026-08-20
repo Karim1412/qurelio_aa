@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import type { Transporter } from 'nodemailer';
 
-/** Matches apps/frontend globals.css — Qurel+i blue, o gold */
+/** Matches apps/frontend globals.css: Qurel+i blue, o gold */
 const BRAND_PRIMARY = '#4d92c4';
 const BRAND_ACCENT = '#ffc107';
 const BRAND_SLOGAN = '#6ba8d4';
@@ -18,7 +18,7 @@ export class MailService implements OnModuleInit {
 
   constructor(private config: ConfigService) {}
 
-  /** Wordmark: Qurel + i (primary blue), o (gold) — same split as QurelioLogo */
+  /** Wordmark: Qurel + i (primary blue), o (gold): same split as QurelioLogo */
   private wordmarkHtml(sizePx: number): string {
     return `<span style="font-family:'Public Sans','Segoe UI',sans-serif;font-size:${sizePx}px;font-weight:700;letter-spacing:0.02em;"><span style="color:${BRAND_PRIMARY};">Qurel</span><span style="color:${BRAND_PRIMARY};">i</span><span style="color:${BRAND_ACCENT};">o</span></span>`;
   }
@@ -29,7 +29,7 @@ export class MailService implements OnModuleInit {
 
     if (!this.senderEmail) {
       this.logger.error(
-        'SMTP_SENDER_EMAIL is missing — set it to a verified sender address on your SMTP server',
+        'SMTP_SENDER_EMAIL is missing: set it to a verified sender address on your SMTP server',
       );
       return;
     }
@@ -41,7 +41,7 @@ export class MailService implements OnModuleInit {
     const secure = (this.config.get<string>('SMTP_SECURE') ?? 'false').toLowerCase() === 'true';
 
     if (!host) {
-      this.logger.error('SMTP_HOST is missing — email sending will fail');
+      this.logger.error('SMTP_HOST is missing: email sending will fail');
       return;
     }
 
@@ -114,10 +114,10 @@ export class MailService implements OnModuleInit {
         html: this.getHtmlTemplate(code, purpose),
       });
 
-      /** Local / staging only: set `LOG_OTP_TO_CONSOLE=true` in env — never in production. */
+      /** Local / staging only: set `LOG_OTP_TO_CONSOLE=true` in env, never in production. */
       if (this.config.get<string>('LOG_OTP_TO_CONSOLE')?.toLowerCase() === 'true') {
         this.logger.warn(
-          `LOG_OTP_TO_CONSOLE: OTP for ${to} is ${code} — turn this off outside trusted dev machines`,
+          `LOG_OTP_TO_CONSOLE: OTP for ${to} is ${code}: turn this off outside trusted dev machines`,
         );
       }
     } catch (err) {
@@ -130,7 +130,7 @@ export class MailService implements OnModuleInit {
     await this.sendAccountActivatedNotice({ ...params, kind: 'company' });
   }
 
-  /** After super admin or company owner activates an account — user or company director login. */
+  /** After super admin or company owner activates an account, user or company director login. */
   async sendAccountActivatedNotice(params: { to: string; name: string; kind: 'company' | 'user' }): Promise<void> {
     const { to, name, kind } = params;
     const loginUrl   = `${this.config.get('FRONTEND_URL')}/auth/login`;
@@ -150,7 +150,7 @@ export class MailService implements OnModuleInit {
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Account Activated — Qurelio</title>
+  <title>Account Activated | Qurelio</title>
   <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
     body { background-color:#f4f8ff; font-family:'Sora',sans-serif; color:#0d1b2a; margin:0; padding:0; }
@@ -180,7 +180,7 @@ export class MailService implements OnModuleInit {
   <div class="hero">
     <div style="font-size:10px;letter-spacing:4px;text-transform:uppercase;color:${BRAND_PRIMARY};font-weight:600;margin-bottom:14px;">QURELIO PLATFORM</div>
     <h1>${headline}</h1>
-    <p class="hero-sub">Welcome aboard — your access to the platform is ready.</p>
+    <p class="hero-sub">Welcome aboard. Your access to the platform is ready.</p>
   </div>
   <div class="body-section">
     <div style="text-align:center;"><span class="badge">${badgeText}</span></div>
@@ -214,7 +214,7 @@ export class MailService implements OnModuleInit {
     try {
       await this.sendMail({
         to,
-        subject: 'You have been invited to Qurelio — set your password',
+        subject: 'You have been invited to Qurelio: set your password',
         html: `
 <!DOCTYPE html><html><head><meta charset="utf-8"><title>You're invited to Qurelio</title>
 <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&display=swap" rel="stylesheet">
@@ -347,7 +347,7 @@ ${message}
   }
 
   /**
-   * Branded shell shared by every demo email — client and admin alike.
+   * Branded shell shared by every demo email: client and admin alike.
    *
    * Mirrors the account-activation template (top bar with wordmark + slogan,
    * gradient hero, white body, dark footer) so a visitor booking a demo gets the
@@ -376,7 +376,7 @@ ${message}
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${heading} — Qurelio</title>
+  <title>${heading} | Qurelio</title>
 </head>
 <body style="background-color:#f4f8ff;font-family:${font};color:#0d1b2a;margin:0;padding:0;">
   <div style="max-width:600px;margin:0 auto;background:#ffffff;">
@@ -433,7 +433,7 @@ ${bodyHtml}
          <p style="margin:0 0 20px;">Our team will confirm within <strong>${responseHours} hours</strong>. The slot is held for you until then.</p>
          <hr style="border:none;border-top:1px solid #e3eeff;margin:0 0 20px;">
          <p style="font-size:13px;color:#90a4ae;line-height:1.7;margin:0;">
-           Nothing to prepare in the meantime — the demo will be built on what you told us.<br>
+           Nothing to prepare in the meantime. The demo will be built on what you told us.<br>
            If you need to change anything, simply reply to this email.
          </p>`,
         { eyebrow: 'DEMO REQUEST', heroSub: 'We have your slot on hold. Here is what happens next.' },
@@ -468,7 +468,7 @@ ${bodyHtml}
     await this.sendMail({
       to,
       replyTo: b.email,
-      subject: `[Qurelio Demo] ${b.companyName} — ${this.formatSlot(startsAt)}`,
+      subject: `[Qurelio Demo] ${b.companyName}: ${this.formatSlot(startsAt)}`,
       html: this.demoShell(
         'New demo request',
         `<table style="width:100%;border-collapse:collapse;margin-bottom:16px;font-size:14px;">
@@ -476,7 +476,7 @@ ${bodyHtml}
            ${row('Name', b.fullName)}
            ${row('Email', `<a href="mailto:${b.email}" style="color:${BRAND_PRIMARY};">${b.email}</a>`)}
            ${row('Company', b.companyName)}
-           ${row('Role', b.roleOther?.trim() ? `${b.role} — ${b.roleOther}` : b.role)}
+           ${row('Role', b.roleOther?.trim() ? `${b.role}: ${b.roleOther}` : b.role)}
            ${row('Phone', b.phone)}
            ${row('Industry', b.field)}
            ${row('Consulting for', b.consultingScope)}
@@ -485,7 +485,7 @@ ${bodyHtml}
            ${row('Targeting', list(b.marketsTargeting))}
            ${row('Certifications', list(withOther(b.certifications, b.certificationsOther)))}
            ${row('Products managed', b.productCount)}
-           ${row('Compliance today', b.qmsName?.trim() ? `${b.complianceToday} — ${b.qmsName}` : b.complianceToday)}
+           ${row('Compliance today', b.qmsName?.trim() ? `${b.complianceToday}: ${b.qmsName}` : b.complianceToday)}
            ${row('Main challenges', list(withOther(b.challenges, b.challengesOther)))}
            ${row('Timeline', b.timeline)}
            ${row('Decision role', b.decisionRole)}
@@ -501,7 +501,7 @@ ${bodyHtml}
          }
          <hr style="border:none;border-top:1px solid #e3eeff;margin:22px 0 18px;">
          <p style="font-size:13px;color:#90a4ae;line-height:1.7;margin:0;">Answer within ${responseHours} hours from the admin dashboard.</p>`,
-        { eyebrow: 'ADMIN NOTIFICATION', heroSub: `${b.companyName} asked for a demo — full answers below.` },
+        { eyebrow: 'ADMIN NOTIFICATION', heroSub: `${b.companyName} asked for a demo. Full answers below.` },
       ),
     });
   }
@@ -549,7 +549,7 @@ ${bodyHtml}
           eyebrow: confirmed ? 'DEMO CONFIRMED' : 'DEMO REQUEST',
           heroSub: confirmed
             ? 'Your slot is booked. Everything you need is below.'
-            : 'That time is no longer available — you can pick another whenever you like.',
+            : 'That time is no longer available. You can pick another whenever you like.',
           cta: confirmed
             ? (meetingLink ? { label: 'Join the demo', url: meetingLink } : undefined)
             : { label: 'Choose another slot', url: this.bookingUrl() },
@@ -573,7 +573,7 @@ ${bodyHtml}
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Your Verification Code — Qurelio</title>
+  <title>Your Verification Code | Qurelio</title>
   <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&family=Sora:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body { background-color: #f4f8ff; font-family: 'Sora', sans-serif; color: #0d1b2a; margin:0; padding:0; }

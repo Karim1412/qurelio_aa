@@ -31,19 +31,19 @@ const SECTION_FILL: ExcelJS.Fill = {
 };
 
 function fmtDate(d: Date | string | null | undefined): string {
-  if (!d) return '—';
+  if (!d) return '-';
   const dt = d instanceof Date ? d : new Date(d);
-  return Number.isNaN(dt.getTime()) ? '—' : dt.toLocaleDateString('en-GB');
+  return Number.isNaN(dt.getTime()) ? '-' : dt.toLocaleDateString('en-GB');
 }
 
 function fmtDateTime(d: Date | string | null | undefined): string {
-  if (!d) return '—';
+  if (!d) return '-';
   const dt = d instanceof Date ? d : new Date(d);
-  return Number.isNaN(dt.getTime()) ? '—' : dt.toLocaleString('en-GB');
+  return Number.isNaN(dt.getTime()) ? '-' : dt.toLocaleString('en-GB');
 }
 
 export function formatFindingAnswer(answer: FindingType | string | null | undefined): string {
-  if (!answer) return '—';
+  if (!answer) return '-';
   const a = String(answer);
   if (a === 'STRENGTH') return 'Strong point';
   return a.replace(/_/g, ' ');
@@ -124,7 +124,7 @@ function addKeyValueBlock(
 }
 
 function evidenceCheckedSummary(checks: EvidenceCheckRow[] | null | undefined): string {
-  if (!Array.isArray(checks) || !checks.length) return '—';
+  if (!Array.isArray(checks) || !checks.length) return '-';
   const checked = checks.filter((x) => x.checked);
   if (!checked.length) return 'None ticked';
   return checked.map((x) => x.label).join('; ');
@@ -138,7 +138,7 @@ function sheetSummary(
 ) {
   const lastCol = 4;
   ws.mergeCells(1, 1, 1, lastCol);
-  ws.getCell(1, 1).value = 'Audit report — Summary';
+  ws.getCell(1, 1).value = 'Audit report: Summary';
   ws.getCell(1, 1).font = { bold: true, size: 16 };
   ws.getRow(1).height = 28;
 
@@ -149,19 +149,19 @@ function sheetSummary(
   ws.getCell(r, 1).fill = SECTION_FILL;
   r += 1;
 
-  const scopeRefs = Array.isArray(audit.scopeClauseRefs) ? audit.scopeClauseRefs.join(', ') : '—';
+  const scopeRefs = Array.isArray(audit.scopeClauseRefs) ? audit.scopeClauseRefs.join(', ') : '-';
   r = addKeyValueBlock(ws, r, [
     ['Company', companyName],
-    ['Audit title', audit.title || '—'],
+    ['Audit title', audit.title || '-'],
     ['Type', audit.type],
     ['Status', audit.status],
-    ['ISO standard', audit.isoStandard || '—'],
-    ['Lead auditor', audit.leadAuditor || '—'],
+    ['ISO standard', audit.isoStandard || '-'],
+    ['Lead auditor', audit.leadAuditor || '-'],
     ['Scheduled start', fmtDate(audit.scheduledAt)],
     ['Scheduled end', fmtDate(audit.scheduledEndAt)],
     ['Started', fmtDateTime(audit.startedAt)],
     ['Completed', fmtDateTime(audit.completedAt)],
-    ['Scope', audit.scope || '—'],
+    ['Scope', audit.scope || '-'],
     ['Scope clauses', scopeRefs],
     ['Report generated', fmtDateTime(new Date())],
   ], lastCol);
@@ -189,7 +189,7 @@ function sheetSummary(
   ws.getCell(r, 1).fill = SECTION_FILL;
   r += 1;
   ws.mergeCells(r, 1, r, lastCol);
-  ws.getCell(r, 1).value = (audit.overallConclusion || '—').trim() || '—';
+  ws.getCell(r, 1).value = (audit.overallConclusion || '-').trim() || '-';
   ws.getCell(r, 1).alignment = { wrapText: true, vertical: 'top' };
 
   ws.getColumn(1).width = 22;
@@ -222,15 +222,15 @@ function sheetChecklist(ws: ExcelJS.Worksheet, audit: Audit, ncById: Map<string,
     const row = ws.getRow(r);
     row.getCell(1).value = c.isoClause;
     row.getCell(2).value = hierarchyLabel(c.hierarchyLevel);
-    row.getCell(3).value = c.question || '—';
+    row.getCell(3).value = c.question || '-';
     row.getCell(4).value = formatFindingAnswer(c.answer);
-    row.getCell(5).value = c.score != null ? c.score : '—';
-    row.getCell(6).value = (c.notes || '').trim() || '—';
+    row.getCell(5).value = c.score != null ? c.score : '-';
+    row.getCell(6).value = (c.notes || '').trim() || '-';
     row.getCell(7).value = evidenceCheckedSummary(checks);
-    row.getCell(8).value = c.ncId || '—';
-    row.getCell(9).value = nc?.title || '—';
-    row.getCell(10).value = nc?.status || '—';
-    row.getCell(11).value = c.attachmentDocumentId || '—';
+    row.getCell(8).value = c.ncId || '-';
+    row.getCell(9).value = nc?.title || '-';
+    row.getCell(10).value = nc?.status || '-';
+    row.getCell(11).value = c.attachmentDocumentId || '-';
     applyDataRow(ws, r, colCount);
     r += 1;
   }
@@ -253,10 +253,10 @@ function sheetChecklistLines(ws: ExcelJS.Worksheet, audit: Audit) {
     if (!checks.length) {
       const row = ws.getRow(r);
       row.getCell(1).value = c.isoClause;
-      row.getCell(2).value = c.question || '—';
-      row.getCell(3).value = '—';
-      row.getCell(4).value = '—';
-      row.getCell(5).value = '—';
+      row.getCell(2).value = c.question || '-';
+      row.getCell(3).value = '-';
+      row.getCell(4).value = '-';
+      row.getCell(5).value = '-';
       applyDataRow(ws, r, colCount);
       r += 1;
       continue;
@@ -264,10 +264,10 @@ function sheetChecklistLines(ws: ExcelJS.Worksheet, audit: Audit) {
     for (const line of checks) {
       const row = ws.getRow(r);
       row.getCell(1).value = c.isoClause;
-      row.getCell(2).value = c.question || '—';
-      row.getCell(3).value = line.label || '—';
+      row.getCell(2).value = c.question || '-';
+      row.getCell(3).value = line.label || '-';
       row.getCell(4).value = line.checked ? 'Yes' : 'No';
-      row.getCell(5).value = line.source || '—';
+      row.getCell(5).value = line.source || '-';
       applyDataRow(ws, r, colCount);
       r += 1;
     }
@@ -287,10 +287,10 @@ function sheetFindings(ws: ExcelJS.Worksheet, findings: AuditFinding[]) {
   for (const f of findings) {
     const row = ws.getRow(r);
     row.getCell(1).value = formatFindingAnswer(f.type);
-    row.getCell(2).value = f.isoClause || '—';
-    row.getCell(3).value = f.description || '—';
-    row.getCell(4).value = (f.evidence || '').trim() || '—';
-    row.getCell(5).value = f.recordedBy || '—';
+    row.getCell(2).value = f.isoClause || '-';
+    row.getCell(3).value = f.description || '-';
+    row.getCell(4).value = (f.evidence || '').trim() || '-';
+    row.getCell(5).value = f.recordedBy || '-';
     row.getCell(6).value = fmtDateTime(f.createdAt);
     applyDataRow(ws, r, colCount);
     r += 1;
@@ -314,7 +314,7 @@ function sheetLinkedNcs(ws: ExcelJS.Worksheet, ncById: Map<string, LinkedNcBrief
     row.getCell(2).value = nc.title;
     row.getCell(3).value = nc.status;
     row.getCell(4).value = nc.classification;
-    row.getCell(5).value = nc.isoClause || '—';
+    row.getCell(5).value = nc.isoClause || '-';
     applyDataRow(ws, r, colCount);
     r += 1;
   }

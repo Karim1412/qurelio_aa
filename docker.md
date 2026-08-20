@@ -1,4 +1,4 @@
-# Docker — Commands Cheat Sheet
+# Docker: Commands Cheat Sheet
 
 All commands run **from the repository root** (`/Qurelio`). The compose file lives in
 `docker/docker-compose.yml` and its build contexts are relative to it, so always pass
@@ -32,7 +32,7 @@ npm run docker:down      # down
 ## 2. Start everything (infra + services + gateway + frontend)
 
 ```bash
-# Validate .env resolution first — catches missing variables before any build
+# Validate .env resolution first: catches missing variables before any build
 docker compose -f docker/docker-compose.yml --env-file .env config
 
 # Build + start the full stack, detached
@@ -65,7 +65,7 @@ $DC restart frontend
 ```
 
 > The frontend image is built with `API_PROXY_TARGET=http://gateway:3000` baked in as a
-> build arg — after changing that target you must rebuild, not just restart.
+> build arg: after changing that target you must rebuild, not just restart.
 
 ### Gateway (NestJS API, :3000)
 
@@ -162,7 +162,7 @@ $DC logs seed                                 # what the last run did
 $DC stop                     # stop containers, keep them
 $DC stop frontend gateway    # stop specific ones
 $DC down                     # stop + remove containers and the network (volumes kept)
-$DC down -v                  # ALSO delete postgres_data / redis_data / minio_data — full data reset
+$DC down -v                  # ALSO delete postgres_data / redis_data / minio_data, full data reset
 $DC rm -f seed               # drop the exited seed container
 docker system prune -f       # reclaim dangling images/build cache (repo-wide, be deliberate)
 ```
@@ -195,39 +195,39 @@ Container names are prefixed by `COMPOSE_PROJECT_NAME` (default `qurelio`), e.g.
 `qurelio_gateway`.
 
 Inside the Docker network, services always talk to each other on the **container** port
-(`http://gateway:3000`, `http://rag-service:8000`) — host overrides do not affect that.
+(`http://gateway:3000`, `http://rag-service:8000`), host overrides do not affect that.
 
 ---
 
 ## 9. Troubleshooting
 
-**Port already allocated** — set the matching `*_HOST_PORT` in `.env` and `up -d` again.
+**Port already allocated**: set the matching `*_HOST_PORT` in `.env` and `up -d` again.
 Find the squatter with `ss -ltnp | grep 3000`.
 
-**`config` prints empty values / a service reads the wrong credentials** — the variable is
+**`config` prints empty values / a service reads the wrong credentials**, the variable is
 missing from the root `.env`. `auth-service` and `seed` load `.env` via `env_file`; the
 other services get their values interpolated by compose, so an unset variable becomes an
 empty string instead of an error.
 
 Today `config` warns about `SENDGRID_API_KEY`, `SENDGRID_SENDER_EMAIL` and
-`SENDGRID_TEMPLATE_ID` — the compose file still references them while `.env` provides the
+`SENDGRID_TEMPLATE_ID`: the compose file still references them while `.env` provides the
 `SMTP_*` variables that the services actually use. Those warnings are expected and harmless;
 mail goes out over SMTP via Nodemailer.
 
-**Browser can't reach the app on `localhost`** — try `http://127.0.0.1:3001` (IPv6 `::1` vs
+**Browser can't reach the app on `localhost`**: try `http://127.0.0.1:3001` (IPv6 `::1` vs
 IPv4) and keep `FRONTEND_URL` identical to the URL you actually open, otherwise CORS and
 cookies break.
 
-**Presigned download / avatar URLs point at `minio` and fail in the browser** — set
+**Presigned download / avatar URLs point at `minio` and fail in the browser**, set
 `MINIO_PUBLIC_URL` to a host the browser can resolve (e.g. `http://<server-ip>:9000`), then
 recreate `document-service` and `auth-service`.
 
-**A service restarts in a loop** — `$DC logs --tail=200 <service>`. Most common causes are a
+**A service restarts in a loop**: `$DC logs --tail=200 <service>`. Most common causes are a
 failed DB connection (postgres not healthy yet) and a missing JWT/secret variable.
 
-**Uploads succeed but nothing gets indexed** — check `rag-service` logs and its
+**Uploads succeed but nothing gets indexed**: check `rag-service` logs and its
 `OPENAI_API_KEY` / `PINECONE_API_KEY`. To run `document-service` without the RAG pipeline,
 set `RAG_INGEST_ENABLED=false`.
 
-**Which compose values are actually in effect** —
+**Which compose values are actually in effect**:
 `$DC config` (full resolved file) or `$DC config --services` (service names only).

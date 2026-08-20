@@ -155,9 +155,9 @@ function initials(u: User): string {
 }
 
 function formatRelative(iso?: string): string {
-  if (!iso) return '—';
+  if (!iso) return '-';
   const d = new Date(iso);
-  if (!Number.isFinite(d.getTime())) return '—';
+  if (!Number.isFinite(d.getTime())) return '-';
   const diff = (Date.now() - d.getTime()) / 1000;
   if (diff < 60) return 'just now';
   if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
@@ -325,7 +325,7 @@ export function ShareDialog({ docId, docName, onClose, onSaved }: Props) {
     return m;
   }, [users, me]);
 
-  // Activity feed: opens, downloads, edits — anything meaningful for collaborators.
+  // Activity feed: opens, downloads, edits: anything meaningful for collaborators.
   const activityEvents = useMemo(() => {
     if (!audit) return [];
     const allowed = new Set(['VIEW', 'DOWNLOAD', 'UPLOAD', ...EDIT_ACTIONS]);

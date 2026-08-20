@@ -8,11 +8,11 @@ import { DemoBookingStatus, DemoSlotStatus } from '../database/entities/demo.ent
  * Booking form option lists.
  *
  * The booking popup asks the Early Access questionnaire, so these are the same
- * values the public form renders — see
+ * values the public form renders: see
  * `apps/frontend/src/components/demo/demo-form-options.ts`. Change both together.
  */
 
-/** Field / Industry — the three sectors Qurelio targets. */
+/** Field / Industry: the three sectors Qurelio targets. */
 export const DEMO_FIELDS = [
   'Pharmaceutical industry',
   'Cosmetic industry',
@@ -38,7 +38,7 @@ export const DEMO_ROLES = [
 export const DEMO_CONSULTING_SCOPES = ['For my own firm', 'For my clients', 'Both'] as const;
 
 export const DEMO_MARKETS = [
-  'Tunisia — domestic market',
+  'Tunisia (domestic market)',
   'European Union',
   'United Kingdom',
   'United States',
@@ -79,8 +79,8 @@ export const DEMO_CHALLENGES = [
 ] as const;
 
 export const DEMO_TIMELINES = [
-  'Immediately — within a month',
-  'This quarter — 1 to 3 months',
+  'Immediately (within a month)',
+  'This quarter (1 to 3 months)',
   'In 3 to 6 months',
   'Beyond 6 months / just gathering information for now',
 ] as const;
@@ -90,7 +90,7 @@ export const DEMO_DECISION_ROLES = [
 ] as const;
 
 export const DEMO_PILOT_ANSWERS = [
-  "Yes, I'm interested", "Maybe — I'd like to know more", "No, I'd just like to see the product",
+  "Yes, I'm interested", "Maybe, I'd like to know more", "No, I'd just like to see the product",
 ] as const;
 
 export const DEMO_LANGUAGES = ['French', 'English', 'Arabic'] as const;
@@ -104,7 +104,7 @@ export class CreateDemoBookingDto {
   @IsString()
   slotId!: string;
 
-  // ── Page 1 — you & your company ───────────────────────────────────────────
+  // ── Page 1: you & your company ───────────────────────────────────────────
   @IsString() @MinLength(2, { message: 'First and last name is required' }) @MaxLength(200)
   fullName!: string;
 
@@ -124,7 +124,7 @@ export class CreateDemoBookingDto {
   @IsOptional() @Matches(/^\+[1-9]\d{6,14}$/, { message: 'Enter a valid phone number with country code' })
   phone?: string;
 
-  // ── Page 2 — regulatory context ───────────────────────────────────────────
+  // ── Page 2: regulatory context ───────────────────────────────────────────
   @IsIn(asStrings(DEMO_FIELDS), { message: 'Select your primary industry' })
   field!: string;
 
@@ -149,7 +149,7 @@ export class CreateDemoBookingDto {
   @IsOptional() @IsIn(asStrings(DEMO_PRODUCT_COUNTS))
   productCount?: string;
 
-  // ── Page 3 — priorities & demo ────────────────────────────────────────────
+  // ── Page 3: priorities & demo ────────────────────────────────────────────
   @IsIn(asStrings(DEMO_COMPLIANCE_TODAY), { message: 'Tell us how you manage compliance today' })
   complianceToday!: string;
 

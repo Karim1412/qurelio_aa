@@ -157,7 +157,7 @@ export function QuickActionsPanel({
         
       </div>
 
-      {/* Independent framed action buttons — 2×2 grid */}
+      {/* Independent framed action buttons: 2×2 grid */}
       <motion.div
         initial="hidden"
         animate="show"

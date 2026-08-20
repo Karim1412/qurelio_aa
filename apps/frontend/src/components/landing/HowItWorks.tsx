@@ -56,7 +56,7 @@ const UploadIllustration = () => (
     </g>
     <text x="110" y="98" textAnchor="middle" fontSize="6" fill="#78716C" fontFamily="Poppins, sans-serif" fontWeight="500">Drop files here</text>
 
-    {/* File row 1 — completed (green tick + full bar) */}
+    {/* File row 1: completed (green tick + full bar) */}
     <g className="hiw-paper hiw-paper-1">
       <rect x="30" y="114" width="160" height="22" rx="6" fill="#FFFFFF" stroke="#E7E5E0" strokeWidth="1" />
       <rect x="36" y="120" width="10" height="10" rx="2" fill="#EAF3FA" />
@@ -71,7 +71,7 @@ const UploadIllustration = () => (
       </g>
     </g>
 
-    {/* File row 2 — uploading (animated bar) */}
+    {/* File row 2: uploading (animated bar) */}
     <g className="hiw-paper hiw-paper-2">
       <rect x="30" y="142" width="160" height="22" rx="6" fill="#FFFFFF" stroke="#E1DED7" strokeWidth="1" />
       <rect x="36" y="148" width="10" height="10" rx="2" fill="#F4EEFC" />
@@ -149,7 +149,7 @@ const AnalyzeIllustration = () => (
     {/* Scanning beam */}
     <rect className="hiw-beam" x="20" y="28" width="118" height="2.5" rx="1.25" fill="url(#scan-grad)" />
 
-    {/* AI side panel — detected clauses */}
+    {/* AI side panel: detected clauses */}
     <g filter="url(#ai-shadow)">
       <rect x="148" y="36" width="58" height="132" rx="9" fill="url(#ai-side)" stroke="#E5DDF3" strokeWidth="1" />
 
@@ -168,7 +168,7 @@ const AnalyzeIllustration = () => (
         <text x="0" y="3" textAnchor="middle" fontSize="8" fill="#7C5DBE" fontFamily="Poppins, sans-serif" fontWeight="700">76%</text>
       </g>
 
-      {/* Detected clause chips — gentle staggered enter */}
+      {/* Detected clause chips: gentle staggered enter */}
       <g className="hiw-chip c1">
         <rect x="154" y="98" width="46" height="11" rx="5.5" fill="#FFFFFF" stroke="#E5DDF3" strokeWidth="0.8" />
         <circle cx="160" cy="103.5" r="1.6" fill="#82C9B0" />
@@ -317,12 +317,12 @@ const steps: Step[] = [
     title: 'Teach Qurelio your organization',
     lead: 'Start where you are.',
     description:
-      'Describe your company, products and markets, then bring your product folders and quality documents into one organised home. Qurelio builds a private compliance memory of your organization — so every answer is about your reality.',
+      'Describe your company, products and markets, then bring your product folders and quality documents into one organised home. Qurelio builds a private compliance memory of your organization, so every answer is about your reality.',
     detailsLabel: 'What happens here',
     details: [
       'Guided onboarding captures your activity, markets and quality context',
       'Drag-and-drop bulk import of product folders and records',
-      'Private by default — your memory is yours alone, never shared',
+      'Private by default: your memory is yours alone, never shared',
     ],
     accent: '#7DAFD6',
     accentSoft: '#EAF3FA',
@@ -334,12 +334,12 @@ const steps: Step[] = [
     title: 'Upload a regulation, get your verdict',
     lead: 'See the gaps clearly.',
     description:
-      'Add any public law, decree or regulation that applies to you. Qurelio evaluates your products against it, clause by clause, and returns a compliance score and maturity level — with every gap explained in plain language.',
+      'Add any public law, decree or regulation that applies to you. Qurelio evaluates your products against it, clause by clause, and returns a compliance score and maturity level, with every gap explained in plain language.',
     detailsLabel: 'What you receive',
     details: [
       'Clause-by-clause compliance and maturity assessment',
       'Plain-language explanation of every gap',
-      'Suggested fixes, each with an owner and a date — pending your approval',
+      'Suggested fixes, each with an owner and a date, pending your approval',
     ],
     accent: '#B89FE5',
     accentSoft: '#F4EEFC',
@@ -544,7 +544,7 @@ export function HowItWorks() {
           to { stroke-dashoffset: -14; }
         }
 
-        /* Subtle breathing on the whole wave — calm, almost imperceptible */
+        /* Subtle breathing on the whole wave: calm, almost imperceptible */
         .hiw-wave-shell {
           animation: hiw-wave-breathe 9s ease-in-out infinite;
         }
@@ -694,7 +694,7 @@ export function HowItWorks() {
           height: 100%;
         }
 
-        /* Soft hover-lift on the illustration card — interactive without being loud. */
+        /* Soft hover-lift on the illustration card: interactive without being loud. */
         .hiw-illu {
           transition:
             transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
@@ -710,7 +710,7 @@ export function HowItWorks() {
             0 2px 6px rgba(15, 23, 42, 0.05),
             0 22px 44px -22px color-mix(in srgb, var(--step-accent) 55%, transparent);
         }
-        /* Hovering an inactive column wakes it up — interactive preview. */
+        /* Hovering an inactive column wakes it up: interactive preview. */
         .hiw-illu-col:hover,
         .hiw-illu-col:hover + .hiw-orb-col,
         .hiw-text-col:hover {
@@ -776,7 +776,7 @@ export function HowItWorks() {
           opacity: 1;
         }
 
-        /* Watermark step number — ghosted in the corner */
+        /* Watermark step number: ghosted in the corner */
         .hiw-text-watermark {
           position: absolute;
           top: 14px;
@@ -858,7 +858,7 @@ export function HowItWorks() {
           font-weight: 400;
         }
 
-        /* Divider with centered label — pushed to the bottom so titles align */
+        /* Divider with centered label: pushed to the bottom so titles align */
         .hiw-text-divider {
           position: relative;
           height: 1px;
@@ -1027,7 +1027,7 @@ export function HowItWorks() {
         }
         @keyframes hiw-cloud-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 
-        /* Upload progress bar — animated fill that loops gently */
+        /* Upload progress bar: animated fill that loops gently */
         .hiw-illu-col.active svg .hiw-progress {
           transform-box: fill-box;
           transform-origin: left center;
@@ -1163,12 +1163,12 @@ export function HowItWorks() {
           </h2>
           <p className="hiw-sub">
             Three calm steps. From the day you describe your organization to the daily rhythm of staying
-            compliant — Qurelio guides every move, and you approve every decision.
+            compliant, Qurelio guides every move, and you approve every decision.
           </p>
 
           <div className="hiw-track" ref={trackRef}>
             <div className="hiw-grid">
-              {/* Soft wave geometry — gentle S-curves whose zero-crossings land
+              {/* Soft wave geometry: gentle S-curves whose zero-crossings land
                   exactly at each orb column (x = 200, 600, 1000 in viewBox 1200). */}
               <svg
                 className="hiw-wave hiw-wave--bg hiw-wave-shell"
@@ -1217,7 +1217,7 @@ export function HowItWorks() {
                   }}
                 />
 
-                {/* Traveling shimmer dot — glides along the active portion */}
+                {/* Traveling shimmer dot: glides along the active portion */}
                 {progress > 0.04 && (
                   <circle r="3.5" fill="#FFFFFF" className="hiw-wave-shimmer">
                     <animateMotion

@@ -51,7 +51,7 @@ export function Navbar() {
         const el = document.getElementById(id);
         if (!el) continue;
         const rect = el.getBoundingClientRect();
-        // Skip sections fully outside the viewport — they can't be "active"
+        // Skip sections fully outside the viewport: they can't be "active"
         if (rect.bottom < 0 || rect.top > viewportH) continue;
         const center = rect.top + rect.height / 2;
         const dist = Math.abs(center - viewportCenter);
@@ -96,7 +96,7 @@ export function Navbar() {
 
   return (
     <>
-      {/* ── Full-page scroll progress — always at very top, full width ── */}
+      {/* ── Full-page scroll progress: always at very top, full width ── */}
       <motion.div
         aria-hidden
         className="pointer-events-none fixed inset-x-0 top-0 z-[60] h-[1.5px]"
@@ -157,7 +157,7 @@ export function Navbar() {
           />
 
 
-          {/* ── Inner row ── (fixed height — logo cannot grow it) */}
+          {/* ── Inner row ── (fixed height: logo cannot grow it) */}
           <motion.div
             initial={false}
             animate={{
@@ -168,7 +168,7 @@ export function Navbar() {
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
             className="relative flex w-full items-center justify-between gap-4 px-6 sm:px-8 lg:px-10"
           >
-            {/* ── Logo — fills the row height, no overflow ── */}
+            {/* ── Logo: fills the row height, no overflow ── */}
             <Link
               href="/"
               className="flex h-full shrink-0 items-center gap-2.5 py-1"
@@ -219,7 +219,7 @@ export function Navbar() {
                           className="absolute inset-0 -z-10 rounded-full bg-[var(--brand-primary)]/8"
                         />
                       )}
-                      {/* Active dot — instant snap (no spring delay) */}
+                      {/* Active dot: instant snap (no spring delay) */}
                       {isActive && (
                         <motion.span
                           layoutId="nav-active-dot"
@@ -267,7 +267,7 @@ export function Navbar() {
                 />
               </motion.div>
 
-              {/* CTA — morphs subtly on scroll */}
+              {/* CTA: morphs subtly on scroll */}
               <Link
                 href="/auth/register"
                 className="group relative inline-flex items-center gap-1.5 overflow-hidden rounded-full bg-[var(--text-primary)] px-4 py-2 text-sm font-semibold text-[var(--page-bg)] transition-all duration-200 hover:-translate-y-0.5"

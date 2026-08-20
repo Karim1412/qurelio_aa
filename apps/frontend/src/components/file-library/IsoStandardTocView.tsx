@@ -46,7 +46,7 @@ export function IsoStandardTocView({
                     className="flex w-full items-end gap-2 px-3 py-2.5 text-left transition-colors hover:bg-[var(--brand-primary)]/[0.05]"
                   >
                     <span className="shrink-0 self-center rounded-md bg-[#1565c0]/12 px-2 py-0.5 font-mono text-xs font-semibold text-[#1565c0]">
-                      {sec.clauseNumber?.trim() || '—'}
+                      {sec.clauseNumber?.trim() || '-'}
                     </span>
                     <span className="min-w-0 shrink-0 pb-px text-sm font-semibold leading-snug text-[var(--text-primary)]">
                       {sec.heading}

@@ -97,7 +97,7 @@ export function AppLoader({ visible }: { visible: boolean }) {
           </motion.svg>
         ))}
 
-        {/* Logo — extra large, slow breathing */}
+        {/* Logo: extra large, slow breathing */}
         <motion.div
           className="relative z-10 flex items-center justify-center"
           style={{ width: 240, height: 240 }}

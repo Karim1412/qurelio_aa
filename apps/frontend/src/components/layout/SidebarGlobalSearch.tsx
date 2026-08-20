@@ -52,7 +52,7 @@ interface PreviewSpec {
   samples: string[];
   /** Optional small badge in the upper right (e.g. "12 active"). */
   badge?: string;
-  /** Optional real screenshot — when set, replaces the synthetic icon hero. */
+  /** Optional real screenshot: when set, replaces the synthetic icon hero. */
   image?: string;
 }
 
@@ -100,7 +100,7 @@ const PREVIEW_BY_PATH: Record<string, PreviewSpec> = {
     title: 'Audits',
     description: 'Plan, run and track internal & external audits end-to-end.',
     accent: 'emerald',
-    samples: ['Q2-2026 Internal Audit', 'Supplier Audit · ACME', 'Certification — Notified Body', 'Follow-up · Production Line'],
+    samples: ['Q2-2026 Internal Audit', 'Supplier Audit · ACME', 'Certification · Notified Body', 'Follow-up · Production Line'],
     badge: '6 active',
     image: '/previews/audit.jpg',
   },
@@ -129,7 +129,7 @@ const PREVIEW_BY_PATH: Record<string, PreviewSpec> = {
   },
   '/calendar': {
     title: 'Calendar',
-    description: 'Audits, training deadlines, reviews — all in one timeline.',
+    description: 'Audits, training deadlines, reviews, all in one timeline.',
     accent: 'teal',
     samples: ['Internal audit · May 18', 'ISO 13485 training · May 22', 'CAPA review · May 27', 'Mgmt review · Jun 03'],
     image: '/previews/calendar.jpg',
@@ -273,7 +273,7 @@ function SearchPreviewCard({
       style={{ left, top, width: CARD_W }}
     >
       <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] shadow-[0_20px_60px_-12px_rgba(15,23,42,0.28),0_2px_8px_-2px_rgba(15,23,42,0.08)] backdrop-blur">
-        {/* Hero visual — real screenshot when available, else synthetic icon */}
+        {/* Hero visual: real screenshot when available, else synthetic icon */}
         <div className={cn('relative h-44 w-full overflow-hidden bg-gradient-to-br', accent.grad)}>
           {showImage && spec.image && (
             // eslint-disable-next-line @next/next/no-img-element
@@ -530,7 +530,7 @@ export function SidebarGlobalSearch({
             next.push({
               id: `doc-${d.id}`,
               label: d.name || 'Untitled document',
-              sub: 'Document — open library',
+              sub: 'Document · open library',
               href: '/docs',
               group: 'Your workspace',
               Icon: FileText,
@@ -542,7 +542,7 @@ export function SidebarGlobalSearch({
       if (evalsR.status === 'fulfilled') {
         const rows = asArray<{ id: string; name?: string; isoStandard?: string }>(evalsR.value.data);
         for (const e of rows) {
-          const label = [e.isoStandard, e.name].filter(Boolean).join(' — ') || e.id;
+          const label = [e.isoStandard, e.name].filter(Boolean).join(' · ') || e.id;
           if (matchesQuery(q, label, e.isoStandard, e.name, e.id)) {
             next.push({
               id: `eval-${e.id}`,
@@ -564,7 +564,7 @@ export function SidebarGlobalSearch({
             next.push({
               id: `nc-${n.id}`,
               label,
-              sub: 'Non-conformity — open list',
+              sub: 'Non-conformity · open list',
               href: '/nc',
               group: 'Your workspace',
               Icon: AlertTriangle,
@@ -581,7 +581,7 @@ export function SidebarGlobalSearch({
             next.push({
               id: `audit-${a.id}`,
               label,
-              sub: 'Audit — open list',
+              sub: 'Audit · open list',
               href: '/audits',
               group: 'Your workspace',
               Icon: ClipboardCheck,
@@ -701,7 +701,7 @@ export function SidebarGlobalSearch({
           : 'px-3 pb-3',
       )}
     >
-      {/* ── Pill trigger button (closed state — compact) ── */}
+      {/* ── Pill trigger button (closed state: compact) ── */}
       {!open && (
         <button
           type="button"

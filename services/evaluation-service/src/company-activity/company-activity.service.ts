@@ -48,23 +48,23 @@ export class CompanyActivityService {
     const d = detail ?? {};
     switch (action) {
       case 'AUDIT_CREATED':
-        return `Audit · Created — ${title} (${d.type ?? '—'})`;
+        return `Audit · Created: ${title} (${d.type ?? '-'})`;
       case 'CHECKLIST_GENERATED':
-        return `Audit · Checklist generated — ${title} (${d.count ?? '?'} rows)`;
+        return `Audit · Checklist generated: ${title} (${d.count ?? '?'} rows)`;
       case 'CHECKLIST_REPLACED':
-        return `Audit · Checklist replaced — ${title} (${d.count ?? '?'} rows)`;
+        return `Audit · Checklist replaced: ${title} (${d.count ?? '?'} rows)`;
       case 'AUDIT_STARTED':
-        return `Audit · Started — ${title}`;
+        return `Audit · Started: ${title}`;
       case 'FINDING_ADDED':
-        return `Audit · Finding added — ${title} (${d.type ?? '—'})`;
+        return `Audit · Finding added: ${title} (${d.type ?? '-'})`;
       case 'NC_CREATED_FROM_CHECKLIST':
-        return `Audit · NC created from checklist — ${title}`;
+        return `Audit · NC created from checklist: ${title}`;
       case 'CHECKLIST_UPDATED':
-        return `Audit · Checklist updated — ${title}`;
+        return `Audit · Checklist updated: ${title}`;
       case 'AUDIT_COMPLETED':
-        return `Audit · Completed — ${title}`;
+        return `Audit · Completed: ${title}`;
       default:
-        return `Audit · ${action} — ${title}`;
+        return `Audit · ${action}: ${title}`;
     }
   }
 
@@ -159,12 +159,12 @@ export class CompanyActivityService {
 
     for (const ev of evals) {
       const label = this.evalProductLabel(ev);
-      const iso = ev.isoStandard || '—';
+      const iso = ev.isoStandard || '-';
       if (inRange(ev.createdAt, fromMs, toMs)) {
         out.push({
           at: ev.createdAt.getTime(),
           actorUserId: ev.initiatedBy,
-          event: `Evaluation · Queued — ${iso} (${label})`,
+          event: `Evaluation · Queued: ${iso} (${label})`,
           status: 'info',
         });
       }
@@ -172,24 +172,24 @@ export class CompanyActivityService {
         out.push({
           at: ev.startedAt.getTime(),
           actorUserId: ev.initiatedBy,
-          event: `Evaluation · Processing — ${iso} (${label})`,
+          event: `Evaluation · Processing: ${iso} (${label})`,
           status: 'info',
         });
       }
       if (ev.completedAt && inRange(ev.completedAt, fromMs, toMs)) {
         if (ev.status === EvaluationStatus.COMPLETED) {
-          const score = ev.conformityScore != null ? `${Math.round(ev.conformityScore)}%` : '—';
+          const score = ev.conformityScore != null ? `${Math.round(ev.conformityScore)}%` : '-';
           out.push({
             at: ev.completedAt.getTime(),
             actorUserId: ev.initiatedBy,
-            event: `Evaluation · Completed — ${iso} (${label}) — ${score}`,
+            event: `Evaluation · Completed: ${iso} (${label}), ${score}`,
             status: 'success',
           });
         } else if (ev.status === EvaluationStatus.FAILED) {
           out.push({
             at: ev.completedAt.getTime(),
             actorUserId: ev.initiatedBy,
-            event: `Evaluation · Failed — ${iso} (${label})`,
+            event: `Evaluation · Failed: ${iso} (${label})`,
             status: 'error',
           });
         }
@@ -200,7 +200,7 @@ export class CompanyActivityService {
       out.push({
         at: nc.createdAt.getTime(),
         actorUserId: nc.detectedBy,
-        event: `Non-conformity · Created — ${nc.title || 'NC'} (${nc.status})`,
+        event: `Non-conformity · Created: ${nc.title || 'NC'} (${nc.status})`,
         status: 'warning',
       });
     }
@@ -212,7 +212,7 @@ export class CompanyActivityService {
         out.push({
           at: c.createdAt.getTime(),
           actorUserId: actor,
-          event: `CAPA · Action added — ${c.title} (NC: ${ncTitle})`,
+          event: `CAPA · Action added: ${c.title} (NC: ${ncTitle})`,
           status: 'info',
         });
       }
@@ -221,7 +221,7 @@ export class CompanyActivityService {
         out.push({
           at: c.completedAt.getTime(),
           actorUserId: actor,
-          event: `CAPA · Completed — ${c.title} (NC: ${ncTitle})`,
+          event: `CAPA · Completed: ${c.title} (NC: ${ncTitle})`,
           status: 'success',
         });
       }

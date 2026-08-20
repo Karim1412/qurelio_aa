@@ -4,10 +4,10 @@ import React from 'react';
 import { ReqDot, QwCheckGrid } from '@/components/company/qw-fields';
 
 const MATURITY_LEVELS = [
-  { value: 'none', icon: '🌱', label: 'None', description: 'Starting from scratch — no QMS or documentation in place' },
+  { value: 'none', icon: '🌱', label: 'None', description: 'Starting from scratch, no QMS or documentation in place' },
   { value: 'informal', icon: '📋', label: 'Informal', description: 'Practices exist but are undocumented or inconsistent' },
   { value: 'developing', icon: '🔧', label: 'Developing', description: 'Some written procedures, no formal QMS yet' },
-  { value: 'established', icon: '🏗️', label: 'Established', description: 'Full QMS in place and operational — not yet certified' },
+  { value: 'established', icon: '🏗️', label: 'Established', description: 'Full QMS in place and operational, not yet certified' },
   { value: 'certified', icon: '🏆', label: 'Certified', description: 'Active certification in force (ISO 9001 or similar)' },
 ];
 
@@ -45,7 +45,7 @@ export function StepQuality({ data, onChange }: StepQualityProps) {
     <div className="wizard-panel">
       <div className="panel-header">
         <h2>Quality Team &amp; Context</h2>
-        <p>Tell us about your team and your current quality maturity — the AI calibrates its output to your level.</p>
+        <p>Tell us about your team and your current quality maturity. The AI calibrates its output to your level.</p>
       </div>
 
       <div className="form-section">
@@ -132,7 +132,7 @@ export function StepQuality({ data, onChange }: StepQualityProps) {
         {data.hasDocuments && (
           <div className="tip" style={{ marginTop: 12, marginBottom: 0 }}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z" /><polyline points="13 2 13 9 20 9" /></svg>
-            <p>After saving this step, you&apos;ll be prompted to upload your product folder — those documents build your <strong>Compliance Memory</strong> and unlock AI-powered compliance evaluation.</p>
+            <p>After saving this step, you&apos;ll be prompted to upload your product folder. Those documents build your <strong>Compliance Memory</strong> and unlock AI-powered compliance evaluation.</p>
           </div>
         )}
       </div>

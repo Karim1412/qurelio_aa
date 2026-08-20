@@ -214,7 +214,7 @@ export function ReportDetail({ report, onReportUpdated }: ReportDetailProps) {
             )}
             {!templateId && (
               <p className="mt-1 text-xs text-[var(--badge-progress-text)]">
-                No template linked — create a new report and select a template for the full form.
+                No template linked. Create a new report and select a template for the full form.
               </p>
             )}
           </div>
@@ -353,7 +353,7 @@ export function ReportDetail({ report, onReportUpdated }: ReportDetailProps) {
                     </div>
                   ))}
                   {Object.keys(report.data || {}).length === 0 && (
-                    <p className="text-sm text-[var(--muted)]">No field data — create a report with a template selected.</p>
+                    <p className="text-sm text-[var(--muted)]">No field data. Create a report with a template selected.</p>
                   )}
                 </div>
               </>

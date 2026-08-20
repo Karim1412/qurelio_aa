@@ -36,7 +36,7 @@ export function FileLibraryUploaderCell({
     uploadedBy && user?.id && uploadedBy === user.id
       ? [user.firstName, user.lastName].filter(Boolean).join(' ').trim() ||
         user.email?.split('@')[0] ||
-        '—'
+        '-'
       : displayUserName(uploadedBy, user?.id, nameMap);
   const isCompanyUploader = Boolean(uploadedBy && workspaceId && uploadedBy === workspaceId);
   const userKey = uploadedBy && !isCompanyUploader ? userAvatarKeyById.get(uploadedBy) ?? null : null;
@@ -66,7 +66,7 @@ export function FileLibraryUploaderCell({
   }, [isCompanyUploader, workspaceAvatarKey, token]);
 
   if (!uploadedBy) {
-    return <span className="text-sm text-[var(--muted)]">—</span>;
+    return <span className="text-sm text-[var(--muted)]">-</span>;
   }
 
   const initials = initialsFromDisplayName(

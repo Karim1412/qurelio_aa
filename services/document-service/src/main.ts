@@ -9,7 +9,7 @@ async function bootstrap() {
   const ragOn = (process.env.RAG_INGEST_ENABLED ?? 'true').toLowerCase() !== 'false';
   if (ragOn && !token) {
     logger.warn(
-      'DOCUMENT_INTERNAL_TOKEN is empty — rag-service cannot PATCH /documents/internal/extraction; documents may stay PROCESSING.',
+      'DOCUMENT_INTERNAL_TOKEN is empty: rag-service cannot PATCH /documents/internal/extraction; documents may stay PROCESSING.',
     );
   }
   const app = await NestFactory.create<NestExpressApplication>(AppModule);

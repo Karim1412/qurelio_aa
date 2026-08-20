@@ -23,10 +23,10 @@ export function formatEvaluationPair(
   const isoDocId = ev.isoDocumentId ?? snap?.isoDocumentId;
   const prodDocId = ev.productDocumentId ?? snap?.productDocumentId;
   const norm = isoNorms.find((n) => n.id === isoDocId);
-  /** Short reference for UI (dropdown, table) — not the long descriptive title. */
+  /** Short reference for UI (dropdown, table): not the long descriptive title. */
   const isoLine = norm
     ? norm.isoStandard || norm.name || 'ISO'
-    : ev.isoStandard || '—';
+    : ev.isoStandard || '-';
 
   const packName = snap?.reportPack?.product?.name;
   const fromApi = [ev.productName, snap?.productName, packName].find(
@@ -36,7 +36,7 @@ export function formatEvaluationPair(
   const snapProductId = typeof snap?.productId === 'string' ? snap.productId : undefined;
   const pid = ev.productId ?? snapProductId;
 
-  let productLine = '—';
+  let productLine = '-';
   if (fromApi) {
     productLine = fromApi.trim();
   } else if (pid) {
@@ -53,7 +53,7 @@ export function formatEvaluationPair(
         break;
       }
     }
-    if (productLine === '—' && documents?.length) {
+    if (productLine === '-' && documents?.length) {
       const doc = documents.find((d) => d.id === prodDocId);
       if (doc?.productName) {
         productLine = doc.productName;
@@ -62,7 +62,7 @@ export function formatEvaluationPair(
         if (pr?.name) productLine = pr.name;
       }
     }
-    if (productLine === '—') productLine = 'Product evidence';
+    if (productLine === '-') productLine = 'Product evidence';
   }
 
   return {

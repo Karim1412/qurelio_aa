@@ -91,10 +91,10 @@ export class DemoService {
       });
       if (!slot) throw new NotFoundException('That time slot no longer exists');
       if (slot.status !== DemoSlotStatus.OPEN) {
-        throw new ConflictException('That time slot has just been taken — please pick another');
+        throw new ConflictException('That time slot has just been taken. Please pick another');
       }
       if (slot.startsAt.getTime() <= Date.now()) {
-        throw new BadRequestException('That time slot is in the past — please pick another');
+        throw new BadRequestException('That time slot is in the past. Please pick another');
       }
 
       await tx.getRepository(DemoSlot).update(slot.id, { status: DemoSlotStatus.BOOKED });
@@ -214,14 +214,14 @@ export class DemoService {
     booking.respondedAt = new Date();
 
     if (dto.status === DemoBookingStatus.CONFIRMED) {
-      // A pasted link always wins — it is the admin's explicit choice, and the
+      // A pasted link always wins: it is the admin's explicit choice, and the
       // fallback when Google is unconfigured or failing.
       const manual = dto.meetingLink?.trim();
       if (manual) {
         booking.meetingLink = manual;
       } else if (!booking.meetingLink) {
         const created = await this.meet.createMeeting({
-          summary: `Qurelio demo — ${booking.companyName}`,
+          summary: `Qurelio demo: ${booking.companyName}`,
           description: [
             `Demo for ${booking.companyName}.`,
             booking.fullName ? `Contact: ${booking.fullName} <${booking.email}>` : `Contact: ${booking.email}`,
@@ -237,7 +237,7 @@ export class DemoService {
         } else {
           // Confirmation still goes out; it simply carries no join link.
           this.logger.warn(
-            `Booking ${booking.id} confirmed without a meeting link — add one manually if needed`,
+            `Booking ${booking.id} confirmed without a meeting link, add one manually if needed`,
           );
         }
       }
@@ -339,10 +339,10 @@ export class DemoService {
   async createSlot(dto: CreateDemoSlotDto) {
     const startsAt = new Date(dto.startsAt);
     if (Number.isNaN(startsAt.getTime())) throw new BadRequestException('Invalid start time');
-    // A past slot can never be booked — the public list filters it out — so creating
+    // A past slot can never be booked: the public list filters it out, so creating
     // one only looks like availability that silently is not there.
     if (startsAt.getTime() <= Date.now()) {
-      throw new BadRequestException('That time is in the past — pick a future slot');
+      throw new BadRequestException('That time is in the past. Pick a future slot');
     }
     const existing = await this.slots.findOne({ where: { startsAt } });
     if (existing) throw new ConflictException('A slot already exists at that time');
@@ -414,7 +414,7 @@ export class DemoService {
     const slot = await this.slots.findOne({ where: { id } });
     if (!slot) throw new NotFoundException('Slot not found');
     if (slot.status === DemoSlotStatus.BOOKED) {
-      throw new ConflictException('This slot is booked — decline or cancel the booking first');
+      throw new ConflictException('This slot is booked. Decline or cancel the booking first');
     }
     await this.slots.delete(id);
     return { message: 'Slot deleted' };
@@ -432,7 +432,7 @@ export class DemoService {
       companyCapacity: b.companyCapacity,
       // Qualification answers, folded in from the booking form.
       fullName: b.fullName ?? null,
-      role: b.roleOther?.trim() ? `${b.role} — ${b.roleOther}` : b.role ?? null,
+      role: b.roleOther?.trim() ? `${b.role}: ${b.roleOther}` : b.role ?? null,
       consultingScope: b.consultingScope ?? null,
       marketsActive: b.marketsActive ?? [],
       marketsTargeting: b.marketsTargeting ?? [],
@@ -440,7 +440,7 @@ export class DemoService {
         ? [...(b.certifications ?? []).filter((c) => c !== 'Other'), b.certificationsOther]
         : b.certifications ?? [],
       productCount: b.productCount ?? null,
-      complianceToday: b.qmsName?.trim() ? `${b.complianceToday} — ${b.qmsName}` : b.complianceToday ?? null,
+      complianceToday: b.qmsName?.trim() ? `${b.complianceToday}: ${b.qmsName}` : b.complianceToday ?? null,
       challenges: b.challengesOther?.trim()
         ? [...(b.challenges ?? []).filter((c) => c !== 'Other'), b.challengesOther]
         : b.challenges ?? [],

@@ -30,14 +30,14 @@ export function formatCriterionAsYesNoQuestion(
 
   if (!q) {
     const std = (isoStandard || 'the standard').trim();
-    return `Is clause ${isoClause || '—'} applied in your product or process per ${std}?`;
+    return `Is clause ${isoClause || '-'} applied in your product or process per ${std}?`;
   }
   if (/^(is|are|does|do|has|have|can|was|were)\b/i.test(q)) {
     return q.endsWith('?') ? q : `${q}?`;
   }
   if (/^assess\b/i.test(q) || /^verify\b/i.test(q)) {
     const std = (isoStandard || 'this standard').trim();
-    return `Is ${std} applied in your product or process for clause ${isoClause || '—'}?`;
+    return `Is ${std} applied in your product or process for clause ${isoClause || '-'}?`;
   }
   const body = q.length > 240 ? `${q.slice(0, 237)}…` : q;
   return `Does your organization meet this requirement: ${body}?`;

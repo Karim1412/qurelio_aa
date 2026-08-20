@@ -40,7 +40,7 @@ import {
   mergeEvidenceChecksWithDefaults,
 } from './audit-checklist-defaults';
 
-/** ISO 9001:2015 style clauses — one checklist row per clause (AUD-003). */
+/** ISO 9001:2015 style clauses: one checklist row per clause (AUD-003). */
 const ISO_9001_CLAUSE_QUESTIONS: { isoClause: string; question: string }[] = [
   { isoClause: '4.1', question: 'Has the organization determined internal and external issues relevant to its purpose and strategic direction?' },
   { isoClause: '4.2', question: 'Have the needs and expectations of interested parties been determined, monitored, and reviewed?' },
@@ -62,7 +62,7 @@ const ISO_9001_CLAUSE_QUESTIONS: { isoClause: string; question: string }[] = [
   { isoClause: '10.3', question: 'Is continual improvement demonstrated by enhancing customer satisfaction and QMS suitability?' },
 ];
 
-/** ISO/IEC 42001:2023 (AIMS) — hierarchical autodiagnostic-style rows (multi-level checklist). */
+/** ISO/IEC 42001:2023 (AIMS): hierarchical autodiagnostic-style rows (multi-level checklist). */
 const ISO_42001_CLAUSE_QUESTIONS: { isoClause: string; question: string; hierarchyLevel: 1 | 2 | 3 }[] = [
   { hierarchyLevel: 1, isoClause: '4', question: 'Chapter 4: Context of the organization' },
   { hierarchyLevel: 2, isoClause: '4.1', question: '4.1 Understanding the organization and its context' },
@@ -259,8 +259,8 @@ export class AuditService {
     let scope = (dto.scope || '').trim();
     if (!scope) {
       scope = isoLabel
-        ? `${isoLabel} — clauses: ${scopeClauseRefs.join(', ')}`
-        : `Audit scope — clauses: ${scopeClauseRefs.join(', ')}`;
+        ? `${isoLabel} clauses: ${scopeClauseRefs.join(', ')}`
+        : `Audit scope clauses: ${scopeClauseRefs.join(', ')}`;
     }
 
     const audit = this.auditRepo.create({
@@ -308,7 +308,7 @@ export class AuditService {
     return this.getOne(audit.id, companyId);
   }
 
-  /** AUD-009 (V2): AI-style suggestions — editable draft; caller replaces checklist via applySuggestedChecklist. */
+  /** AUD-009 (V2): AI-style suggestions: editable draft; caller replaces checklist via applySuggestedChecklist. */
   async suggestChecklist(isoStandard: string, scopeClauseRefs?: string[]) {
     const rows = this.buildChecklistRows(isoStandard, scopeClauseRefs);
     return {
@@ -551,7 +551,7 @@ export class AuditService {
 
     if (patch.answer === FindingType.NON_CONFORMANT && !updated.ncId) {
       const nc = await this.ncService.create(companyId, userId, {
-        title: `Audit finding — clause ${updated.isoClause}`,
+        title: `Audit finding: clause ${updated.isoClause}`,
         description: [updated.question, updated.notes].filter(Boolean).join('\n\n'),
         classification: NCClassification.MAJOR,
         isoClause: updated.isoClause,
@@ -759,7 +759,7 @@ export class AuditService {
       return {
         filled: 0,
         capped: false,
-        message: 'No empty criteria rows — every leaf row already has an evaluation.',
+        message: 'No empty criteria rows. Every leaf row already has an evaluation.',
       };
     }
     for (const r of rows) {
@@ -774,7 +774,7 @@ export class AuditService {
       filled: rows.length,
       capped,
       message: capped
-        ? `Applied AI to ${rows.length} row(s). More than ${AuditService.AI_FILL_MAX_ROWS} empty rows remain — run again to continue.`
+        ? `Applied AI to ${rows.length} row(s). More than ${AuditService.AI_FILL_MAX_ROWS} empty rows remain. Run again to continue.`
         : `Applied AI evaluation and score to ${rows.length} criterion row(s).`,
     };
   }
@@ -816,7 +816,7 @@ export class AuditService {
       return {
         answer: FindingType.CONFORMANT,
         score: 88,
-        rationale: `Conformant — score in the high conformant band.${baseNote}`,
+        rationale: `Conformant: score in the high conformant band.${baseNote}`,
         model: 'heuristic',
       };
     }
@@ -824,7 +824,7 @@ export class AuditService {
       return {
         answer: FindingType.NON_CONFORMANT,
         score: 22,
-        rationale: `Non-conformant — low band until corrective evidence is available.${baseNote}`,
+        rationale: `Non-conformant: low band until corrective evidence is available.${baseNote}`,
         model: 'heuristic',
       };
     }
@@ -832,7 +832,7 @@ export class AuditService {
       return {
         answer: FindingType.OBSERVATION,
         score: 62,
-        rationale: `Observation — mid band until closed.${baseNote}`,
+        rationale: `Observation: mid band until closed.${baseNote}`,
         model: 'heuristic',
       };
     }
@@ -840,7 +840,7 @@ export class AuditService {
       return {
         answer: FindingType.STRENGTH,
         score: 94,
-        rationale: `Strong point — high band.${baseNote}`,
+        rationale: `Strong point: high band.${baseNote}`,
         model: 'heuristic',
       };
     }
@@ -849,7 +849,7 @@ export class AuditService {
       return {
         answer: FindingType.NON_CONFORMANT,
         score: 28,
-        rationale: `Checklist marks a gap or deviation — draft non-conformant.${baseNote}`,
+        rationale: `Checklist marks a gap or deviation. Draft non-conformant.${baseNote}`,
         model: 'heuristic',
       };
     }
@@ -857,7 +857,7 @@ export class AuditService {
       return {
         answer: FindingType.NON_CONFORMANT,
         score: 24,
-        rationale: `Notes suggest a significant gap — draft non-conformant; verify on site.${baseNote}`,
+        rationale: `Notes suggest a significant gap. Draft non-conformant; verify on site.${baseNote}`,
         model: 'heuristic',
       };
     }
@@ -883,7 +883,7 @@ export class AuditService {
       return {
         answer: FindingType.CONFORMANT,
         score: hasNotes ? 86 : 84,
-        rationale: `Multiple checklist items verified without a gap — draft conformant.${baseNote}`,
+        rationale: `Multiple checklist items verified without a gap. Draft conformant.${baseNote}`,
         model: 'heuristic',
       };
     }
@@ -891,7 +891,7 @@ export class AuditService {
       return {
         answer: FindingType.OBSERVATION,
         score: 62,
-        rationale: `Partial checklist verification — observation until more evidence is recorded.${baseNote}`,
+        rationale: `Partial checklist verification: observation until more evidence is recorded.${baseNote}`,
         model: 'heuristic',
       };
     }
@@ -1015,10 +1015,10 @@ export class AuditService {
 
     bar('Audit information');
     line(`Company: ${companyName}`, 10, false);
-    line(`Title: ${audit.title || '—'}`, 10, false);
+    line(`Title: ${audit.title || '-'}`, 10, false);
     line(`Type: ${audit.type} · Status: ${audit.status}`, 10, false);
-    line(`ISO standard: ${audit.isoStandard || '—'}`, 10, false);
-    line(`Lead auditor: ${audit.leadAuditor || '—'}`, 10, false);
+    line(`ISO standard: ${audit.isoStandard || '-'}`, 10, false);
+    line(`Lead auditor: ${audit.leadAuditor || '-'}`, 10, false);
     if (audit.scheduledAt) {
       line(`Scheduled start: ${new Date(audit.scheduledAt).toLocaleDateString('en-GB')}`, 10, false);
     }
@@ -1031,7 +1031,7 @@ export class AuditService {
     if (audit.completedAt) {
       line(`Completed: ${new Date(audit.completedAt).toLocaleString('en-GB')}`, 10, false);
     }
-    line(`Scope: ${audit.scope || '—'}`, 10, false);
+    line(`Scope: ${audit.scope || '-'}`, 10, false);
     const refs = Array.isArray(audit.scopeClauseRefs) ? audit.scopeClauseRefs.join(', ') : '';
     if (refs) line(`Scope clauses: ${refs}`, 10, false);
     gap(6);
@@ -1046,7 +1046,7 @@ export class AuditService {
     gap(6);
 
     bar('Overall conclusion');
-    line(stripHtmlForPdf((audit.overallConclusion || '—').slice(0, 8000)), 10, false);
+    line(stripHtmlForPdf((audit.overallConclusion || '-').slice(0, 8000)), 10, false);
     gap(8);
 
     bar('Checklist results');
@@ -1060,8 +1060,8 @@ export class AuditService {
       checklists.forEach((c) => {
         const scorePart = c.score != null ? ` · Score ${c.score}%` : '';
         const ans = formatFindingAnswer(c.answer);
-        line(`Clause ${c.isoClause} — ${ans}${scorePart}`, 10, true, 3);
-        line(c.question || '—', 10, false, 2);
+        line(`Clause ${c.isoClause}: ${ans}${scorePart}`, 10, true, 3);
+        line(c.question || '-', 10, false, 2);
         const checks = (Array.isArray(c.evidenceChecks) ? c.evidenceChecks : []) as EvidenceCheckRow[];
         if (checks.length) {
           line('Checklist (yes/no lines):', 9, true, 2);
@@ -1075,7 +1075,7 @@ export class AuditService {
           const nc = ncById.get(c.ncId);
           line(
             nc
-              ? `Linked NC: ${nc.title} (${nc.status}) — ${c.ncId}`
+              ? `Linked NC: ${nc.title} (${nc.status}), ${c.ncId}`
               : `Linked NC: ${c.ncId}`,
             9,
             false,
@@ -1095,7 +1095,7 @@ export class AuditService {
       findings.forEach((f) => {
         const clause = f.isoClause ? ` · Clause ${f.isoClause}` : '';
         line(`${formatFindingAnswer(f.type)}${clause}`, 10, true, 3);
-        line(stripHtmlForPdf((f.description || '—').slice(0, 2000)), 10, false, 2);
+        line(stripHtmlForPdf((f.description || '-').slice(0, 2000)), 10, false, 2);
         if (f.evidence) line(`Evidence: ${stripHtmlForPdf(f.evidence.slice(0, 1200))}`, 9, false, 2);
         gap(4);
       });
@@ -1107,7 +1107,7 @@ export class AuditService {
       line('No NC records linked from checklist items.', 10, false);
     } else {
       [...ncById.values()].forEach((nc) => {
-        line(`${nc.title} — ${nc.status} (${nc.classification})`, 10, true, 2);
+        line(`${nc.title}: ${nc.status} (${nc.classification})`, 10, true, 2);
         line(`ID: ${nc.id}${nc.isoClause ? ` · Clause ${nc.isoClause}` : ''}`, 9, false, 2);
         gap(3);
       });

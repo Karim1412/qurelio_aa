@@ -23,7 +23,7 @@ def _parse_llm_json(content: str) -> dict[str, Any]:
 
 CLAUSE_EVIDENCE_ITEMS_PROMPT = ChatPromptTemplate.from_template(
     """You are an ISO management-system lead auditor preparing **short yes/no checklist questions**
-for ONE audit criterion — clause **{iso_clause}** only.
+for ONE audit criterion: clause **{iso_clause}** only.
 
 Standard: {iso_standard}
 Audit criterion (from the norm / extraction):
@@ -48,7 +48,7 @@ Respond ONLY with valid JSON:
 
 def _fallback_items(*, question: str, iso_clause: str) -> list[str]:
     q = (question or "").strip()[:400]
-    c = (iso_clause or "").strip() or "—"
+    c = (iso_clause or "").strip() or "-"
     topic = q.split("—")[-1].strip()[:70] if "—" in q else q[:70]
     topic_bit = f" ({topic})" if topic else ""
     return [
@@ -90,8 +90,8 @@ class AuditClauseEvidenceItemsAiService:
         try:
             result = await chain.ainvoke(
                 {
-                    "iso_standard": (iso_standard or "—")[:120],
-                    "iso_clause": (iso_clause or "—")[:80],
+                    "iso_standard": (iso_standard or "-")[:120],
+                    "iso_clause": (iso_clause or "-")[:80],
                     "question": q[:6000],
                     "existing_labels": label_block[:8000],
                 }

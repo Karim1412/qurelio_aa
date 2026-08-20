@@ -43,7 +43,7 @@ export function formatSectionAsAuditCriterion(
 
   if (summary.length >= 24) {
     const body = summary.length > 280 ? `${summary.slice(0, 277)}…` : summary;
-    return `Does your organization meet ${clauseBit} — ${body}?`;
+    return `Does your organization meet ${clauseBit}: ${body}?`;
   }
 
   const shallLine =
@@ -60,7 +60,7 @@ export function formatSectionAsAuditCriterion(
     || notes[0];
   if (lead) {
     const body = lead.length > 260 ? `${lead.slice(0, 257)}…` : lead;
-    return `Is ${clauseBit} implemented and effective in your product or process — ${body}?`;
+    return `Is ${clauseBit} implemented and effective in your product or process: ${body}?`;
   }
 
   if (heading) {

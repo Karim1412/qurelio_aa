@@ -29,7 +29,7 @@ export function formatEvaluationRetryError(err: unknown): string {
     return 'This run can’t be retried automatically. Create a new evaluation with the same standard and product.';
   }
   if (s.includes('network') || s.includes('timeout') || ax.message === 'Network Error') {
-    return 'Network error — check your connection and try again.';
+    return 'Network error. Check your connection and try again.';
   }
 
   if (typeof raw === 'string' && raw.length > 0 && raw.length < 220) {

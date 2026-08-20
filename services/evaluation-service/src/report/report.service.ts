@@ -101,7 +101,7 @@ export class ReportService {
   }
 
   /**
-   * Get report by ID (optionally with child relations — avoid relations on write paths)
+   * Get report by ID (optionally with child relations, avoid relations on write paths)
    */
   async getReportById(
     companyId: string,

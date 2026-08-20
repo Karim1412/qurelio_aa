@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 /**
  * When NOTIFICATION_INTERNAL_TOKEN (or DOCUMENT_INTERNAL_TOKEN) is set, internal routes must send X-Internal-Token.
- * If unset, internal routes stay open (dev only — use a token in production).
+ * If unset, internal routes stay open (dev only: use a token in production).
  */
 @Injectable()
 export class InternalTokenGuard implements CanActivate {

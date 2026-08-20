@@ -219,7 +219,7 @@ export class ProxyService {
         headers: fwdHeaders,
         params:  query,
         data:    stream,          // pipe the raw Readable stream
-        timeout: 300_000,         // 5 min — upstream buffers files in memory + uploads to object storage
+        timeout: 300_000,         // 5 min: upstream buffers files in memory + uploads to object storage
         validateStatus: () => true,
         maxContentLength: Infinity,
         maxBodyLength:    Infinity,

@@ -57,7 +57,7 @@ export class RegisterUserDto {
   @IsNotEmpty()
   @Matches(/^QUR[A-Z0-9]{5}$/, {
     message:
-      'Company code must be 8 characters: QUR followed by 5 letters or digits (example: QUR12AB3). Ask your company director — it is shown on Profile after signup.',
+      'Company code must be 8 characters: QUR followed by 5 letters or digits (example: QUR12AB3). Ask your company director. It is shown on Profile after signup.',
   })
   companyCode: string;
 }

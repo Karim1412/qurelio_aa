@@ -12,7 +12,7 @@ function toQueryString(sp: Record<string, string | string[] | undefined>) {
   return q.toString();
 }
 
-/** @deprecated Use `/docs` — file library. */
+/** @deprecated Use `/docs`: file library. */
 export default async function ReportsToDocsRedirectPage({ searchParams }: Props) {
   const sp = await searchParams;
   // Keep a `view=reports` marker so the sidebar can keep the Reports tab

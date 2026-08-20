@@ -1,17 +1,17 @@
-/* Bundled fonts — avoids next/font/google network fetch during Docker/offline builds */
+/* Bundled fonts: avoids next/font/google network fetch during Docker/offline builds */
 @import "tailwindcss";
 
-/* Landing page font — Poppins from Google Fonts */
+/* Landing page font: Poppins from Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 96px;
-  /* Slightly damp the native scroll feel — feels softer on trackpads / wheels */
+  /* Slightly damp the native scroll feel: feels softer on trackpads / wheels */
   scroll-snap-type: none;
 }
 
-/* Soften how anchor jumps land — the section is offset from the hard top edge. */
+/* Soften how anchor jumps land: the section is offset from the hard top edge. */
 [data-translate-root] section[id],
 [data-translate-root] [id^="section-"] {
   scroll-margin-top: 96px;
@@ -47,7 +47,7 @@ html {
 @import '@fontsource/public-sans/latin-600.css';
 @import '@fontsource/public-sans/latin-700.css';
 
-/* react-phone-number-input — align focus ring with Qurelio brand */
+/* react-phone-number-input: align focus ring with Qurelio brand */
 .qurelio-phone-input {
   --PhoneInput-color--focus: #4d92c4;
 }
@@ -61,12 +61,12 @@ html {
   min-width: 0;
 }
 
-/* Default intl icon is phone + globe in one SVG — show handset only to match cleaner fields */
+/* Default intl icon is phone + globe in one SVG: show handset only to match cleaner fields */
 .qurelio-phone-input .PhoneInputInternationalIconGlobe {
   display: none;
 }
 
-/* Stat-card "open" arrow — gentle horizontal nudge while the card is hovered. */
+/* Stat-card "open" arrow: gentle horizontal nudge while the card is hovered. */
 @keyframes qurelio-arrow-nudge {
   0%,
   100% {
@@ -84,10 +84,10 @@ html {
 @layer base {
   :root {
     --font-public-sans: 'Public Sans';
-    /* Brand — Qurelio: blue + gold */
+    /* Brand: Qurelio: blue + gold */
     --brand-primary: #4d92c4;
     --brand-accent: #ffc107;
-    /* Hero / pill CTAs — a touch lighter than the wordmark “o” for softer contrast on dark UI */
+    /* Hero / pill CTAs: a touch lighter than the wordmark “o” for softer contrast on dark UI */
     --brand-accent-cta: #ffca28;
     --brand-slogan: #6ba8d4;
     --brand-dark: #1c252e;
@@ -164,7 +164,7 @@ html {
     --badge-out-bg: #ffe9d0;
     --badge-out-text: #b71d18;
 
-    /* Info callouts (auth notes, tips) — readable in light mode */
+    /* Info callouts (auth notes, tips): readable in light mode */
     --callout-info-bg: color-mix(in srgb, var(--brand-primary) 12%, var(--surface));
     --callout-info-border: color-mix(in srgb, var(--brand-primary) 40%, var(--border));
     --callout-info-text: var(--text-primary);
@@ -174,7 +174,7 @@ html {
     --auth-hero-to: #e8f2f9;
     --auth-hero-glow: rgba(77, 146, 196, 0.12);
 
-    /* Report status & severity — vivid in light mode */
+    /* Report status & severity: vivid in light mode */
     --report-status-draft-bg: #f3f4f6;
     --report-status-draft-text: #374151;
     --report-status-draft-border: #d1d5db;
@@ -211,7 +211,7 @@ html {
     --report-severity-critical-border: #fca5a5;
   }
 
-  /* Joyful black UI — default when .dark on <html> */
+  /* Joyful black UI: default when .dark on <html> */
   .dark {
     --brand-primary: #4d92c4;
     --brand-slogan: #8ebfe0;
@@ -656,13 +656,13 @@ html {
   text-overflow: ellipsis;
 }
 
-/* Source row while being dragged — fades to indicate it's "lifted off" */
+/* Source row while being dragged: fades to indicate it's "lifted off" */
 [data-drag-source='true'] {
   opacity: 0.35 !important;
   transition: opacity 120ms ease-out;
 }
 
-/* Trash FAB lid — animates open when a doc is dragged over */
+/* Trash FAB lid: animates open when a doc is dragged over */
 .trash-fab-lid {
   transform-origin: 80% 100%;
   transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -702,7 +702,7 @@ html {
   pointer-events: none;
 }
 
-/* ── Sidebar nav icon hover animations — soft, fluid, and visible ───────── */
+/* ── Sidebar nav icon hover animations: soft, fluid, and visible ───────── */
 @keyframes sb-bounce {
   0%   { transform: translateY(0)     scale(1); }
   25%  { transform: translateY(-7px)  scale(1.08); }
@@ -766,7 +766,7 @@ html {
 }
 /* Hover icon animations disabled per user preference. */
 
-/* Sidebar water-drop ripple — a central splash and two concentric waves
+/* Sidebar water-drop ripple: a central splash and two concentric waves
    that expand outward, evoking a droplet falling on water. */
 @keyframes sb-drop-core {
   0%   { transform: scale(0);    opacity: 0.32; }

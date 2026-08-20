@@ -91,7 +91,7 @@ export class ProxyController {
       }
 
       if (contentType.includes('multipart/form-data')) {
-        // For file uploads the body has NOT been parsed by Express — pipe the raw stream
+        // For file uploads the body has NOT been parsed by Express, pipe the raw stream
         ({ status, data } = await this.proxy.forwardStream({
           method:  req.method,
           path:    rawPath,

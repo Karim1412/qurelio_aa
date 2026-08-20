@@ -1,6 +1,6 @@
 import { cn } from '@/utils/cn';
 
-/** Wordmark: "Qurel" + "i" in primary blue, "o" in accent gold — matches brand assets. */
+/** Wordmark: "Qurel" + "i" in primary blue, "o" in accent gold, matches brand assets. */
 export function QurelioLogo({
   className,
   height = 32,

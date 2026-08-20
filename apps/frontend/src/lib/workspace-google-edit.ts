@@ -66,7 +66,7 @@ export async function openWorkspaceDocument(fetchBlob: () => Promise<{
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 60_000);
       toast.success(
-        'File saved — open it from your Downloads folder (Word/Excel), or upload it to Google Drive and use Open with Google Docs/Sheets.',
+        'File saved. Open it from your Downloads folder (Word/Excel), or upload it to Google Drive and use Open with Google Docs/Sheets.',
         { duration: 8000 },
       );
       return;
@@ -131,7 +131,7 @@ export async function openGoogleEditorFromWorkspaceFile(fetchBlob: () => Promise
       return;
     }
     toast.success(
-      'File downloaded — in the new Google tab, use File → Open and pick the file from Downloads (or drag it into the tab).',
+      'File downloaded. In the new Google tab, use File → Open and pick the file from Downloads (or drag it into the tab).',
       { duration: 10_000 },
     );
   } catch (e) {

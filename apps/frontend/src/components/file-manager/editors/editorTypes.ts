@@ -1,9 +1,9 @@
 /**
  * Editor kind dispatched from the file extension / mime.
- * - text: plain text / code / markdown / json / yaml / etc. — textarea editor
- * - csv: CSV / TSV — editable table grid (no external dep)
- * - xlsx: Excel — editable table grid (uses `xlsx`)
- * - pdf: PDF — inline preview + text annotation overlay (uses `pdf-lib`)
+ * - text: plain text / code / markdown / json / yaml / etc., textarea editor
+ * - csv: CSV / TSV: editable table grid (no external dep)
+ * - xlsx: Excel: editable table grid (uses `xlsx`)
+ * - pdf: PDF: inline preview + text annotation overlay (uses `pdf-lib`)
  * - image: inline preview, rename + replace
  * - replace: any binary we can't render; preview if possible, replace via upload
  */

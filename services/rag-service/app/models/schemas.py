@@ -59,7 +59,7 @@ class EvidenceExcerpt(BaseModel):
 
 
 class ClauseResult(BaseModel):
-    """One auditable requirement — the unit of an audit worksheet row.
+    """One auditable requirement: the unit of an audit worksheet row.
 
     A clause that states several distinct "SHALL" requirements produces several
     of these, each with its own status and justification, so the output matches a
@@ -75,7 +75,7 @@ class ClauseResult(BaseModel):
     conditional_clauses:   str   = ""
     # Cross-references cited by the requirement ("7.2.10", "IEC 60364-5-52:2009, 524").
     references:            str   = ""
-    # PASS | FAIL | N/A | MISSING_INFO — the auditor-facing outcome.
+    # PASS | FAIL | N/A | MISSING_INFO: the auditor-facing outcome.
     status:                str   = ""
     # Status-prefixed rationale citing the source document and page.
     justification:         str   = ""
@@ -162,7 +162,7 @@ class NcIshikawaAiResponse(BaseModel):
 
 
 class AuditChecklistScoreRequest(BaseModel):
-    """One audit checklist criterion — evaluation-service loads DB row and forwards text to RAG."""
+    """One audit checklist criterion: evaluation-service loads DB row and forwards text to RAG."""
     question: str
     answer: Optional[str] = None
     notes: Optional[str] = None

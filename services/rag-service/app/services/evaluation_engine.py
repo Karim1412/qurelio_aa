@@ -45,7 +45,7 @@ VERDICT_INCONCLUSIVE = "INCONCLUSIVE"
 
 PROMPT = ChatPromptTemplate.from_template(
     """You are a lead auditor performing a rigorous clause-by-clause conformity assessment.
-Assess ONLY against the requirement text supplied below — do not import requirements
+Assess ONLY against the requirement text supplied below, do not import requirements
 from any other standard you happen to know.
 
 STANDARD CLAUSE: {clause_reference}
@@ -56,9 +56,9 @@ REQUIREMENT TEXT (excerpt):
 EVIDENCE CHUNKS (retrieved by semantic similarity from approved evidence documents):
 {evidence_chunks}
 
-TASK — produce a conformity matrix for this clause:
+TASK: produce a conformity matrix for this clause:
 1. SPLIT the clause into each SEPARATE normative requirement (every distinct "SHALL"
-   / "DOIT" statement). One clause often states several — emit ONE row per requirement.
+   / "DOIT" statement). One clause often states several: emit ONE row per requirement.
    Lettered or numbered sub-items become their own rows ("7.2.3 (a)", "7.2.3 (b)").
 2. For each requirement, decide whether it APPLIES to this product at all.
 3. Judge each applicable requirement against the evidence and justify it.
@@ -71,7 +71,7 @@ RESPOND ONLY WITH VALID JSON:
     {{
       "reference": "{clause_reference}",
       "summary": "The requirement restated as one normative sentence",
-      "applicable_if": "IF: <condition>  — empty when unconditional",
+      "applicable_if": "IF: <condition>  (empty when unconditional)",
       "conditional_clauses": "clauses whose conditions gate this one, else empty",
       "references": "cross-references cited, e.g. '7.2.10' or 'IEC 60364-5-52:2009, 524', else empty",
       "status": "PASS|FAIL|N/A|MISSING_INFO",
@@ -82,7 +82,7 @@ RESPOND ONLY WITH VALID JSON:
   ]
 }}
 
-STATUS — choose exactly one per requirement:
+STATUS: choose exactly one per requirement:
 - "PASS": the evidence positively demonstrates conformity.
 - "FAIL": the evidence shows the requirement is NOT met, or contradicts it.
 - "N/A": the requirement does not apply to this product (condition not met, feature
@@ -116,7 +116,7 @@ STATUS_MISSING_INFO = "MISSING_INFO"
 
 # Statuses that carry no conformity judgement and are therefore excluded from the
 # score: N/A means the requirement does not apply, INCONCLUSIVE means the engine
-# itself failed. MISSING_INFO *is* scored — an undemonstrated requirement is not a
+# itself failed. MISSING_INFO *is* scored: an undemonstrated requirement is not a
 # conforming one.
 _UNSCORED_STATUSES = {STATUS_NA, VERDICT_INCONCLUSIVE}
 
@@ -143,7 +143,7 @@ def _status_to_verdict(status: str) -> str:
         return "NOT_SATISFIED"
     if status == STATUS_MISSING_INFO:
         return "PARTIALLY_SATISFIED"
-    return VERDICT_INCONCLUSIVE  # N/A — carries no conformity judgement
+    return VERDICT_INCONCLUSIVE  # N/A: carries no conformity judgement
 
 
 def _verdict_weight(v: str) -> float:
@@ -161,7 +161,7 @@ def _status_weight(status: str) -> float:
 
 
 def _resolve_clause_weight(ref: str, clause_weights: Optional[dict[str, Any]]) -> float:
-    """EVAL-004: exact id, `4.*`, section `4`, or `group:4.1` — most specific match wins."""
+    """EVAL-004: exact id, `4.*`, section `4`, or `group:4.1`, most specific match wins."""
     if not clause_weights:
         return 1.0
     if ref in clause_weights:
@@ -226,7 +226,7 @@ def _weighted_overall(
 def _parse_json_array_lenient(text: str) -> list:
     """Parse a JSON array, salvaging the complete items when it was truncated.
 
-    A cut-off response is still useful — the clauses that did arrive are valid —
+    A cut-off response is still useful: the clauses that did arrive are valid,
     so trim back to the last complete object and close the array.
     """
     s = (text or "").strip()
@@ -349,7 +349,7 @@ class EvaluationEngine:
             return ""
         words = v.split(" ")
         n = len(words)
-        # Smallest repeating unit that tiles the sequence — handles any repeat
+        # Smallest repeating unit that tiles the sequence, handles any repeat
         # count, since annex headers can recur four or more times.
         for size in range(1, n // 2 + 1):
             if n % size:
@@ -403,7 +403,7 @@ class EvaluationEngine:
             return []
 
         # Prefer the standard's numbered clauses (7.2.1, 16.4). Annexes, figures and
-        # tables are only used when the document has no numbered clauses at all —
+        # tables are only used when the document has no numbered clauses at all,
         # otherwise an annex heading crowds out the requirements that matter.
         # "7", "7.2", "7.2.3" and lettered sub-items "7.2.3 (a)" all count as
         # numbered clauses; annex/article headers do not.
@@ -432,7 +432,7 @@ class EvaluationEngine:
         Used only when the uploaded document yields no usable numbered structure
         (scanned image, partial extract, wrong file). The clause LIST comes from
         the model; every verdict is still decided against the retrieved evidence,
-        so this never invents conformity — only the skeleton to audit against.
+        so this never invents conformity: only the skeleton to audit against.
         Callers must log that the list is not document-derived.
         """
         name = (iso_standard or "").strip()
@@ -440,8 +440,8 @@ class EvaluationEngine:
             return []
         prompt = (
             f"The standard designation is: \"{name}\".\n"
-            "If you recognise this designation, list its auditable, numbered clauses "
-            "— the sections a lead auditor assesses conformity against.\n"
+            "If you recognise this designation, list its auditable, numbered clauses: "
+            "the sections a lead auditor assesses conformity against.\n"
             "Rules:\n"
             "- Return ONLY a JSON array, no prose, no code fences.\n"
             '- Each item: {"reference": "<number>", "title": "<clause title>"}\n'
@@ -450,7 +450,7 @@ class EvaluationEngine:
             "- Titles in the language the standard is normally published in.\n"
             "- Skip scope, normative references and terms/definitions.\n"
             "- Max 60 items, document order.\n"
-            "- If you do NOT recognise the designation, return [] — never guess."
+            "- If you do NOT recognise the designation, return [], never guess."
         )
         try:
             # A full clause list runs well past LLM_MAX_TOKENS (tuned for short
@@ -564,7 +564,7 @@ class EvaluationEngine:
                 self._clause_cache[cache_key] = from_model
                 return from_model
             logger.warning(
-                "Falling back to %d annex/article heading(s) for %s — the document "
+                "Falling back to %d annex/article heading(s) for %s, the document "
                 "exposes no numbered clauses and the standard was not recognised.",
                 len(structural),
                 iso_standard,
@@ -598,13 +598,13 @@ class EvaluationEngine:
         corpus = "\n\n".join(chunks)[:12000]
         prompt = (
             f"Below is text extracted from the standard '{iso_standard}'.\n"
-            "Identify the numbered, auditable clauses it defines — the ones a lead "
+            "Identify the numbered, auditable clauses it defines, the ones a lead "
             "auditor would assess conformity against.\n"
             "Rules:\n"
             "- Return ONLY a JSON array, no prose, no code fences.\n"
             '- Each item: {"reference": "<id>", "title": "<short title>"}\n'
             "- Go to the DEEPEST numbered subdivision the text shows. If the document "
-            'has "7", "7.2" and "7.2.3", return all three — the leaf clauses are where '
+            'has "7", "7.2" and "7.2.3", return all three: the leaf clauses are where '
             "the requirements live, and the headings are needed for context.\n"
             "- NEVER return only top-level numbers when deeper subdivisions exist.\n"
             "- Use the document's OWN numbering exactly as it appears: dotted clauses "
@@ -633,7 +633,7 @@ class EvaluationEngine:
             )
             raise RuntimeError(
                 f"Could not read the clause structure of '{iso_standard}' "
-                f"({type(e).__name__}). The evaluation was not run — retry once the "
+                f"({type(e).__name__}). The evaluation was not run. Retry once the "
                 "AI service is reachable."
             ) from e
 
@@ -655,7 +655,7 @@ class EvaluationEngine:
         if not clauses:
             # Last resort before failing: scan the standard's own text for headings.
             # Reached when the vectors predate clause-aware indexing AND the model
-            # returned nothing usable — without this the engine dead-ends on
+            # returned nothing usable: without this the engine dead-ends on
             # documents it could still audit.
             clauses = self._clauses_from_raw_text("\n\n".join(chunks))
             if clauses:
@@ -668,7 +668,7 @@ class EvaluationEngine:
                 self._clause_cache[cache_key] = clauses
                 return clauses
 
-            # Nothing usable in the document itself — fall back to the model's
+            # Nothing usable in the document itself: fall back to the model's
             # knowledge of this standard's clause structure. Verdicts still come
             # only from the retrieved evidence; this supplies the skeleton, not
             # the conclusions.
@@ -676,7 +676,7 @@ class EvaluationEngine:
             if clauses:
                 logger.warning(
                     "Clause list for %s came from MODEL KNOWLEDGE, not the uploaded "
-                    "document (%d clause(s)) — the file yielded no usable structure.",
+                    "document (%d clause(s)): the file yielded no usable structure.",
                     iso_standard,
                     len(clauses),
                 )
@@ -710,7 +710,7 @@ class EvaluationEngine:
     ) -> EvaluateResponse:
         del scoring_method  # reserved for future templates; weights drive scoring when set
         evidence_ids = evidence_document_ids or [product_document_id]
-        # Clauses come from the standard the user selected — not a hardcoded list.
+        # Clauses come from the standard the user selected, not a hardcoded list.
         clauses = await self._derive_clauses(company_id, iso_document_id, iso_standard)
         sem = asyncio.Semaphore(CLAUSE_CONCURRENCY)
 
@@ -738,7 +738,7 @@ class EvaluationEngine:
                         iso_document_id,
                         evidence_ids,
                     )
-                    # The heading parsed from the standard beats the model's guess —
+                    # The heading parsed from the standard beats the model's guess,
                     # that is what produced titles like "Article 11" for clause 10.
                     if clause_title:
                         for r in rows:
@@ -766,7 +766,7 @@ class EvaluationEngine:
                             clause_text_excerpt="",
                             status=VERDICT_INCONCLUSIVE,
                             justification=(
-                                f"INCONCLUSIVE: clause could not be assessed — "
+                                f"INCONCLUSIVE: clause could not be assessed. "
                                 f"{type(e).__name__}: {e}"
                             )[:500],
                             verdict=VERDICT_INCONCLUSIVE,
@@ -778,7 +778,7 @@ class EvaluationEngine:
                             ],
                             legacy_score=0.0,
                             legacy_status="ERROR",
-                            reasoning=f"Clause could not be assessed — {type(e).__name__}: {e}"[:500],
+                            reasoning=f"Clause could not be assessed. {type(e).__name__}: {e}"[:500],
                         )
                     ]
 
@@ -788,16 +788,16 @@ class EvaluationEngine:
 
         inconclusive = [r for r in results if (r.status or "") == VERDICT_INCONCLUSIVE]
         if inconclusive and len(inconclusive) == len(results):
-            # Nothing was assessable — surface a failed evaluation instead of
+            # Nothing was assessable: surface a failed evaluation instead of
             # persisting a meaningless 0% that reads as a real audit verdict.
             raise RuntimeError(
-                f"All {len(clauses)} clauses failed to evaluate — "
+                f"All {len(clauses)} clauses failed to evaluate. "
                 f"the evaluation could not be performed. "
                 f"First error: {inconclusive[0].reasoning or 'unknown'}"
             )
         if inconclusive:
             logger.warning(
-                "%d/%d requirement rows inconclusive — excluded from the conformity score",
+                "%d/%d requirement rows inconclusive: excluded from the conformity score",
                 len(inconclusive),
                 len(results),
             )
@@ -873,7 +873,7 @@ class EvaluationEngine:
         except Exception as e:
             logger.warning("Exact clause lookup failed for %s: %s", clause_id, e)
         if not iso_m:
-            # Standard indexed before clause-aware ingestion — fall back to similarity.
+            # Standard indexed before clause-aware ingestion, fall back to similarity.
             iso_m = await self.ingestion.search(
                 f"clause {clause_id}",
                 company_id,
@@ -1030,7 +1030,7 @@ class EvaluationEngine:
                                 "status": STATUS_MISSING_INFO,
                                 "justification": (
                                     f"MISSING_INFO: model output invalid after {max_retries} "
-                                    "retries — manual review required."
+                                    "retries. Manual review required."
                                 ),
                                 "confidence": 0.0,
                             }
@@ -1043,7 +1043,7 @@ class EvaluationEngine:
 
         raw_requirements = data.get("requirements")
         if not isinstance(raw_requirements, list) or not raw_requirements:
-            # Older/degraded output shape — treat the clause as a single requirement.
+            # Older/degraded output shape: treat the clause as a single requirement.
             raw_requirements = [
                 {
                     "reference": clause_id,

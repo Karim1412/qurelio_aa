@@ -95,7 +95,7 @@ export function TemplateManagement() {
       };
 
       const response = await reportApi.createTemplate(newTemplate);
-      toast.success('Template created — customize sections and fields below');
+      toast.success('Template created. Customize sections and fields below');
       setFormData({ name: '', description: '', reportType: '' });
       setShowCreateDialog(false);
       const created = response.data;
@@ -446,7 +446,7 @@ export function TemplateManagement() {
             <DialogHeader>
               <DialogTitle>Template: {selectedTemplate.name}</DialogTitle>
               <DialogDescription>
-                {countTemplateFields(selectedTemplate.sections)} fields — read-only structure preview.
+                {countTemplateFields(selectedTemplate.sections)} fields, read-only structure preview.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-3 max-h-[50vh] overflow-auto">

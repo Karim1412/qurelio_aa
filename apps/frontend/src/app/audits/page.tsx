@@ -1399,7 +1399,7 @@ export default function AuditsPage() {
                           </select>
                         ) : (
                           <p className="mt-1.5 inline-flex h-10 w-full items-center rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 text-sm text-[var(--text-primary)]">
-                            {resolveLeadAuditorName(generalInfo.leadAuditor, companyUsers) || '—'}
+                            {resolveLeadAuditorName(generalInfo.leadAuditor, companyUsers) || '-'}
                           </p>
                         )}
                       </div>

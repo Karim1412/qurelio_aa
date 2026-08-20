@@ -59,7 +59,7 @@ export class WorkspaceChatContextService {
       for (const nc of openNcs) {
         const clause = nc.isoClause ? ` clause ${nc.isoClause}` : '';
         lines.push(
-          `- [${nc.status}] ${nc.title}${clause} (${nc.classification}) — id ${nc.id}`,
+          `- [${nc.status}] ${nc.title}${clause} (${nc.classification}), id ${nc.id}`,
         );
       }
     } else {
@@ -84,7 +84,7 @@ export class WorkspaceChatContextService {
       for (const c of capaDueThisMonth) {
         const ncTitle = c.nonConformity?.title ? ` (NC: ${c.nonConformity.title})` : '';
         lines.push(
-          `- ${c.title} — due ${c.dueDate.toISOString().slice(0, 10)} [${c.actionStatus}]${ncTitle}`,
+          `- ${c.title}, due ${c.dueDate.toISOString().slice(0, 10)} [${c.actionStatus}]${ncTitle}`,
         );
       }
     }

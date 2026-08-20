@@ -21,7 +21,7 @@ export enum DemoSlotStatus {
 }
 
 export enum DemoBookingStatus {
-  /** Awaiting the admin's answer — the 48 h response target applies from createdAt. */
+  /** Awaiting the admin's answer: the 48 h response target applies from createdAt. */
   PENDING = 'PENDING',
   CONFIRMED = 'CONFIRMED',
   DECLINED = 'DECLINED',
@@ -73,7 +73,7 @@ export class DemoBooking {
   slot!: DemoSlot;
 
   /**
-   * Request form — the Early Access questionnaire, filled in the booking popup.
+   * Request form: the Early Access questionnaire, filled in the booking popup.
    *
    * A booking and its qualification answers are one record: the visitor picks a
    * slot and answers in the same step, so there is no separate request to
@@ -84,7 +84,7 @@ export class DemoBooking {
   @Column({ name: 'company_name' })
   companyName!: string;
 
-  /** Field / Industry — Pharmaceutical / Cosmetic / MedTech. */
+  /** Field / Industry: Pharmaceutical / Cosmetic / MedTech. */
   @Column()
   field!: string;
 
@@ -115,7 +115,7 @@ export class DemoBooking {
   @Column({ name: 'role_other', nullable: true })
   roleOther?: string | null;
 
-  /** Own firm / clients / both — asked only of consultants. */
+  /** Own firm / clients / both: asked only of consultants. */
   @Column({ name: 'consulting_scope', nullable: true })
   consultingScope?: string | null;
 
@@ -159,7 +159,7 @@ export class DemoBooking {
   @Column({ name: 'preferred_language', nullable: true })
   preferredLanguage?: string | null;
 
-  /** Required to submit — recorded as evidence of consent. */
+  /** Required to submit: recorded as evidence of consent. */
   @Column({ name: 'consent_contact', default: false })
   consentContact!: boolean;
 
@@ -178,7 +178,7 @@ export class DemoBooking {
   @Column({ name: 'responded_at', type: 'timestamp with time zone', nullable: true })
   respondedAt?: Date | null;
 
-  /** Google Meet URL sent with the confirmation — generated, or pasted by the admin. */
+  /** Google Meet URL sent with the confirmation: generated, or pasted by the admin. */
   @Column({ name: 'meeting_link', type: 'text', nullable: true })
   meetingLink?: string | null;
 

@@ -21,7 +21,7 @@ export function QurelioSpinner({ size = 64, className }: QurelioSpinnerProps) {
       role="status"
       aria-label="Processing"
     >
-      {/* Soft brand glow (single layer, blue only — no yellow) */}
+      {/* Soft brand glow (single layer, blue only: no yellow) */}
       <span
         aria-hidden
         className="absolute inset-0 rounded-full bg-[var(--brand-primary)]/18 blur-2xl"

@@ -6,9 +6,9 @@ import { ExtractionProgressProvider } from '@/components/providers/ExtractionPro
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: { default: 'Qurelio — The AI Compliance & Quality OS', template: '%s | Qurelio' },
+  title: { default: 'Qurelio: The AI Compliance & Quality OS', template: '%s | Qurelio' },
   description:
-    'The legally-safe AI compliance OS: build a private Compliance Memory from your own documents, evaluate against public regulations, monitor regulatory change, and run your full quality-operations lifecycle — with every AI output human-approved before it becomes executable.',
+    'The legally-safe AI compliance OS: build a private Compliance Memory from your own documents, evaluate against public regulations, monitor regulatory change, and run your full quality-operations lifecycle, with every AI output human-approved before it becomes executable.',
   keywords: ['Compliance OS', 'Compliance Memory', 'Regulatory Monitoring', 'QMS', 'CAPA', 'Audits', 'ISO 9001', 'Multi-tenant'],
   icons: {
     icon: '/brand/querlio-mini.png',

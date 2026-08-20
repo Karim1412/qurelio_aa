@@ -38,14 +38,14 @@ export type TabOverview = {
 /**
  * Keyed by the sidebar tab's href.
  * The dashboard banner reads `hoveredHref` from the preview store and
- * renders the matching overview — falling back to the dashboard one.
+ * renders the matching overview: falling back to the dashboard one.
  */
 export const TAB_OVERVIEWS: Record<string, TabOverview> = {
   '/dashboard': {
     eyebrow: 'Overview',
     title: 'My dashboard',
     description:
-      'Your home base — KPI cards, system activity charts, and your team at a glance.',
+      'Your home base: KPI cards, system activity charts, and your team at a glance.',
     Icon: DashboardIllustration,
     tint: '#1B1BF5',
     tintBg: 'rgba(27,27,245,0.10)',
@@ -56,7 +56,7 @@ export const TAB_OVERVIEWS: Record<string, TabOverview> = {
     eyebrow: 'Files',
     title: 'My file library',
     description:
-      'A single place for all your documents — product files, standards and shared assets.',
+      'A single place for all your documents: product files, standards and shared assets.',
     Icon: FileLibraryIllustration,
     tint: '#118D57',
     tintBg: 'rgba(17,141,87,0.10)',
@@ -67,7 +67,7 @@ export const TAB_OVERVIEWS: Record<string, TabOverview> = {
     eyebrow: 'Workspace',
     title: 'My company',
     description:
-      'Identity of your organization — logo, members, settings and workspace details.',
+      'Identity of your organization: logo, members, settings and workspace details.',
     Icon: CompanyIllustration,
     tint: '#1565C0',
     tintBg: 'rgba(21,101,192,0.10)',
@@ -78,7 +78,7 @@ export const TAB_OVERVIEWS: Record<string, TabOverview> = {
     eyebrow: 'Tasks',
     title: 'Kanban board',
     description:
-      'Visual workflow — drag cards across columns to move work forward, end to end.',
+      'Visual workflow: drag cards across columns to move work forward, end to end.',
     Icon: KanbanIllustration,
     tint: '#7C4DFF',
     tintBg: 'rgba(124,77,255,0.10)',
@@ -89,7 +89,7 @@ export const TAB_OVERVIEWS: Record<string, TabOverview> = {
     eyebrow: 'Schedule',
     title: 'Calendar',
     description:
-      'Plan events across month, week, day or agenda — gently and clearly.',
+      'Plan events across month, week, day or agenda, gently and clearly.',
     Icon: CalendarIllustration,
     tint: '#B76E00',
     tintBg: 'rgba(183,110,0,0.10)',
@@ -111,7 +111,7 @@ export const TAB_OVERVIEWS: Record<string, TabOverview> = {
     eyebrow: 'Learning',
     title: 'Organization training',
     description:
-      'Modules and curricula shared across teams — track completion company-wide.',
+      'Modules and curricula shared across teams. Track completion company-wide.',
     Icon: OrganizationTrainingIllustration,
     tint: '#7C4DFF',
     tintBg: 'rgba(124,77,255,0.10)',
@@ -155,7 +155,7 @@ export const TAB_OVERVIEWS: Record<string, TabOverview> = {
     eyebrow: 'Modules',
     title: 'Standards & regulations',
     description:
-      'ISO standards, regulations and reference texts — searchable and always current.',
+      'ISO standards, regulations and reference texts, searchable and always current.',
     Icon: StandardsIllustration,
     tint: '#1565C0',
     tintBg: 'rgba(21,101,192,0.10)',
@@ -166,7 +166,7 @@ export const TAB_OVERVIEWS: Record<string, TabOverview> = {
     eyebrow: 'Modules',
     title: 'Compliance engine',
     description:
-      'Run evaluations against your standards — turn evidence into clear pass/fail scores.',
+      'Run evaluations against your standards. Turn evidence into clear pass/fail scores.',
     Icon: ComplianceIllustration,
     tint: '#1B1BF5',
     tintBg: 'rgba(27,27,245,0.10)',
@@ -177,7 +177,7 @@ export const TAB_OVERVIEWS: Record<string, TabOverview> = {
     eyebrow: 'Quality',
     title: 'Audits',
     description:
-      'Plan, conduct and close audits — every step tracked, every finding captured.',
+      'Plan, conduct and close audits: every step tracked, every finding captured.',
     Icon: AuditsIllustration,
     tint: '#7C4DFF',
     tintBg: 'rgba(124,77,255,0.10)',
@@ -199,7 +199,7 @@ export const TAB_OVERVIEWS: Record<string, TabOverview> = {
     eyebrow: 'Quality',
     title: 'Reports',
     description:
-      'Generated reports across documents, audits and non-conformities — ready to export.',
+      'Generated reports across documents, audits and non-conformities, ready to export.',
     Icon: ReportsIllustration,
     tint: '#118D57',
     tintBg: 'rgba(17,141,87,0.10)',
@@ -210,7 +210,7 @@ export const TAB_OVERVIEWS: Record<string, TabOverview> = {
     eyebrow: 'Admin',
     title: 'Company management',
     description:
-      'Manage every tenant on the platform — onboarding, status, verifications.',
+      'Manage every tenant on the platform: onboarding, status, verifications.',
     Icon: CompanyManagementIllustration,
     tint: '#1B1BF5',
     tintBg: 'rgba(27,27,245,0.10)',
@@ -232,7 +232,7 @@ export const TAB_OVERVIEWS: Record<string, TabOverview> = {
 export const DASHBOARD_OVERVIEW_KEY = '/dashboard';
 
 /**
- * Used by sub-tab nested children that don't have their own overview yet —
+ * Used by sub-tab nested children that don't have their own overview yet,
  * e.g. /training/my falls back to /training/my if missing.
  */
 export function resolveOverview(href: string | null | undefined): TabOverview {

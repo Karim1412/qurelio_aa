@@ -32,7 +32,7 @@ import toast from 'react-hot-toast';
  * pre-fill every later step, which the user then verifies or corrects.
  */
 const STEPS: Step[] = [
-  { label: 'Documents', subtitle: 'Upload files — AI fills the form' },
+  { label: 'Documents', subtitle: 'Upload files, AI fills the form' },
   { label: 'Identity', subtitle: 'Product name & type' },
   { label: 'Technical', subtitle: 'Use, materials, HS code' },
   { label: 'Markets', subtitle: 'Target regions & regulations' },
@@ -54,7 +54,7 @@ const EXTRACTION_TIMEOUT_MS = 4 * 60_000;
 const DRAFTS_LS_KEY = 'qurelio-product-drafts';
 const AUTOSAVE_LS_KEY = 'qurelio-product-wizard-autosave';
 
-/** Bumped when the step order changed — older drafts store the pre-Documents-first indices. */
+/** Bumped when the step order changed: older drafts store the pre-Documents-first indices. */
 const DRAFT_SCHEMA_VERSION = 2;
 
 /** Mirrors PRODUCT_DRAFT_STATUS in document-service: hidden until activated. */
@@ -184,7 +184,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
   const isEditMode = !!editProduct;
   const [view, setView] = useState<'wizard' | 'drafts'>('wizard');
 
-  // Try to load autosave on open (create flow only — edit mode hydrates from the product instead)
+  // Try to load autosave on open (create flow only, edit mode hydrates from the product instead)
   const autosave = open && view === 'wizard' && !isEditMode ? loadAutosave() : null;
 
   const [step, setStep] = useState(autosave?.step ?? 0);
@@ -200,19 +200,19 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
   const [certifications, setCertifications] = useState<ProductCertificationsData>(autosave?.certifications ?? CERTIFICATIONS_EMPTY);
   const [documents, setDocuments] = useState<ProductDocumentsData>({ files: [] });
 
-  /** Field keys the AI pre-filled from the uploaded documents — flagged for the user to verify. */
+  /** Field keys the AI pre-filled from the uploaded documents, flagged for the user to verify. */
   const [aiFields, setAiFields] = useState<string[]>(autosave?.aiFields ?? []);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  /** Folder name as the server currently holds it — uploads reference the product by it. */
+  /** Folder name as the server currently holds it: uploads reference the product by it. */
   const [serverProductName, setServerProductName] = useState('');
   /** Set once "Save & activate" succeeded, so closing no longer offers to discard. */
   const [isActivated, setIsActivated] = useState(false);
-  /** Draft folder created for uploads but never activated — offered for discard on close. */
+  /** Draft folder created for uploads but never activated, offered for discard on close. */
   const [pendingDiscard, setPendingDiscard] = useState<string | null>(null);
   const [isDiscarding, setIsDiscarding] = useState(false);
   /** Upload + read progress for the running analysis. */
   const [progress, setProgress] = useState<AnalysisProgress | null>(null);
-  /** Values the document disagrees with — offered rather than applied (mainly edit mode). */
+  /** Values the document disagrees with: offered rather than applied (mainly edit mode). */
   const [suggestions, setSuggestions] = useState<PrefillSuggestion[]>([]);
   const [analysisMadeNoChange, setAnalysisMadeNoChange] = useState(false);
   /** Same count as `suggestions`, readable synchronously right after an analysis run. */
@@ -227,7 +227,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
     contentRef.current?.scrollTo({ top: 0, behavior: 'auto' });
   }, [step, view]);
 
-  // Persist autosave whenever state changes (create flow only — never pollute the create draft with an edit)
+  // Persist autosave whenever state changes (create flow only, never pollute the create draft with an edit)
   useEffect(() => {
     if (!open || view !== 'wizard' || isEditMode) return;
     saveAutosave({
@@ -283,7 +283,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
     setCertifications({
       productCertifications: editProduct.productCertifications ?? [],
     });
-    // Only newly added files are ever processed — the folder's existing, already
+    // Only newly added files are ever processed: the folder's existing, already
     // extracted documents are never re-read.
     setDocuments({ files: [] });
     setSuggestions([]);
@@ -296,7 +296,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
   const validateStep = useCallback((s: number): boolean => {
     switch (s) {
       case STEP_DOCUMENTS:
-        // Documents are optional — continuing with none simply means filling the form by hand.
+        // Documents are optional: continuing with none simply means filling the form by hand.
         return true;
       case STEP_IDENTITY:
         if (!identity.name.trim()) { toast.error('Product name is required'); return false; }
@@ -326,7 +326,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
     const firstFile = documents.files[0]?.name;
     const base = firstFile ? firstFile.replace(/\.[^.]+$/, '').trim() : '';
     if (base) return base;
-    return `New product — ${new Date().toLocaleString()}`;
+    return `New product ${new Date().toLocaleString()}`;
   };
 
   /** Resolves the product folder, creating it on first use. Returns the name the server holds. */
@@ -436,7 +436,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
       setProgress({
         done: ids.length + read,
         total,
-        label: `Reading with AI — ${read}/${ids.length} done`,
+        label: `Reading with AI: ${read}/${ids.length} done`,
       });
     };
     reportRead();
@@ -463,7 +463,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
               ),
             }));
           }
-        } catch { /* transient — retry on the next tick */ }
+        } catch { /* transient: retry on the next tick */ }
       }
       reportRead();
     }
@@ -474,7 +474,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
       setDocuments((prev) => ({
         files: prev.files.map((f) =>
           f.documentId === docId
-            ? { ...f, status: 'analyzing', error: 'Still being read — it will finish in the background' }
+            ? { ...f, status: 'analyzing', error: 'Still being read. It will finish in the background' }
             : f,
         ),
       }));
@@ -497,7 +497,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
       toast.error(failures[0], { duration: 8000 });
     }
     if (ids.length === 0) {
-      // Nothing reached the server — stay on this step so the user can retry or skip.
+      // Nothing reached the server: stay on this step so the user can retry or skip.
       return null;
     }
 
@@ -506,7 +506,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
     if (stillRunning.length > 0) onExtractionStarted?.(stillRunning);
 
     if (structures.length === 0) {
-      toast.error('No usable content was extracted — fill the form manually');
+      toast.error('No usable content was extracted. Fill the form manually');
       return 0;
     }
 
@@ -545,7 +545,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
     setAiFields((prev) => [...new Set([...prev, ...nextFields])]);
 
     /**
-     * Anything the document found that contradicts a value already in the form —
+     * Anything the document found that contradicts a value already in the form,
      * the normal case when editing a saved product, where `applyPrefill` writes
      * nothing at all. Offered for review instead of being dropped on the floor.
      */
@@ -572,7 +572,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
    * Moving between steps never touches the server.
    *
    * Only "Save & activate" (or an explicit "Save as draft") commits, so abandoning
-   * the wizard leaves nothing behind — no half-filled product in the library, no
+   * the wizard leaves nothing behind: no half-filled product in the library, no
    * archive entry. The single exception is the Documents step, which must create a
    * hidden DRAFT folder for the files to land in so the AI can read them; that
    * draft is discarded on cancel.
@@ -598,10 +598,10 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
         setIsSaving(false);
         setProgress(null);
       }
-      // Upload failed outright — hold on this step rather than advancing to an empty form.
+      // Upload failed outright: hold on this step rather than advancing to an empty form.
       if (count === null) return;
       if (count > 0) {
-        toast.success(`${count} field${count > 1 ? 's' : ''} pre-filled — please verify them`);
+        toast.success(`${count} field${count > 1 ? 's' : ''} pre-filled. Please verify them`);
       }
       // Disagreements need a decision here; advancing would bury them.
       if (suggestionsPendingRef.current > 0) {
@@ -651,12 +651,12 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
   const persistProfile = async (id: string, status: string) => {
     const payload = buildProfilePayload(status);
     await productApi.updateProfile(id, payload);
-    // Identity may rename the folder — keep the name uploads reference in sync.
+    // Identity may rename the folder: keep the name uploads reference in sync.
     if (payload.name) setServerProductName(payload.name);
   };
 
   const handleSaveAndDraft = async () => {
-    const name = draftName.trim() || identity.name.trim() || `Draft — ${new Date().toLocaleDateString()}`;
+    const name = draftName.trim() || identity.name.trim() || `Draft ${new Date().toLocaleDateString()}`;
     setIsSaving(true);
     try {
       const { id } = await ensureProduct();
@@ -750,9 +750,9 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
       }
 
       toast.success(uploadedIds.length > 0
-        ? `Product ${isEditMode ? 'updated' : 'activated'} — ${uploadedIds.length} file${uploadedIds.length > 1 ? 's' : ''} sent for AI extraction`
+        ? `Product ${isEditMode ? 'updated' : 'activated'}, ${uploadedIds.length} file${uploadedIds.length > 1 ? 's' : ''} sent for AI extraction`
         : isEditMode ? 'Product updated successfully!' : 'Product activated successfully!');
-      // Activated — close directly, there is no draft left to discard.
+      // Activated: close directly, there is no draft left to discard.
       resetAndClose();
       onCreated?.();
     } catch { toast.error('Failed to complete'); }
@@ -805,7 +805,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
       await productApi.delete(pendingDiscard);
       clearAutosave();
     } catch {
-      toast.error('Could not discard the draft — it stays hidden until you activate it');
+      toast.error('Could not discard the draft. It stays hidden until you activate it');
     } finally {
       setIsDiscarding(false);
       setPendingDiscard(null);
@@ -832,7 +832,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
   const uploadedDocCount = documents.files.filter((f) => !!f.documentId).length;
 
   /**
-   * Editing a field clears its AI flag — the value is the user's now, so it no
+   * Editing a field clears its AI flag: the value is the user's now, so it no
    * longer needs verifying.
    */
   const clearAiFlags = (group: string, patch: Record<string, unknown>) => {
@@ -881,7 +881,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
 
   const applyAllSuggestions = () => {
     suggestions.forEach(applySuggestion);
-    toast.success(`${suggestions.length} value${suggestions.length > 1 ? 's' : ''} applied — verify them before saving`);
+    toast.success(`${suggestions.length} value${suggestions.length > 1 ? 's' : ''} applied. Verify them before saving`);
   };
 
   const renderStep = () => {
@@ -964,7 +964,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
             <DialogDescription className="text-[13px]">
               {view === 'drafts'
                 ? 'Resume a saved draft or start fresh'
-                : 'Upload your documents first — the AI fills the form, you verify it'}
+                : 'Upload your documents first. The AI fills the form, you verify it'}
             </DialogDescription>
           </DialogHeader>
           <div className="flex items-center gap-2">
@@ -1018,7 +1018,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
                 ) : isLast ? (
                   <>
                     <Check className="h-4 w-4 text-emerald-500" />
-                    Ready — <span className="font-medium">Save &amp; activate</span> creates the product
+                    Ready: <span className="font-medium">Save &amp; activate</span> creates the product
                   </>
                 ) : (
                   <>
@@ -1058,7 +1058,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
       </DialogContent>
     </Dialog>
 
-      {/* Closing before activation — the hidden draft folder must not survive silently. */}
+      {/* Closing before activation: the hidden draft folder must not survive silently. */}
       <Dialog open={!!pendingDiscard} onOpenChange={(v) => !v && setPendingDiscard(null)}>
         <DialogContent className="max-w-md">
           <DialogHeader>

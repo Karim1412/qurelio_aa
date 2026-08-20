@@ -23,7 +23,7 @@ type Props = {
    * `default` = section tint (amber/blue/indigo) from `variant`.
    */
   activeStyle?: 'default' | 'prime';
-  /** e.g. [6, 10, 20, 30] — when set, shows a “rows per page” control (Prime–style). */
+  /** e.g. [6, 10, 20, 30]: when set, shows a “rows per page” control (Prime–style). */
   rowsPerPageOptions?: number[];
   onPageSizeChange?: (rows: number) => void;
 };

@@ -100,7 +100,7 @@ import {
 const BR = '#4d92c4';
 const BR_BG = 'rgba(77,146,196,0.12)';
 
-/** Hero CTAs — `--brand-accent-cta` (slightly lighter than the wordmark `--brand-accent`). */
+/** Hero CTAs: `--brand-accent-cta` (slightly lighter than the wordmark `--brand-accent`). */
 const heroGoldBtn =
   'gap-2 rounded-full border-0 bg-none bg-[var(--brand-accent-cta)] px-4 py-2.5 text-sm font-semibold text-[var(--brand-dark)] shadow-none transition hover:brightness-105 dark:shadow-none';
 
@@ -605,7 +605,7 @@ export default function DashboardPage() {
           listType: 'audits',
           series: bucketSeries(auditsRaw, statBuckets),
           emptyHint: {
-            message: 'No audits scheduled yet — schedule your first ISO audit.',
+            message: 'No audits scheduled yet. Schedule your first ISO audit.',
             cta: 'Schedule audit',
             href: '/audits',
           },
@@ -851,13 +851,13 @@ export default function DashboardPage() {
         name: String(a.title ?? a.name ?? `Audit ${i + 1}`),
         date: a.scheduledAt
           ? new Date(a.scheduledAt).toLocaleDateString(undefined, { dateStyle: 'medium' })
-          : '—',
+          : '-',
         status: String(a.status ?? 'PLANNED').replace(/_/g, ' '),
       }));
 
     const acts: ActivityItem[] = [];
     const relTime = (iso?: string) => {
-      if (!iso) return '—';
+      if (!iso) return '-';
       const t = new Date(iso).getTime();
       const diff = Date.now() - t;
       if (!Number.isFinite(diff) || diff < 0) return 'soon';
@@ -935,7 +935,7 @@ export default function DashboardPage() {
       const rawType = d.type ? String(d.type).replace(/_/g, ' ').toLowerCase() : 'document';
       const docTypeLabel = rawType.charAt(0).toUpperCase() + rawType.slice(1);
       const who = personName(d.uploadedBy);
-      // The document's real content — the actual extracted text as it is —
+      // The document's real content: the actual extracted text as it is,
       // then its description, then a meaningful fallback line.
       const str = (v: unknown) =>
         typeof v === 'string' && v.trim()
@@ -948,7 +948,7 @@ export default function DashboardPage() {
         str(d.extractedText) ||
         str(d.description) ||
         str(d.summary) ||
-        `${op.detail} — ${docTypeLabel} document.`;
+        `${op.detail}, ${docTypeLabel} document.`;
       const stamp = d.updatedAt || d.createdAt;
       // Optional profile photo if the API provides one on the uploader object.
       const upl = d.uploadedBy as { avatarUrl?: string; photoUrl?: string; avatar?: string } | string | undefined;
@@ -1034,7 +1034,7 @@ export default function DashboardPage() {
   const listConfig = useMemo(() => {
     if (!listType) return null;
     const fmtDate = (d?: string) =>
-      d ? new Date(d).toLocaleDateString(undefined, { dateStyle: 'medium' }) : '—';
+      d ? new Date(d).toLocaleDateString(undefined, { dateStyle: 'medium' }) : '-';
     const statusBadge = (s?: string): { label: string; color: string } | undefined => {
       if (!s) return undefined;
       const upper = s.toUpperCase();
@@ -1072,7 +1072,7 @@ export default function DashboardPage() {
           empty: 'No products in this period.',
           rows: products.map<Row>((p, i) => ({
             id: rowKey(p, i),
-            primary: String(p.name ?? p.title ?? '—'),
+            primary: String(p.name ?? p.title ?? '-'),
             secondary: typeof p.description === 'string' ? p.description : undefined,
             badge: statusBadge(p.status),
             date: fmtDate(p.createdAt),
@@ -1152,7 +1152,7 @@ export default function DashboardPage() {
           empty: 'No documents in this period.',
           rows: docsList.map<Row>((d, i) => ({
             id: rowKey(d, i),
-            primary: String(d.name ?? d.title ?? '—'),
+            primary: String(d.name ?? d.title ?? '-'),
             secondary: d.type ? String(d.type).replace(/_/g, ' ') : undefined,
             badge: statusBadge(d.status),
             date: fmtDate(d.createdAt),
@@ -1171,7 +1171,7 @@ export default function DashboardPage() {
           empty: 'No standards in this period.',
           rows: stds.map<Row>((s, i) => ({
             id: rowKey(s, i),
-            primary: String(s.name ?? '—'),
+            primary: String(s.name ?? '-'),
             secondary: s.isoStandard ? String(s.isoStandard) : undefined,
             badge: statusBadge(s.status),
             date: fmtDate(s.effectiveDate ?? s.createdAt),
@@ -1226,7 +1226,7 @@ export default function DashboardPage() {
                 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)',
               backgroundSize: '56px 56px',
               // Transparent in the centre so the grid never strikes through
-              // the centred logo — lines only fade in toward the edges.
+              // the centred logo: lines only fade in toward the edges.
               maskImage:
                 'radial-gradient(ellipse 70% 65% at 50% 50%, transparent 0%, transparent 42%, black 85%)',
               WebkitMaskImage:
@@ -1246,7 +1246,7 @@ export default function DashboardPage() {
             className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[var(--brand-accent)]/45 to-transparent"
           />
 
-          {/* ─── Centered brand logo — oversized so it bleeds past the banner top + bottom ─── */}
+          {/* ─── Centered brand logo: oversized so it bleeds past the banner top + bottom ─── */}
           <motion.div
             aria-hidden
             className="pointer-events-none absolute left-1/2 top-1/2 z-[1] -translate-x-1/2 -translate-y-1/2 select-none"
@@ -1275,7 +1275,7 @@ export default function DashboardPage() {
             }}
             className="relative z-[2] grid grid-cols-1 items-center gap-6 sm:grid-cols-[1.1fr_auto]"
           >
-            {/* Left — headline + subtitle */}
+            {/* Left: headline + subtitle */}
             <div className="min-w-0">
               <motion.h2
                 variants={{
@@ -1317,7 +1317,7 @@ export default function DashboardPage() {
               </motion.p>
             </div>
 
-            {/* Right — quick action buttons (2×2 grid) */}
+            {/* Right: quick action buttons (2×2 grid) */}
             <motion.div
               variants={{
                 hidden: { opacity: 0, y: 8 },
@@ -1482,7 +1482,7 @@ export default function DashboardPage() {
                     borderColor: `color-mix(in srgb, ${stat.color} 22%, transparent)`,
                   }}
                 >
-                  {/* Halftone dot pattern — clustered toward the lower-right, like the reference */}
+                  {/* Halftone dot pattern: clustered toward the lower-right, like the reference */}
                   <div
                     aria-hidden
                     className="pointer-events-none absolute inset-0"
@@ -1498,7 +1498,7 @@ export default function DashboardPage() {
                   />
                   <CardContent className="relative flex flex-col gap-3 p-0">
                     <div className="flex items-start justify-between gap-2">
-                      {/* Single-color illustration tile — color inherits via currentColor */}
+                      {/* Single-color illustration tile: color inherits via currentColor */}
                       <div
                         className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
                         style={{
@@ -2212,7 +2212,7 @@ export default function DashboardPage() {
                       const seed =
                         u.id || u.email || `${u.firstName}${u.lastName}` || String(idx);
                       const name =
-                        [u.firstName, u.lastName].filter(Boolean).join(' ') || u.email || '—';
+                        [u.firstName, u.lastName].filter(Boolean).join(' ') || u.email || '-';
                       const isActive = u.isActive === true || u.status === 'ACTIVE';
                       const isPending = u.status === 'PENDING' || u.status === 'INVITED';
                       return (
@@ -2321,7 +2321,7 @@ export default function DashboardPage() {
               Compliance trends
             </DialogTitle>
             <DialogDescription className="text-xs text-[var(--muted)]">
-              Monthly progress over the last 6 months — Documents ready, Audits completed, NCs closed.
+              Monthly progress over the last 6 months: Documents ready, Audits completed, NCs closed.
             </DialogDescription>
           </DialogHeader>
           <div className="mt-2 grid grid-cols-3 gap-3">

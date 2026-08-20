@@ -40,8 +40,8 @@ function ncDraftListTitle(d: Record<string, unknown>) {
   const raw = String(d?.title ?? '').trim();
   if (raw && !/\bundefined\b/i.test(raw)) return raw;
   const c = String(d?.clauseReference ?? d?.isoClause ?? '').trim();
-  if (c) return `NC draft — Clause ${c}`;
-  return 'NC draft — add clause reference and upload evidence';
+  if (c) return `NC draft: Clause ${c}`;
+  return 'NC draft: add clause reference and upload evidence';
 }
 
 /** Maps RAG / evaluation-service clause rows to the UI row shape (legacy + new verdicts). */
@@ -86,7 +86,7 @@ function normalizeEvalRow(r: any) {
   return {
     ...r,
     clause_id: ref,
-    // camelCase first — that is what evaluation-service returns; the snake_case
+    // camelCase first: that is what evaluation-service returns; the snake_case
     // spellings are the raw RAG shape. Reading only snake_case made every title
     // fall back to "Clause <ref>" and every summary to the standard excerpt.
     clause_title: r.clauseTitle || r.clause_title || '',
@@ -102,7 +102,7 @@ function normalizeEvalRow(r: any) {
     confidence: conf,
     justification:
       (r.justification ??
-        (Array.isArray(r.gaps) && r.gaps.length ? r.gaps.join('; ') : '')) || '—',
+        (Array.isArray(r.gaps) && r.gaps.length ? r.gaps.join('; ') : '')) || '-',
     evidence_found: r.evidence_found ?? evText,
     applicable: r.applicable !== false,
     _supportingEvidence: se,
@@ -212,12 +212,12 @@ function ClauseRow({
         )}
         onClick={() => setOpen(!open)}
       >
-        <TableCell className="whitespace-nowrap font-bold text-[var(--text-primary)]">{row.clause_id || '—'}</TableCell>
+        <TableCell className="whitespace-nowrap font-bold text-[var(--text-primary)]">{row.clause_id || '-'}</TableCell>
         <TableCell className="max-w-[180px]">
-          <p className="text-sm font-semibold text-[var(--text-primary)]">{row.clause_title || '—'}</p>
+          <p className="text-sm font-semibold text-[var(--text-primary)]">{row.clause_title || '-'}</p>
         </TableCell>
         <TableCell className="max-w-[320px]">
-          <p className="line-clamp-3 text-xs text-[var(--muted)]">{row.clause_summary || '—'}</p>
+          <p className="line-clamp-3 text-xs text-[var(--muted)]">{row.clause_summary || '-'}</p>
         </TableCell>
         <TableCell className="max-w-[200px]">
           <p className="line-clamp-3 text-xs text-[var(--muted)]">{row.applicable_if || ''}</p>
@@ -268,7 +268,7 @@ function ClauseRow({
                     <p className="text-[11px] font-bold uppercase">Manual override</p>
                     <p>
                       Set to <strong>{String(row.override.verdict).replace(/_/g, ' ')}</strong>
-                      {row.override.reason ? ` — ${row.override.reason}` : ''}
+                      {row.override.reason ? `: ${row.override.reason}` : ''}
                     </p>
                     {row.override.at && (
                       <p className="mt-1 text-[10px] opacity-80">Recorded at {format(new Date(row.override.at), 'PPp')}</p>
@@ -298,7 +298,7 @@ function ClauseRow({
                       {row._supportingEvidence.slice(0, 8).map((ex: any, i: number) => (
                         <li key={i} className="rounded border border-[var(--border)] bg-[var(--surface)] p-2">
                           <span className="text-[10px] font-mono text-[var(--muted)]">
-                            {(ex.documentId || ex.document_id) || '—'}
+                            {(ex.documentId || ex.document_id) || '-'}
                             {(ex.sourceLabel || ex.source_label) ? ` · ${ex.sourceLabel || ex.source_label}` : ''}
                           </span>
                           <p className="mt-1 text-[var(--text-primary)]">{ex.excerpt || ''}</p>
@@ -351,19 +351,19 @@ function ClauseRow({
                         <tbody>
                           {row.requirementElements.map((el: any, i: number) => (
                             <tr key={i} className="border-b border-[var(--border)] last:border-0">
-                              <td className="p-2 text-[var(--text-primary)]">{el.element || '—'}</td>
+                              <td className="p-2 text-[var(--text-primary)]">{el.element || '-'}</td>
                               <td className="p-2">
                                 <span className={`font-semibold ${
                                   el.status === 'covered' ? 'text-green-700' :
                                   el.status === 'partial' ? 'text-amber-700' : 'text-red-700'
                                 }`}>
-                                  {el.status || '—'}
+                                  {el.status || '-'}
                                 </span>
                               </td>
                               <td className="p-2 text-[var(--muted)]">
-                                {Array.isArray(el.evidence_refs) ? el.evidence_refs.join(', ') : '—'}
+                                {Array.isArray(el.evidence_refs) ? el.evidence_refs.join(', ') : '-'}
                               </td>
-                              <td className="p-2 text-[var(--text-primary)]">{el.notes || '—'}</td>
+                              <td className="p-2 text-[var(--text-primary)]">{el.notes || '-'}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -582,7 +582,7 @@ export default function EvaluationReportPage() {
         failed
           ? `The AI service reported an error; your inputs are kept for retry. · ${pair.summary}`
           : running
-            ? `Evaluation is running — this page refreshes automatically. · ${pair.summary}`
+            ? `Evaluation is running. This page refreshes automatically. · ${pair.summary}`
             : `Review clause-level results, overrides, and exports when you are ready. · ${pair.summary}`
       }
     >
@@ -666,7 +666,7 @@ export default function EvaluationReportPage() {
           <ul className="mt-2 max-h-32 list-inside list-disc overflow-y-auto text-xs opacity-90">
             {ncDrafts.map((d: any, i: number) => (
               <li key={i}>
-                {ncDraftListTitle(d)} — {String(d.description || '').slice(0, 120)}
+                {ncDraftListTitle(d)}: {String(d.description || '').slice(0, 120)}
                 {String(d.description || '').length > 120 ? '…' : ''}
               </li>
             ))}
@@ -687,7 +687,7 @@ export default function EvaluationReportPage() {
               <li key={i}>
                 <span className="font-mono text-[var(--text-primary)]">{e.clauseReference}</span>
                 {' → '}
-                {String(e.verdict || '').replace(/_/g, ' ')} by {e.userId?.slice?.(0, 8) ?? e.userId} — {e.reason}
+                {String(e.verdict || '').replace(/_/g, ' ')} by {e.userId?.slice?.(0, 8) ?? e.userId}: {e.reason}
                 {e.at ? ` (${format(new Date(e.at), 'PPp')})` : ''}
               </li>
             ))}
@@ -750,7 +750,7 @@ export default function EvaluationReportPage() {
               <div className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5 text-[var(--brand-primary)]" />
                 <h2 className="font-bold text-[var(--text-primary)]">Clause-by-clause analysis</h2>
-                <span className="text-xs text-[var(--muted)]">({results.length} clauses — click a row to expand)</span>
+                <span className="text-xs text-[var(--muted)]">({results.length} clauses, click a row to expand)</span>
               </div>
             </div>
             <Table>

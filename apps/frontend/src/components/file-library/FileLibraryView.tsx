@@ -85,19 +85,19 @@ import { useConfirmAction, type ConfirmActionOptions } from '@/hooks/use-confirm
 import { SectionPagination, DEFAULT_SECTION_PAGE_SIZE } from '@/components/ui/section-pagination';
 import { openGoogleEditorFromWorkspaceFile } from '@/lib/workspace-google-edit';
 
-/** Row actions — same rectangular frame (view / download / upload) */
+/** Row actions: same rectangular frame (view / download / upload) */
 const DOC_ROW_NEUTRAL_BTN =
   'h-8 w-8 rounded-md border border-[var(--input-border)] bg-[var(--surface)] text-[var(--text-primary)] hover:bg-[var(--page-bg)]';
 
-/** Row archive — yellow rectangle (standards, product files, product folder remove) */
+/** Row archive: yellow rectangle (standards, product files, product folder remove) */
 const DOC_ROW_ARCHIVE_BTN =
   'h-8 w-8 rounded-md border border-[var(--brand-accent)] bg-[var(--brand-accent)]/10 text-[var(--brand-accent)] hover:bg-[var(--brand-accent)]/18';
 
-/** Workspace row — permanent delete */
+/** Workspace row: permanent delete */
 const DOC_ROW_WORKSPACE_DELETE_BTN =
   'h-8 w-8 rounded-md border border-red-500/55 bg-red-500/10 text-red-600 hover:bg-red-500/18 dark:text-red-400';
 
-/** Top nav — “Archived standards” / “Archived product docs” (gold contour + gold label, Qurelio accent) */
+/** Top nav: “Archived standards” / “Archived product docs” (gold contour + gold label, Qurelio accent) */
 const ARCHIVE_LIB_NAV_BTN =
   'gap-2 rounded-full border-2 !border-[var(--brand-accent)] bg-[var(--surface)] px-4 py-2.5 text-sm font-semibold !text-[var(--brand-accent)] transition-hover hover:bg-[var(--brand-accent)]/10';
 
@@ -120,7 +120,7 @@ async function collectFilesFromEntry(entry: FileSystemEntry): Promise<File[]> {
   return [];
 }
 
-/** Same rules as the main uploader, but for EVIDENCE (custom folder) — no ISO extraction. */
+/** Same rules as the main uploader, but for EVIDENCE (custom folder), no ISO extraction. */
 const FOLDER_EVIDENCE_NAME_RE = /\.(pdf|doc|docx|xlsx|jpe?g|png|tiff?)$/i;
 const FOLDER_EVIDENCE_MAX_BYTES = 50 * 1024 * 1024;
 
@@ -141,7 +141,7 @@ function mergeFolderEvidenceQueue(prev: File[], files: File[]): { next: File[]; 
       }
       if (addedCount > 0 && skipped > 0) {
         toast(
-          `Added ${addedCount} file(s). ${skipped} were skipped — only PDF, Word, Excel, and images up to 50 MB are allowed.`,
+          `Added ${addedCount} file(s). ${skipped} were skipped. Only PDF, Word, Excel, and images up to 50 MB are allowed.`,
         );
       } else if (addedCount > 0) {
         toast.success(`${addedCount} file(s) added to the upload queue`);
@@ -223,7 +223,7 @@ function statusLabel(status?: string) {
     case 'UPLOADING':
       return 'Uploading';
     default:
-      return status ?? '—';
+      return status ?? '-';
   }
 }
 
@@ -255,7 +255,7 @@ function sectionToClauseRow(sec: ExtractedSection, index: number): ClauseEditRow
   if (cn) {
     return {
       clauseNumber: cn,
-      title: (sec.heading || '').trim() || '—',
+      title: (sec.heading || '').trim() || '-',
       content: sec.content ?? '',
     };
   }
@@ -387,7 +387,7 @@ function libraryLabel(ls?: string | null) {
     case 'ARCHIVED':
       return 'Archived';
     default:
-      return '—';
+      return '-';
   }
 }
 
@@ -417,7 +417,7 @@ function ExtractedContentModal({
   const [loading, setLoading] = useState(false);
   const [editingJson, setEditingJson] = useState<string | null>(null);
   const [clauseRows, setClauseRows] = useState<ClauseEditRow[] | null>(null);
-  /** Structured edit for product OCR profile — forms instead of raw JSON. */
+  /** Structured edit for product OCR profile: forms instead of raw JSON. */
   const [productFieldEdit, setProductFieldEdit] = useState<{
     fileSummary: string;
     visualDescription: string;
@@ -459,7 +459,7 @@ function ExtractedContentModal({
     }
   }, [open, currentId]);
 
-  /** RAG structuring often takes tens of seconds — poll slowly to avoid gateway/log spam and UI flicker. */
+  /** RAG structuring often takes tens of seconds: poll slowly to avoid gateway/log spam and UI flicker. */
   useEffect(() => {
     if (!open || !detail) return;
     const s = detail.status as string | undefined;
@@ -610,11 +610,11 @@ function ExtractedContentModal({
   const handleActivateStandard = async () => {
     try {
       await documentApi.activateStandard(currentId);
-      toast.success('Standard activated — clause content indexed for evaluations');
+      toast.success('Standard activated. Clause content indexed for evaluations');
       await load();
       onDocumentChange?.();
     } catch {
-      toast.error('Activation failed — check clause content and try again');
+      toast.error('Activation failed. Check clause content and try again');
     }
   };
 
@@ -821,7 +821,7 @@ function ExtractedContentModal({
                   </p>
                   {detail.type === 'WORKSPACE_FILE' && (
                     <p className="mt-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-3 text-xs leading-relaxed text-[var(--muted)]">
-                      Workspace file — no AI extraction. Download the original, edit in Google Docs/Sheets (or locally), and
+                      Workspace file: no AI extraction. Download the original, edit in Google Docs/Sheets (or locally), and
                       use <span className="font-semibold text-[var(--text-primary)]">new version</span> or{' '}
                       <span className="font-semibold text-[var(--text-primary)]">archive</span> from the library when you
                       update or remove it.
@@ -1357,13 +1357,13 @@ function ExtractedContentModal({
                               <TableBody>
                                 {pp.traceabilityRows!.map((row, i) => (
                                   <TableRow key={i}>
-                                    <TableCell className="text-xs">{row.category ?? '—'}</TableCell>
-                                    <TableCell className="text-xs font-medium">{row.parameter ?? '—'}</TableCell>
+                                    <TableCell className="text-xs">{row.category ?? '-'}</TableCell>
+                                    <TableCell className="text-xs font-medium">{row.parameter ?? '-'}</TableCell>
                                     <TableCell className="text-xs font-semibold text-[var(--text-primary)]">
-                                      {row.value ?? '—'}
+                                      {row.value ?? '-'}
                                     </TableCell>
-                                    <TableCell className="text-xs text-[var(--muted)]">{row.unit ?? '—'}</TableCell>
-                                    <TableCell className="text-xs text-[var(--muted)]">{row.notes ?? '—'}</TableCell>
+                                    <TableCell className="text-xs text-[var(--muted)]">{row.unit ?? '-'}</TableCell>
+                                    <TableCell className="text-xs text-[var(--muted)]">{row.notes ?? '-'}</TableCell>
                                   </TableRow>
                                 ))}
                               </TableBody>
@@ -1661,7 +1661,7 @@ function groupDocs(docs: any[], products: any[] = []) {
   return { standards, folders: Array.from(folderMap.values()), unfiled };
 }
 
-/** Product detail modal — list-style Files tab (Qleer-style). */
+/** Product detail modal: list-style Files tab (Qleer-style). */
 function ViewProductModal({
   open,
   onClose,
@@ -1679,7 +1679,7 @@ function ViewProductModal({
   folder: { product: any; docs: any[] } | null;
   onViewFile: (doc: any, siblings: any[]) => void;
   onDownloadFile: (id: string, name?: string) => void;
-  /** Company Admin — archive product file (soft-delete) */
+  /** Company Admin: archive product file (soft-delete) */
   onArchiveFile?: (id: string) => void;
   /** Called after a file is uploaded so parent can refresh */
   onUploaded?: () => void;
@@ -1771,8 +1771,8 @@ function ViewProductModal({
 
   // Helper to render a label/value row
   const Field = ({ label, value, field, type = 'text' }: { label: string; value: any; field?: string; type?: string }) => {
-    const display = Array.isArray(value) ? (value.length ? value.join(', ') : '—')
-      : value || '—';
+    const display = Array.isArray(value) ? (value.length ? value.join(', ') : '-')
+      : value || '-';
     if (isEditing && field) {
       return (
         <div>
@@ -1833,7 +1833,7 @@ function ViewProductModal({
         <dd className="font-medium text-sm">
           {items.length ? items.map((v: string, i: number) => (
             <span key={i} className="mr-1 inline-flex items-center rounded-full bg-[var(--brand-primary)]/10 px-2 py-0.5 text-[11px] font-semibold text-[var(--brand-primary)]">{v}</span>
-          )) : '—'}
+          )) : '-'}
         </dd>
       </div>
     );
@@ -1841,11 +1841,11 @@ function ViewProductModal({
 
   const ProductTypeLabel = (t: string) => {
     const map: Record<string, string> = { finished: 'Finished', semi_finished: 'Semi-finished', component: 'Component', raw_material: 'Raw material', service: 'Service' };
-    return map[t] || t || '—';
+    return map[t] || t || '-';
   };
   const ProductStatusLabel = (s: string) => {
     const map: Record<string, string> = { active: 'Active', draft: 'Draft', discontinued: 'Discontinued' };
-    return map[s] || s || '—';
+    return map[s] || s || '-';
   };
 
   return (
@@ -2041,12 +2041,12 @@ function ViewProductModal({
                   <div key={i} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
                     <p className="mb-3 text-[11px] font-bold uppercase tracking-wide text-[var(--muted)]">Certificate {i + 1}</p>
                     <dl className="grid gap-3 text-sm sm:grid-cols-2">
-                      <div><dt className="text-[var(--muted)] text-[11px] font-medium">Standard</dt><dd className="font-medium">{cert.standardName || '—'}</dd></div>
-                      <div><dt className="text-[var(--muted)] text-[11px] font-medium">Certifying Body</dt><dd className="font-medium">{cert.certifyingBody || '—'}</dd></div>
-                      <div><dt className="text-[var(--muted)] text-[11px] font-medium">Certificate #</dt><dd className="font-medium">{cert.certificateNumber || '—'}</dd></div>
-                      <div><dt className="text-[var(--muted)] text-[11px] font-medium">Market Scope</dt><dd className="font-medium">{cert.marketScope || '—'}</dd></div>
-                      <div><dt className="text-[var(--muted)] text-[11px] font-medium">Issue Date</dt><dd className="font-medium">{cert.issueDate || '—'}</dd></div>
-                      <div><dt className="text-[var(--muted)] text-[11px] font-medium">Expiry Date</dt><dd className="font-medium">{cert.expiryDate || '—'}</dd></div>
+                      <div><dt className="text-[var(--muted)] text-[11px] font-medium">Standard</dt><dd className="font-medium">{cert.standardName || '-'}</dd></div>
+                      <div><dt className="text-[var(--muted)] text-[11px] font-medium">Certifying Body</dt><dd className="font-medium">{cert.certifyingBody || '-'}</dd></div>
+                      <div><dt className="text-[var(--muted)] text-[11px] font-medium">Certificate #</dt><dd className="font-medium">{cert.certificateNumber || '-'}</dd></div>
+                      <div><dt className="text-[var(--muted)] text-[11px] font-medium">Market Scope</dt><dd className="font-medium">{cert.marketScope || '-'}</dd></div>
+                      <div><dt className="text-[var(--muted)] text-[11px] font-medium">Issue Date</dt><dd className="font-medium">{cert.issueDate || '-'}</dd></div>
+                      <div><dt className="text-[var(--muted)] text-[11px] font-medium">Expiry Date</dt><dd className="font-medium">{cert.expiryDate || '-'}</dd></div>
                     </dl>
                   </div>
                 ))
@@ -2094,7 +2094,7 @@ function ViewProductModal({
                     const tag =
                       (doc.tags && doc.tags[0]) ||
                       (doc.extractedStructured as ExtractedStructured | null)?.classification ||
-                      '—';
+                      '-';
                     return (
                       <div
                         key={doc.id}
@@ -2241,7 +2241,7 @@ function DocCard({
                 </p>
                 {!hideExtractionPill && <StatusPill status={doc.status} />}
               </div>
-              {variant === 'product' && getExtractedCategory(doc) !== '—' && (
+              {variant === 'product' && getExtractedCategory(doc) !== '-' && (
                 <p className="text-xs font-semibold text-[var(--brand-primary)]" title="Extracted category">
                   {getExtractedCategory(doc)}
                 </p>
@@ -2601,7 +2601,7 @@ function StandardListRowActions({
   onView: () => void;
   onDownload: () => void;
   onDelete: () => void;
-  /** Permanent delete on the active standard (DIRECTOR only — backend enforced). */
+  /** Permanent delete on the active standard (DIRECTOR only, backend enforced). */
   onHardDelete?: () => void;
   onUploadVersion: (file: File) => void;
   archivedStandard?: boolean;
@@ -2954,7 +2954,7 @@ function DocSection({
       toast.success(next ? 'Record is now active' : 'Record set to inactive');
       onDocsMutated?.();
     } catch {
-      toast.error('Could not update status — Company Admin or Quality Manager only');
+      toast.error('Could not update status. Company Admin or Quality Manager only');
     }
   };
 
@@ -2977,7 +2977,7 @@ function DocSection({
       setProductModal(null);
       onDelete('__reload__');
     } catch {
-      toast.error('Archive failed — Company Admin or Quality Manager may be required');
+      toast.error('Archive failed. Company Admin or Quality Manager may be required');
     }
   };
 
@@ -2995,7 +2995,7 @@ function DocSection({
             title: `Delete ${label} permanently?`,
             description:
               'This removes the archived product and its documents for good. ' +
-              'It cannot be undone — use Restore instead if you may still need it.',
+              'It cannot be undone. Use Restore instead if you may still need it.',
             confirmLabel: 'Delete permanently',
             variant: 'destructive',
           })
@@ -3008,7 +3008,7 @@ function DocSection({
       setProductModal(null);
       onDelete('__reload__');
     } catch {
-      toast.error('Delete failed — Company Admin or Quality Manager may be required');
+      toast.error('Delete failed. Company Admin or Quality Manager may be required');
     }
   };
 
@@ -3056,7 +3056,7 @@ function DocSection({
                 <TableBody>
                   {folderPage.map((folder) => {
                     const extracted = getBestProductCategoryFromDocs(folder.docs);
-                    const showCat = extracted !== '—' ? extracted : folder.product.categoryTags?.[0] || '—';
+                    const showCat = extracted !== '-' ? extracted : folder.product.categoryTags?.[0] || '-';
                     const isArchived = !!folder.product.archivedAt;
                     return (
                       <TableRow
@@ -3065,7 +3065,7 @@ function DocSection({
                         onDoubleClick={() => setProductModal(folder)}
                       >
                         <TableCell className="font-mono text-sm text-[var(--text-primary)]">
-                          {folder.product.reference || folder.product.sku || '—'}
+                          {folder.product.reference || folder.product.sku || '-'}
                         </TableCell>
                         <TableCell className="max-w-[260px] truncate font-semibold text-[var(--text-primary)]" title={folder.product.name}>
                           {folder.product.name}
@@ -3076,7 +3076,7 @@ function DocSection({
                         <TableCell className="text-sm text-[var(--muted)]">
                           {folder.product.createdAt
                             ? new Date(folder.product.createdAt).toLocaleDateString()
-                            : '—'}
+                            : '-'}
                         </TableCell>
                         <TableCell>
                           <span
@@ -3225,7 +3225,7 @@ function DocSection({
                       )}
                       onDoubleClick={() => onViewDocument(doc, standards)}
                     >
-                      <TableCell className="font-mono text-sm text-[var(--text-primary)]">{doc.isoStandard || '—'}</TableCell>
+                      <TableCell className="font-mono text-sm text-[var(--text-primary)]">{doc.isoStandard || '-'}</TableCell>
                       <TableCell className="max-w-[260px] truncate font-semibold text-[var(--text-primary)]" title={doc.name}>
                         {doc.name}
                       </TableCell>
@@ -3235,7 +3235,7 @@ function DocSection({
                       <TableCell className="text-sm text-[var(--muted)]">
                         {doc.effectiveDate
                           ? new Date(doc.effectiveDate).toLocaleDateString()
-                          : '—'}
+                          : '-'}
                       </TableCell>
                       <TableCell>
                         <span
@@ -3311,7 +3311,7 @@ function DocSection({
                       className="cursor-grab border-b border-[var(--border)]/40 transition-colors hover:bg-[var(--page-bg)]/40 active:cursor-grabbing"
                       onDoubleClick={() => onViewDocument(doc, unfiled)}
                     >
-                      <TableCell className="font-mono text-sm text-[var(--text-primary)]">{doc.isoStandard || '—'}</TableCell>
+                      <TableCell className="font-mono text-sm text-[var(--text-primary)]">{doc.isoStandard || '-'}</TableCell>
                       <TableCell className="max-w-[260px] truncate font-semibold text-[var(--text-primary)]" title={doc.name}>
                         {doc.name}
                       </TableCell>
@@ -3321,7 +3321,7 @@ function DocSection({
                       <TableCell className="text-sm text-[var(--muted)]">
                         {doc.effectiveDate
                           ? new Date(doc.effectiveDate).toLocaleDateString()
-                          : '—'}
+                          : '-'}
                       </TableCell>
                       <TableCell>
                         <span
@@ -3444,13 +3444,13 @@ function DocSection({
                         {doc.name}
                       </TableCell>
                       <TableCell className="max-w-[180px] truncate text-sm text-[var(--text-primary)]" title={doc.product?.name}>
-                        {doc.product?.name ?? '—'}
+                        {doc.product?.name ?? '-'}
                       </TableCell>
                       <TableCell className="max-w-[140px] truncate text-sm text-[var(--muted)]" title={doc.workspaceCategory}>
-                        {doc.workspaceCategory ?? '—'}
+                        {doc.workspaceCategory ?? '-'}
                       </TableCell>
                       <TableCell className="whitespace-nowrap text-sm text-[var(--muted)]">
-                        {doc.createdAt ? new Date(doc.createdAt).toLocaleDateString() : '—'}
+                        {doc.createdAt ? new Date(doc.createdAt).toLocaleDateString() : '-'}
                       </TableCell>
                       <TableCell>
                         <span
@@ -3566,7 +3566,7 @@ function DocSection({
                       className="cursor-pointer border-b border-[var(--border)]/40 transition-colors hover:bg-[var(--page-bg)]/40"
                       onDoubleClick={() => onViewDocument(doc, legacyUnfiled)}
                     >
-                      <TableCell className="font-mono text-sm text-[var(--text-primary)]">{doc.isoStandard || '—'}</TableCell>
+                      <TableCell className="font-mono text-sm text-[var(--text-primary)]">{doc.isoStandard || '-'}</TableCell>
                       <TableCell className="max-w-[260px] truncate font-semibold text-[var(--text-primary)]" title={doc.name}>
                         {doc.name}
                       </TableCell>
@@ -3576,7 +3576,7 @@ function DocSection({
                       <TableCell className="text-sm text-[var(--muted)]">
                         {doc.effectiveDate
                           ? new Date(doc.effectiveDate).toLocaleDateString()
-                          : '—'}
+                          : '-'}
                       </TableCell>
                       <TableCell>
                         <span
@@ -3830,7 +3830,7 @@ function UploadDialog({
         }
         if (addedCount > 0 && skipped > 0) {
           toast(
-            `Added ${addedCount} file(s). ${skipped} file(s) were not added — only PDF, Word, Excel, and images up to 50 MB are allowed.`,
+            `Added ${addedCount} file(s). ${skipped} file(s) were not added. Only PDF, Word, Excel, and images up to 50 MB are allowed.`,
           );
         } else if (addedCount > 0) {
           toast.success(`${addedCount} file(s) added to the queue`);
@@ -4318,7 +4318,7 @@ function DocumentsPageContent({
   const [sharedDocs, setSharedDocs] = useState<any[]>([]);
   const [archivedStandards, setArchivedStandards] = useState<any[]>([]);
   const [archivedProducts, setArchivedProducts] = useState<any[]>([]);
-  // Archived product *entities* (not their docs) — powers the view-only Archived product folders list.
+  // Archived product *entities* (not their docs): powers the view-only Archived product folders list.
   const [archivedProductList, setArchivedProductList] = useState<any[]>([]);
   const [allProducts, setAllProducts] = useState<any[]>([]);
   // Start false: loadDocs only runs when user?.id exists; otherwise we'd stay "loading" forever
@@ -4401,7 +4401,7 @@ function DocumentsPageContent({
     return () => window.removeEventListener('qurelio:trash-changed', handler);
   }, [loadDocs]);
 
-  /** Full library list + id lookup — merge without duplicates (my uploads appear in both API responses). */
+  /** Full library list + id lookup: merge without duplicates (my uploads appear in both API responses). */
   const allDocsById = useMemo(() => {
     const m = new Map<string, (typeof myDocs)[number]>();
     for (const d of myDocs) m.set(d.id, d);
@@ -4446,7 +4446,7 @@ function DocumentsPageContent({
   }, [extraction.done]);
 
   // Auto-reopen the upload dialog when navigating back to products management
-  // while an extraction is still running globally — keeps the main popup visible.
+  // while an extraction is still running globally: keeps the main popup visible.
   useEffect(() => {
     if (
       docView === 'product' &&
@@ -4565,7 +4565,7 @@ function DocumentsPageContent({
     fd.append('file', file);
     try {
       await documentApi.uploadVersion(id, fd);
-      toast.success('New version uploaded — extraction in progress');
+      toast.success('New version uploaded. Extraction in progress');
       void loadDocs();
     } catch {
       toast.error('Version upload failed');
@@ -4578,7 +4578,7 @@ function DocumentsPageContent({
       toast.success(
         archiveScope === 'product'
           ? 'Document restored'
-          : 'Standard restored — review and activate if needed',
+          : 'Standard restored. Review and activate if needed',
       );
       void loadDocs();
     } catch {
@@ -4602,7 +4602,7 @@ function DocumentsPageContent({
       toast.success(archiveScope === 'product' ? 'Document permanently deleted' : 'Standard permanently deleted');
       void loadDocs();
     } catch {
-      toast.error('Delete failed — Company Admin may be required for this document');
+      toast.error('Delete failed. Company Admin may be required for this document');
     }
 };
 
@@ -4905,7 +4905,7 @@ function DocumentsPageContent({
                         : null}
                     </p>
                     <p className="mt-0.5 text-[10px] text-[var(--muted)]">
-                      Created by {f.createdByName || '—'}
+                      Created by {f.createdByName || '-'}
                     </p>
                   </div>
                 </Link>
@@ -5137,7 +5137,7 @@ function DocumentsPageContent({
                     <FloatingUploadBrandIcon />
                     <div className="mt-1">
                       <p className="text-sm font-semibold text-[var(--text-primary)]">Drop files or folder here</p>
-                      <p className="mt-0.5 text-[11px] text-[var(--muted)]">PDF, Word, XLSX, images — max 50 MB each</p>
+                      <p className="mt-0.5 text-[11px] text-[var(--muted)]">PDF, Word, XLSX, images, max 50 MB each</p>
                     </div>
                   </>
                 ) : (
@@ -5148,7 +5148,7 @@ function DocumentsPageContent({
                         Drag &amp; drop or click to browse
                       </p>
                       <p className="mt-0.5 text-[11px] text-[var(--muted)]">
-                        PDF, Word, XLSX, JPEG, PNG, TIFF — max 50 MB each
+                        PDF, Word, XLSX, JPEG, PNG, TIFF, max 50 MB each
                       </p>
                     </div>
                   </>

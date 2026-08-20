@@ -1,5 +1,5 @@
 /* ─────────────────────────────────────────────────────────────────────────
-   Company Profile wizard — scoped design from the V3 mockup.
+   Company Profile wizard: scoped design from the V3 mockup.
    Every rule is prefixed with `.qw` so it only styles the "My company" main
    content and never leaks into the app header or sidebar.
    ───────────────────────────────────────────────────────────────────────── */

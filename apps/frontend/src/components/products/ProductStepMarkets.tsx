@@ -33,7 +33,7 @@ export function ProductStepMarkets({ data, onChange, aiFields }: Props) {
 
       <div className="space-y-2.5">
         <AiLabel required field="markets.targetMarkets" aiFields={aiFields}>Target markets for this product</AiLabel>
-        <p className="text-[11px] text-[var(--muted)]">Select only the markets where this specific product is sold or targeted — not the company&apos;s full market list. The monitoring engine watches regulatory families for these markets only.</p>
+        <p className="text-[11px] text-[var(--muted)]">Select only the markets where this specific product is sold or targeted, not the company&apos;s full market list. The monitoring engine watches regulatory families for these markets only.</p>
         <div className="flex flex-wrap gap-2.5">
           {MARKETS.map((m) => {
             const checked = data.targetMarkets.includes(m);

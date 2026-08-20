@@ -24,7 +24,7 @@ const COOLDOWN_MS = 750;
 /**
  * Walk up from `el` looking for an ancestor that can still scroll horizontally
  * in `dir` (-1 = content moving right / swipe-right, +1 = swipe-left). If one
- * exists we must NOT hijack the gesture — let the table/carousel scroll.
+ * exists we must NOT hijack the gesture: let the table/carousel scroll.
  */
 function hasHorizontalScrollIntent(el: EventTarget | null, dir: number): boolean {
   let node = el as HTMLElement | null;

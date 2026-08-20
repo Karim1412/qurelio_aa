@@ -128,7 +128,7 @@ function CountUp({ to, duration = 1200 }: { to: number; duration?: number }) {
   return <>{val.toLocaleString()}</>;
 }
 
-/** Soft glass card chrome — used for every analytics surface. */
+/** Soft glass card chrome: used for every analytics surface. */
 function GlassCard({
   className,
   children,
@@ -503,7 +503,7 @@ export default function AnalyticsPage() {
             <div className="h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
-                  data={complianceTrend.length ? complianceTrend : [{ month: '—', compliance: 0, audits: 0, nc: 0 }]}
+                  data={complianceTrend.length ? complianceTrend : [{ month: '-', compliance: 0, audits: 0, nc: 0 }]}
                   margin={{ top: 12, right: 18, left: -6, bottom: 0 }}
                 >
                   <defs>
@@ -676,7 +676,7 @@ export default function AnalyticsPage() {
             <div className="h-[280px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
-                  data={complianceTrend.length ? complianceTrend : [{ month: '—', compliance: 0, audits: 0, nc: 0 }]}
+                  data={complianceTrend.length ? complianceTrend : [{ month: '-', compliance: 0, audits: 0, nc: 0 }]}
                   margin={{ top: 12, right: 18, left: -6, bottom: 0 }}
                 >
                   <defs>

@@ -28,7 +28,7 @@ export default function RegisterHubPage() {
   return (
     <AuthLayout
       title="Choose how you want to get started"
-      subtitle="Pick the path that matches your situation—you can always contact support if you are unsure."
+      subtitle="Pick the path that matches your situation. You can always contact support if you are unsure."
       heroLeft
     >
       <div>

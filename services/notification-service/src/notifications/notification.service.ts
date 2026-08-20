@@ -29,7 +29,7 @@ export class NotificationService implements OnModuleInit {
     const secure = (this.cfg.get<string>('SMTP_SECURE') ?? 'false').toLowerCase() === 'true';
 
     if (!host || !this.senderEmail) {
-      this.logger.error('SMTP_HOST or SMTP_SENDER_EMAIL missing in Notification Service — emails will fail');
+      this.logger.error('SMTP_HOST or SMTP_SENDER_EMAIL missing in Notification Service, emails will fail');
       return;
     }
 
@@ -151,7 +151,7 @@ export class NotificationService implements OnModuleInit {
     const color = dto.score >= 90 ? '#36b37e' : dto.score >= 70 ? '#ffab00' : '#ff5630';
     await this.sendMail({
       to:      dto.userEmail,
-      subject: `✅ Evaluation Complete — ${dto.score.toFixed(1)}% Conformity`,
+      subject: `✅ Evaluation Complete: ${dto.score.toFixed(1)}% Conformity`,
       html:    `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:32px;">
                   <h2 style="color:#1565c0;">Evaluation Complete</h2>
                   <p>Your <strong>${dto.isoStandard}</strong> conformity evaluation has finished.</p>
@@ -186,7 +186,7 @@ export class NotificationService implements OnModuleInit {
 
     await this.sendMail({
       to: dto.userEmail,
-      subject: `Evaluation failed — ${dto.isoStandard}`,
+      subject: `Evaluation failed: ${dto.isoStandard}`,
       html: `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:32px;">
                <h2 style="color:#c62828;">Evaluation Failed</h2>
                <p>Your <strong>${dto.isoStandard}</strong> compliance evaluation did not complete.</p>
@@ -229,7 +229,7 @@ export class NotificationService implements OnModuleInit {
       userId: dto.userId,
       type: NotificationType.CAPA_ASSIGNED,
       title: 'CAPA action assigned to you',
-      message: `${dto.capaTitle} — NC: ${dto.ncTitle}. Due ${dueStr}.`,
+      message: `${dto.capaTitle} (NC: ${dto.ncTitle}). Due ${dueStr}.`,
       metadata: { ncId: dto.ncId, capaId: dto.capaId, dueDate: dto.dueDate },
     });
 
@@ -240,7 +240,7 @@ export class NotificationService implements OnModuleInit {
     const fe = this.cfg.get('FRONTEND_URL', 'http://localhost:3001').replace(/\/$/, '');
     await this.sendMail({
       to: dto.userEmail,
-      subject: `CAPA assigned — ${dto.capaTitle}`,
+      subject: `CAPA assigned: ${dto.capaTitle}`,
       html: `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:32px;">
                <h2 style="color:#1565c0;">CAPA assigned</h2>
                <p>You have been assigned: <strong>${dto.capaTitle.replace(/</g, '&lt;')}</strong></p>
@@ -262,7 +262,7 @@ export class NotificationService implements OnModuleInit {
       userId: dto.userId,
       type: NotificationType.CAPA_DUE_SOON,
       title: 'CAPA due in 48 hours',
-      message: `${dto.capaTitle} (NC: ${dto.ncTitle}) is due ${dueStr} — please complete or update the owner.`,
+      message: `${dto.capaTitle} (NC: ${dto.ncTitle}) is due ${dueStr}. Please complete or update the owner.`,
       metadata: { ncId: dto.ncId, capaId: dto.capaId, dueDate: dto.dueDate },
     });
 
@@ -273,7 +273,7 @@ export class NotificationService implements OnModuleInit {
     const fe = this.cfg.get('FRONTEND_URL', 'http://localhost:3001').replace(/\/$/, '');
     await this.sendMail({
       to: dto.userEmail,
-      subject: `Reminder: CAPA due soon — ${dto.capaTitle}`,
+      subject: `Reminder: CAPA ${dto.capaTitle} is due soon`,
       html: `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:32px;">
                <h2 style="color:#b76e00;">Due within 48 hours</h2>
                <p><strong>${dto.capaTitle.replace(/</g, '&lt;')}</strong> for NC <strong>${dto.ncTitle.replace(/</g, '&lt;')}</strong> is approaching its due date (${dueStr}).</p>

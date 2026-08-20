@@ -54,7 +54,7 @@ interface CatalogEntry {
   tags: string[];
 }
 
-/** Global reference catalog (regulations, laws & standards) — feeds the search typeahead. */
+/** Global reference catalog (regulations, laws & standards), feeds the search typeahead. */
 const CATALOG = (catalogData as { catalog: CatalogEntry[] }).catalog;
 const SEARCH_LIMIT = 7;
 
@@ -72,14 +72,14 @@ CATALOG.forEach((e) => {
 const VERSION_OVERRIDES: Record<string, { current: string; latest: string }> = {
   'ISO 27001': { current: 'ISO/IEC 27001:2013', latest: 'ISO/IEC 27001:2022' },
   'EU MDR': { current: 'Reg. (EU) 2017/745 (2021)', latest: 'Consolidated 2024' },
-  'ICH GCP E6': { current: 'E6(R2)', latest: 'E6(R3) — 2025' },
+  'ICH GCP E6': { current: 'E6(R2)', latest: 'E6(R3), 2025' },
   'EU GMP': { current: 'Annex 1 (2008)', latest: 'Annex 1 revised 2022' },
 };
 
 /**
  * Demo-only transition deadlines, same footing as VERSION_OVERRIDES above:
  * illustrative dates so the "Next deadline" tile has something to resolve to.
- * Nothing in the catalog or the API carries a deadline — replace this map when a
+ * Nothing in the catalog or the API carries a deadline, replace this map when a
  * real transition-date source exists.
  */
 const DEMO_DEADLINES: Record<string, string> = {
@@ -217,7 +217,7 @@ export default function MonitoringPage() {
     const entry: ProjectConfig = {
       projectId: product.id,
       name: product.name,
-      reference: product.reference || product.sku || '—',
+      reference: product.reference || product.sku || '-',
       compliances: selected,
     };
     const idx = list.findIndex((c) => c.projectId === product.id);
@@ -341,7 +341,7 @@ export default function MonitoringPage() {
     },
     {
       label: 'Next deadline',
-      value: metrics?.deadline ? formatDeadline(metrics.deadline.date) : '—',
+      value: metrics?.deadline ? formatDeadline(metrics.deadline.date) : '-',
       caption: metrics
         ? (metrics.deadline?.name ?? 'No deadline tracked for these references')
         : 'Run a scan to populate',
@@ -365,7 +365,7 @@ export default function MonitoringPage() {
                 key={t.label}
                 className="flex overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] shadow-sm"
               >
-                {/* Accent rail — the colour is what separates the tiles at a glance. */}
+                {/* Accent rail: the colour is what separates the tiles at a glance. */}
                 <span className={cn('w-1 shrink-0', t.accent)} aria-hidden />
                 <div className="min-w-0 flex-1 px-4 py-3.5">
                   <p className="text-[11px] font-bold uppercase tracking-wider text-[var(--muted)]">
@@ -425,13 +425,13 @@ export default function MonitoringPage() {
                 </select>
               </div>
 
-              {/* Multi-compliance assignment — searchable reference catalog */}
+              {/* Multi-compliance assignment: searchable reference catalog */}
               <div className="space-y-2">
                 <label className="text-[13px] font-semibold text-[var(--text-primary)]">
                   Assign compliance standards
                 </label>
 
-                {/* Quick-pick pills — first entries of the catalog, hidden while searching */}
+                {/* Quick-pick pills: first entries of the catalog, hidden while searching */}
                 {!customInput.trim() && (
                   <div className="flex flex-wrap gap-2">
                     {QUICK_PICKS.map((entry) => {
@@ -480,7 +480,7 @@ export default function MonitoringPage() {
 
                   {customInput.trim() && searchResults.length === 0 && (
                     <p className="mt-1 rounded-lg border border-dashed border-[var(--border)] px-3 py-2 text-[12px] text-[var(--muted)]">
-                      No match in the reference catalog — press <span className="font-semibold">Add</span> to create a custom requirement.
+                      No match in the reference catalog. Press <span className="font-semibold">Add</span> to create a custom requirement.
                     </p>
                   )}
 
@@ -689,7 +689,7 @@ export default function MonitoringPage() {
                           type="button"
                           variant="outline"
                           size="sm"
-                          // Must not toggle the panel — this opens the benchmark modal.
+                          // Must not toggle the panel: this opens the benchmark modal.
                           onClick={(e) => {
                             e.stopPropagation();
                             setModalRow(row);

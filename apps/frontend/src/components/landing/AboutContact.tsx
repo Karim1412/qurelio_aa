@@ -52,7 +52,7 @@ const BENEFITS: Benefit[] = [
   {
     icon: <Shield className="h-6 w-6" />,
     title: 'Role-Based Access',
-    description: 'Granular permissions for admins, directors, and shop-floor teams — everyone sees what matters.',
+    description: 'Granular permissions for admins, directors, and shop-floor teams, so everyone sees what matters.',
   },
   {
     icon: <Sparkles className="h-6 w-6" />,
@@ -169,7 +169,7 @@ function BenefitCard({ benefit, index }: { benefit: Benefit; index: number }) {
 
 // ─── Input helpers ────────────────────────────────────────────────────────────
 // Soft, shadowless input. Focus reveals a tinted background + accent border + a
-// hairline ring — no blur, no drop-shadow.
+// hairline ring: no blur, no drop-shadow.
 const inputBaseClass =
   'peer relative z-10 block w-full rounded-xl border border-neutral-200/90 bg-white/70 px-4 py-3 text-sm text-neutral-900 placeholder:text-neutral-400 outline-none transition-[background,border-color,transform] duration-300 ease-out focus:border-[var(--brand-primary)]/60 focus:bg-white hover:border-neutral-300';
 
@@ -183,7 +183,7 @@ function FieldRing() {
   );
 }
 
-// Tiny animated underline that grows from the centre on focus — purely flat color.
+// Tiny animated underline that grows from the centre on focus, purely flat color.
 function FieldUnderline() {
   return (
     <span
@@ -230,7 +230,7 @@ function Field({
 }
 
 // ─── Custom illustration (envelope + paper plane + soft bubbles) ──────────────
-// Hand-built SVG — no shadows, only soft fills, gradients, and gentle motion.
+// Hand-built SVG: no shadows, only soft fills, gradients, and gentle motion.
 // Two animation passes: a staged entry choreography on scroll-in, then refined
 // idle loops with custom bezier easing. Reduced-motion users get the static art.
 const SOFT_IN_OUT = [0.45, 0, 0.55, 1] as const; // breathing
@@ -241,7 +241,7 @@ function ContactIllustration() {
   const isVisible = useInView(ref, { once: true, margin: '-60px' });
   const reduceMotion = useReducedMotion();
 
-  // Entry variants — every piece fades + softly settles. The parent staggers
+  // Entry variants: every piece fades + softly settles. The parent staggers
   // children in a deliberate order: ambient → trail → envelope → plane → bubbles.
   const containerVariants: Variants = {
     hidden: {},
@@ -268,7 +268,7 @@ function ContactIllustration() {
     },
   };
 
-  // Idle loops — disabled under reduced motion
+  // Idle loops: disabled under reduced motion
   const envelopeIdle = reduceMotion
     ? {}
     : {
@@ -355,12 +355,12 @@ function ContactIllustration() {
           </linearGradient>
         </defs>
 
-        {/* Soft ambient blobs — drift very slowly */}
+        {/* Soft ambient blobs: drift very slowly */}
         <motion.circle variants={fadeIn} cx="60"  cy="60"  r="48" fill="#CEE6F7" {...blobDrift(18, 8)} />
         <motion.circle variants={fadeIn} cx="370" cy="260" r="56" fill="#FFE8A8" {...blobDrift(22, -10, 1.5)} />
         <motion.circle variants={fadeIn} cx="345" cy="60"  r="22" fill="#B6D8EF" {...blobDrift(16, 6, 0.8)}  />
 
-        {/* Decorative dots scattered — soft twinkle, each on its own beat */}
+        {/* Decorative dots scattered: soft twinkle, each on its own beat */}
         <motion.circle variants={popIn} cx="48"  cy="160" r="3"   fill="#7DAFD6" {...twinkle(4.2, 0)}    style={{ transformOrigin: '48px 160px' }} />
         <motion.circle variants={popIn} cx="372" cy="120" r="2.5" fill="#FFC107" {...twinkle(3.6, 0.6)}  style={{ transformOrigin: '372px 120px' }} />
         <motion.circle variants={popIn} cx="36"  cy="100" r="2"   fill="#B89FE5" {...twinkle(4.8, 1.2)}  style={{ transformOrigin: '36px 100px' }} />
@@ -375,7 +375,7 @@ function ContactIllustration() {
           <path d="M 20 290 l 4 0 M 22 288 l 0 4"   stroke="#B89FE5" strokeWidth="1.1" strokeLinecap="round" />
         </motion.g>
 
-        {/* Dashed flight trail — draws itself on entry, then flows continuously */}
+        {/* Dashed flight trail: draws itself on entry, then flows continuously */}
         <motion.path
           variants={{
             hidden: { opacity: 0, pathLength: 0 },
@@ -393,7 +393,7 @@ function ContactIllustration() {
           )}
         </motion.path>
 
-        {/* Envelope group — floats gently with micro-rotation + breathing scale */}
+        {/* Envelope group: floats gently with micro-rotation + breathing scale */}
         <motion.g
           variants={fadeUp}
           {...envelopeIdle}
@@ -402,7 +402,7 @@ function ContactIllustration() {
           {/* 1) Envelope back panel (deepest layer) */}
           <rect x="120" y="148" width="216" height="132" rx="14" fill="url(#ci-env-body)" stroke="#CFDAE6" strokeWidth="1.3" />
 
-          {/* 2) Letter — sits between back panel and front pocket so the V-notch
+          {/* 2) Letter: sits between back panel and front pocket so the V-notch
                 actually reveals it. Top portion sticks up out of the envelope. */}
           <rect x="148" y="86"  width="160" height="146" rx="10" fill="url(#ci-letter)" stroke="#E7E5E0" strokeWidth="1.2" />
           {/* Letter content lines */}
@@ -411,16 +411,16 @@ function ContactIllustration() {
           <rect x="164" y="130" width="112" height="3"   rx="1.5" fill="#A8A29E" opacity="0.4"  />
           <rect x="164" y="140" width="120" height="3"   rx="1.5" fill="#A8A29E" opacity="0.4"  />
           <rect x="172" y="156" width="96"  height="3"   rx="1.5" fill="#A8A29E" opacity="0.4"  />
-          {/* Highlighted line in brand accent — visible inside the V notch */}
+          {/* Highlighted line in brand accent: visible inside the V notch */}
           <rect x="180" y="174" width="80"  height="3"   rx="1.5" fill="#7DAFD6" opacity="0.7"  />
           <rect x="192" y="192" width="56"  height="3"   rx="1.5" fill="#A8A29E" opacity="0.35" />
 
-          {/* 3) Front pocket (V fold) — covers the lower half of the letter,
+          {/* 3) Front pocket (V fold): covers the lower half of the letter,
                 except for the V-notch which keeps the letter visible there. */}
           <path d="M 120 148 L 228 232 L 336 148 L 336 280 L 120 280 Z"
                 fill="url(#ci-env-body)" stroke="#CFDAE6" strokeWidth="1.3" />
 
-          {/* Inner V accent — outlines the open mouth */}
+          {/* Inner V accent: outlines the open mouth */}
           <path d="M 120 148 L 228 232 L 336 148" stroke="#9CB7CE" strokeWidth="1.2" fill="none" opacity="0.6" />
 
           {/* Subtle inner shading inside the V mouth so the opening reads as depth */}
@@ -433,7 +433,7 @@ function ContactIllustration() {
           <rect x="218" y="261"   width="24" height="2" rx="1" fill="#CFDAE6" />
         </motion.g>
 
-        {/* Receive pulse — fires when the plane enters the letter at t≈0.93
+        {/* Receive pulse: fires when the plane enters the letter at t≈0.93
             of the 12s orbit cycle. begin = planeDelay + 12s * 0.93 ≈ 12.56s. */}
         <circle
           cx="228" cy="100" r="3"
@@ -461,7 +461,7 @@ function ContactIllustration() {
           />
         </circle>
 
-        {/* Paper plane — orbits around the envelope, then dives into the
+        {/* Paper plane: orbits around the envelope, then dives into the
             letter and loops. Initial state is hidden; the orbit keyframes
             handle the reveal at t=0.04. */}
         <motion.g
@@ -480,7 +480,7 @@ function ContactIllustration() {
           </g>
         </motion.g>
 
-        {/* Floating message bubble — bottom left */}
+        {/* Floating message bubble: bottom left */}
         <motion.g
           variants={popIn}
           {...bubbleIdle(4.6, 8, 0)}
@@ -493,7 +493,7 @@ function ContactIllustration() {
           <circle cx="100" cy="233" r="2" fill="#4D92C4" />
         </motion.g>
 
-        {/* Heart / response bubble — top right */}
+        {/* Heart / response bubble: top right */}
         <motion.g
           variants={popIn}
           {...bubbleIdle(5.2, 6, 0.7)}
@@ -507,7 +507,7 @@ function ContactIllustration() {
           />
         </motion.g>
 
-        {/* Check bubble — middle right */}
+        {/* Check bubble: middle right */}
         <motion.g
           variants={popIn}
           {...bubbleIdle(4.8, 5, 1.1)}
@@ -632,8 +632,8 @@ export function ContactSection() {
               variants={fadeInUp}
               className="mt-4 mx-auto max-w-md text-center text-base leading-relaxed text-neutral-500 sm:text-lg"
             >
-              Tell us about your products, your markets and your compliance challenges —
-              we&apos;ll show you what Qurelio can do with them.
+              Tell us about your products, your markets and your compliance challenges.
+              We&apos;ll show you what Qurelio can do with them.
             </motion.p>
 
             <motion.div
@@ -656,7 +656,7 @@ export function ContactSection() {
             <ContactIllustration />
           </motion.div>
 
-          {/* Right column — form */}
+          {/* Right column: form */}
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -673,7 +673,7 @@ export function ContactSection() {
                 backgroundSize: '32px 32px',
               }}
             >
-              {/* Soft tonal overlay — replaces the old shadow with a calm tint. */}
+              {/* Soft tonal overlay: replaces the old shadow with a calm tint. */}
               <div
                 aria-hidden
                 className="pointer-events-none absolute inset-0 rounded-3xl"
@@ -685,7 +685,7 @@ export function ContactSection() {
                   ].join(', '),
                 }}
               />
-              {/* Hairline inner gradient ring — flat, no blur */}
+              {/* Hairline inner gradient ring: flat, no blur */}
               <span
                 aria-hidden
                 className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-inset ring-white/60"
@@ -770,7 +770,7 @@ export function ContactSection() {
                       disabled={loading}
                       className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-gradient-to-r from-[var(--brand-primary)] to-[#3F7BAB] px-6 py-3 text-sm font-semibold text-white outline-none transition-[transform,background] duration-300 ease-out hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      {/* Soft sheen — flat color sweep, no shadow */}
+                      {/* Soft sheen: flat color sweep, no shadow */}
                       <span
                         aria-hidden
                         className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 ease-out group-hover:translate-x-full"

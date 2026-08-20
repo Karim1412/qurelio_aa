@@ -16,7 +16,7 @@ export default function HomePage() {
         <SoftScrollProgress />
         <Navbar />
         <main>
-          {/* Hero keeps its own entrance — no wrapper to avoid double-animation */}
+          {/* Hero keeps its own entrance: no wrapper to avoid double-animation */}
           <HeroSection />
 
           <SoftSection rise={32} parallax={26} duration={1.15}>
@@ -37,7 +37,7 @@ export default function HomePage() {
           </div>
 
           <div>
-            {/* Footer has its own scroll-driven shutter reveal — no wrapper to avoid stacking transforms (text blur). */}
+            {/* Footer has its own scroll-driven shutter reveal, no wrapper to avoid stacking transforms (text blur). */}
             <Footer />
           </div>
         </main>

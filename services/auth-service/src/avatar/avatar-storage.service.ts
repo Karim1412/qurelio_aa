@@ -4,18 +4,18 @@ import * as Minio from 'minio';
 
 /**
  * Uses two MinIO clients:
- * - Internal: Docker hostname `minio` (or MINIO_ENDPOINT) for put/remove — works inside the network.
+ * - Internal: Docker hostname `minio` (or MINIO_ENDPOINT) for put/remove, works inside the network.
  * - Presign: Browser-reachable host (MINIO_PUBLIC_URL or localhost + MINIO_PORT) for presignedGetObject only.
  *
- * Do NOT string-replace hosts on presigned URLs — SigV4 includes the host; replacing breaks the signature.
+ * Do NOT string-replace hosts on presigned URLs: SigV4 includes the host; replacing breaks the signature.
  */
 @Injectable()
 export class AvatarStorageService implements OnModuleInit {
   private readonly logger = new Logger(AvatarStorageService.name);
   private readonly bucket: string;
-  /** Upload / delete — always use service-to-service endpoint */
+  /** Upload / delete: always use service-to-service endpoint */
   private readonly internal: Minio.Client;
-  /** Presigned GET URLs — must use the same Host the user’s browser will use */
+  /** Presigned GET URLs: must use the same Host the user’s browser will use */
   private readonly presign: Minio.Client;
 
   constructor(private cfg: ConfigService) {

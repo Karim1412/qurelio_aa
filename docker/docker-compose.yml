@@ -20,7 +20,7 @@ x-common-env: &common-env
   MINIO_BUCKET: ${MINIO_BUCKET}
   MINIO_USE_SSL: false
   # Mail goes out over SMTP via Nodemailer. The previous SENDGRID_* trio was read
-  # by no service and undefined in .env, so it only produced compose warnings —
+  # by no service and undefined in .env, so it only produced compose warnings,
   # while notification-service logged "SMTP_HOST or SMTP_SENDER_EMAIL missing"
   # because the variables it actually reads were never injected.
   SMTP_HOST: ${SMTP_HOST}
@@ -351,7 +351,7 @@ services:
       start_period: 45s
 
   # ────────────────────────────────────────────────────────────
-  # DEV SEED — one-shot demo data. Runs automatically on `up` (exits when done).
+  # DEV SEED: one-shot demo data. Runs automatically on `up` (exits when done).
   # Bootstraps a demo tenant (login director@althea-medtech.demo / Demo@2024!),
   # then seeds 7 products + the AlphaFlow 3 document folder. Idempotent.
   # Set SEED_COMPANY_ID=<uuid> to target an existing company instead of the demo one.
@@ -366,7 +366,7 @@ services:
     env_file:
       - ../.env
     environment:
-      # Docker-network hostnames — no host port overrides needed here.
+      # Docker-network hostnames: no host port overrides needed here.
       POSTGRES_HOST: postgres
       POSTGRES_PORT: "5432"
       MINIO_ENDPOINT: minio

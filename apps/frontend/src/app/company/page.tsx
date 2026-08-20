@@ -194,7 +194,7 @@ export default function CompanyPage() {
           setCompletedSteps(completed);
         }
       } catch {
-        // Profile doesn't exist yet — that's fine
+        // Profile doesn't exist yet: that's fine
       } finally {
         if (!cancelled) setIsLoading(false);
       }
@@ -402,7 +402,7 @@ export default function CompanyPage() {
             <div className="readiness-title">
               {isCompleted
                 ? 'Readiness: Profile complete'
-                : 'Readiness: In Progress — AI features are locked'}
+                : 'Readiness: In Progress, AI features are locked'}
             </div>
             <div className="readiness-desc">
               Complete your company profile and upload your product documents to unlock compliance

@@ -320,7 +320,7 @@ export function AgentActivityPanel({
           </Badge>
         </div>
         <div className="text-xs text-[var(--muted)]">
-          {stats.done}/{stats.total || '—'} clauses
+          {stats.done}/{stats.total || '-'} clauses
           {stats.active > 0 && ` · ${stats.active} in-flight`}
           {stats.failed > 0 && ` · ${stats.failed} failed`}
         </div>

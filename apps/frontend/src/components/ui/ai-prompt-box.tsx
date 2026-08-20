@@ -9,7 +9,7 @@ import { ArrowUp, Paperclip, Square, X, StopCircle, Mic, Globe, BrainCog, Folder
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/utils/cn';
 
-// Minimal custom styles for textarea scrollbars. Guarded for SSR — Next.js
+// Minimal custom styles for textarea scrollbars. Guarded for SSR: Next.js
 // renders this file on the server during build and `document` is unavailable.
 const styles = `
   *:focus-visible {

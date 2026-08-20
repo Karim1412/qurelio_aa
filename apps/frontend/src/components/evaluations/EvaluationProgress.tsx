@@ -9,7 +9,7 @@ export const ACTIVE_EVALUATION_STATUSES = new Set(['PENDING', 'QUEUED', 'PROCESS
 /**
  * Ceiling for the time-based crawl. Before the engine reports `total_clauses`
  * there is nothing real to measure, so the bar eases toward this value and stops
- * — it must never imply the run is nearly finished when we simply don't know.
+ *: it must never imply the run is nearly finished when we simply don't know.
  */
 const CRAWL_CEILING = 85;
 /** Larger = slower crawl. Tuned against a typical multi-minute clause sweep. */
@@ -46,7 +46,7 @@ type Snapshot = {
 
 /**
  * Progress survives unmounts. Switching between the card and table views, or
- * re-rendering after the 10s poll, tears the component down — without this the
+ * re-rendering after the 10s poll, tears the component down, without this the
  * bar would snap back to 0% every time.
  */
 const SNAPSHOTS = new Map<string, Snapshot>();
@@ -129,7 +129,7 @@ export function EvaluationProgress({ evaluationId, status, startedAt, compact = 
         if (ev.type === 'summary_started') s.summarising = true;
       },
       () => {
-        /* stream unavailable — the crawl below keeps the bar alive */
+        /* stream unavailable: the crawl below keeps the bar alive */
       },
     );
     return () => handle.close();
@@ -144,7 +144,7 @@ export function EvaluationProgress({ evaluationId, status, startedAt, compact = 
     const id = setInterval(() => {
       const s = snap.current;
       // The crawl is always a floor. Without it the bar stalls the moment
-      // `total_clauses` arrives — real progress is 0 until the first clause
+      // `total_clauses` arrives: real progress is 0 until the first clause
       // settles, and a monotonic bar would sit frozen for minutes.
       const crawl = crawlFor(startedAtMs);
       let target = crawl;
@@ -190,7 +190,7 @@ export function EvaluationProgress({ evaluationId, status, startedAt, compact = 
       aria-valuenow={pct}
       aria-valuemin={0}
       aria-valuemax={100}
-      aria-label={`${label} — ${pct}% complete`}
+      aria-label={`${label}: ${pct}% complete`}
     >
       <p className="text-2xl font-black tabular-nums text-[#b76e00]">{pct}%</p>
       <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-[var(--page-bg)]">

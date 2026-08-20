@@ -1,14 +1,14 @@
 {
   "_meta": {
     "file": "regulatory_applicability_matrix.json",
-    "feature": "Regulatory Monitoring (P5) → Applicability engine — the full set of laws, regulations, guidelines and standards applicable to each product of the pharmaceutical demo tenant",
-    "purpose": "TENANT DATA. For each of the 4 Byrsa Pharma products, the references the applicability engine has determined to apply, why, with what confidence, which version the tenant holds, and which compliance gap each one drives. Also records references the engine explicitly ruled OUT — the noise-filtering half of the story.",
+    "feature": "Regulatory Monitoring (P5) → Applicability engine, the full set of laws, regulations, guidelines and standards applicable to each product of the pharmaceutical demo tenant",
+    "purpose": "TENANT DATA. For each of the 4 Byrsa Pharma products, the references the applicability engine has determined to apply, why, with what confidence, which version the tenant holds, and which compliance gap each one drives. Also records references the engine explicitly ruled OUT, the noise-filtering half of the story.",
     "relationship_to_catalog": "regulation_id values reuse 05_Demo_Data/regulatory_reference_catalog.json (84-entry global catalog). References not present there are supplied in `catalog_extensions` and should be merged into the global catalog.",
-    "companion_file": "applicability_use_cases.json — three scripted applicability scenarios built on this matrix.",
-    "tenant": "tnt_byrsa-pharma — Byrsa Pharma S.A. (fictional Tunisian generic-medicines manufacturer)",
-    "scenario_note": "DEMO DATA — fictional tenant and products. Regulatory instruments are real unless flagged is_fabricated_for_demo.",
+    "companion_file": "applicability_use_cases.json: three scripted applicability scenarios built on this matrix.",
+    "tenant": "tnt_byrsa-pharma: Byrsa Pharma S.A. (fictional Tunisian generic-medicines manufacturer)",
+    "scenario_note": "DEMO DATA: fictional tenant and products. Regulatory instruments are real unless flagged is_fabricated_for_demo.",
     "as_of_date": "2026-07-29",
-    "scoping_note": "ICH M7 nitrosamine expectations extend to every medicinal product with a chemically synthesised active substance. This dataset scopes the nitrosamine assessment to Glucoryl 850 — the only product whose API belongs to a documented at-risk class — so the demo narrative stays on one product instead of four."
+    "scoping_note": "ICH M7 nitrosamine expectations extend to every medicinal product with a chemically synthesised active substance. This dataset scopes the nitrosamine assessment to Glucoryl 850, the only product whose API belongs to a documented at-risk class, so the demo narrative stays on one product instead of four."
   },
 
   "legal_status_legend": {
@@ -18,11 +18,11 @@
   },
 
   "schema": {
-    "regulation_id": "Stable key — reused from the global catalog where the entry exists there.",
+    "regulation_id": "Stable key: reused from the global catalog where the entry exists there.",
     "role": "What this reference governs for this product (Market access | GMP | Quality/specifications | Labelling | Packaging | Supply chain | Export).",
-    "applicability_score": "0–1 — how strongly the reference applies to this product (engine output).",
-    "confidence_score": "0–1 — engine confidence in the applicability determination itself.",
-    "verdict": "APPLICABLE | NOT_APPLICABLE | CONDITIONAL — CONDITIONAL means it applies only if a stated condition holds.",
+    "applicability_score": "0–1: how strongly the reference applies to this product (engine output).",
+    "confidence_score": "0–1: engine confidence in the applicability determination itself.",
+    "verdict": "APPLICABLE | NOT_APPLICABLE | CONDITIONAL: CONDITIONAL means it applies only if a stated condition holds.",
     "assignment_source": "USER (assigned by the tenant) | ONBOARDING (auto-assigned from the company profile) | ENGINE_DETECTED (engine found it and the user accepted) | NOT_ASSIGNED (engine says it applies but it is not on the product record).",
     "tenant_version_held": "The edition/consolidation recorded on the product record.",
     "current_version": "The edition/consolidation in force on the as_of_date.",
@@ -44,10 +44,10 @@
       "jurisdiction": "European Union / EEA (adopted by PIC/S)",
       "country_region": "EU",
       "industry": ["Pharmaceuticals"],
-      "category": "Good Manufacturing Practice — Sterile",
+      "category": "Good Manufacturing Practice: Sterile",
       "legal_status": "INGESTIBLE",
       "engine_capability": "Full text ingested & AI-analyzed",
-      "current_version": "2022 revision — in operation since 2023-08-25 (§8.123 lyophilisation from 2024-08-25)",
+      "current_version": "2022 revision: in operation since 2023-08-25 (§8.123 lyophilisation from 2024-08-25)",
       "previous_version": "2008 version (2008/11/25)",
       "source": "European Commission (EudraLex Vol. 4)",
       "source_url": "https://health.ec.europa.eu/medicinal-products/eudralex/eudralex-volume-4_en",
@@ -67,7 +67,7 @@
       "category": "Good Manufacturing Practice",
       "legal_status": "INGESTIBLE",
       "engine_capability": "Full text ingested & AI-analyzed",
-      "current_version": "2015 revision — in operation since 2015-10-01",
+      "current_version": "2015 revision: in operation since 2015-10-01",
       "source": "European Commission (EudraLex Vol. 4)",
       "source_url": "https://health.ec.europa.eu/medicinal-products/eudralex/eudralex-volume-4_en",
       "tags": ["EU", "GMP", "validation"]
@@ -86,7 +86,7 @@
       "category": "Good Manufacturing Practice",
       "legal_status": "INGESTIBLE",
       "engine_capability": "Full text ingested & AI-analyzed",
-      "current_version": "2015 revision — in operation since 2016-04-15",
+      "current_version": "2015 revision: in operation since 2016-04-15",
       "source": "European Commission (EudraLex Vol. 4)",
       "source_url": "https://health.ec.europa.eu/medicinal-products/eudralex/eudralex-volume-4_en",
       "tags": ["EU", "GMP", "QP", "batch release"]
@@ -153,7 +153,7 @@
       "regulation_id": "GUID-EU-BE",
       "reference": "Guideline on the Investigation of Bioequivalence",
       "short_code": "BE guideline",
-      "title": "CPMP/EWP/QWP/1401/98 Rev. 1 — Investigation of bioequivalence for immediate-release oral dosage forms",
+      "title": "CPMP/EWP/QWP/1401/98 Rev. 1: Investigation of bioequivalence for immediate-release oral dosage forms",
       "aliases": ["bioequivalence", "BE", "1401/98", "bioequivalence generique"],
       "type": "Guideline",
       "authority": "EMA / CHMP",
@@ -172,14 +172,14 @@
       "regulation_id": "GUID-EU-TOPICAL",
       "reference": "Guideline on quality and equivalence of topical products",
       "short_code": "Topical guideline",
-      "title": "CHMP/QWP/708282/2018 — quality and equivalence of locally applied, locally acting cutaneous products",
+      "title": "CHMP/QWP/708282/2018: quality and equivalence of locally applied, locally acting cutaneous products",
       "aliases": ["topical", "cutaneous", "IVRT", "semi-solid", "creme", "equivalence topique"],
       "type": "Guideline",
       "authority": "EMA / CHMP",
       "jurisdiction": "European Union / EEA",
       "country_region": "EU",
       "industry": ["Pharmaceuticals"],
-      "category": "Quality — Dosage Form Specific",
+      "category": "Quality: Dosage Form Specific",
       "legal_status": "INGESTIBLE",
       "engine_capability": "Full text ingested & AI-analyzed",
       "current_version": "Current (in force)",
@@ -202,7 +202,7 @@
       "legal_status": "INGESTIBLE",
       "engine_capability": "Full text ingested & AI-analyzed",
       "current_version": "Consolidated",
-      "related_guideline": "EMA guideline on pharmaceutical development of medicines for paediatric use (EMA/CHMP/QWP/805880/2012) — dosing devices, excipient acceptability by age",
+      "related_guideline": "EMA guideline on pharmaceutical development of medicines for paediatric use (EMA/CHMP/QWP/805880/2012), dosing devices, excipient acceptability by age",
       "source": "EUR-Lex",
       "source_url": "https://eur-lex.europa.eu/eli/reg/2006/1901/oj",
       "tags": ["EU", "paediatric"]
@@ -223,7 +223,7 @@
       "engine_capability": "Full text ingested & AI-analyzed",
       "current_version": "R2 (2023)",
       "previous_version": "R1 (2017)",
-      "source": "ICH — published free of charge",
+      "source": "ICH: published free of charge",
       "source_url": "https://www.ich.org/page/multidisciplinary-guidelines",
       "tags": ["ICH", "impurities", "nitrosamines"]
     },
@@ -242,13 +242,13 @@
       "legal_status": "INGESTIBLE",
       "engine_capability": "Full text ingested & AI-analyzed",
       "current_version": "Step 4 (2019)",
-      "source": "ICH — published free of charge",
+      "source": "ICH: published free of charge",
       "source_url": "https://www.ich.org/page/multidisciplinary-guidelines",
       "tags": ["ICH", "biowaiver", "generics"]
     },
     {
       "regulation_id": "GUID-EMA-NITROSAMINE",
-      "reference": "Nitrosamine impurities in human medicinal products — Article 5(3) referral outcome and Q&A",
+      "reference": "Nitrosamine impurities in human medicinal products. Article 5(3) referral outcome and Q&A",
       "short_code": "Nitrosamines Q&A",
       "title": "EMA/CHMP call for review, acceptable intakes and the 3-step approach (risk evaluation → confirmatory testing → dossier update) for nitrosamine impurities",
       "aliases": ["nitrosamines", "NDMA", "NDEA", "article 5(3)", "acceptable intake", "3-step approach"],
@@ -260,7 +260,7 @@
       "category": "Impurities & Safety",
       "legal_status": "INGESTIBLE",
       "engine_capability": "Full text ingested & AI-analyzed",
-      "current_version": "Rolling — Q&A updated periodically",
+      "current_version": "Rolling: Q&A updated periodically",
       "source": "EMA",
       "source_url": "https://www.ema.europa.eu/en/human-regulatory-overview/post-authorisation/pharmacovigilance-post-authorisation/referral-procedures-human-medicines/nitrosamine-impurities",
       "tags": ["EU", "nitrosamines", "impurities"]
@@ -279,8 +279,8 @@
       "category": "Starting Materials & Supply Chain",
       "legal_status": "INGESTIBLE",
       "engine_capability": "Full text ingested & AI-analyzed",
-      "current_version": "Current — alerts issued from 2022 onwards, guidance consolidated",
-      "source": "WHO — free publication",
+      "current_version": "Current: alerts issued from 2022 onwards, guidance consolidated",
+      "source": "WHO: free publication",
       "source_url": "https://www.who.int/teams/regulation-prequalification/incidents-and-SF/full-list-of-who-medical-product-alerts",
       "tags": ["WHO", "excipients", "paediatric", "DEG"]
     },
@@ -297,7 +297,7 @@
       "industry": ["Pharmaceuticals"],
       "category": "Good Manufacturing Practice",
       "legal_status": "USER_UPLOAD",
-      "engine_capability": "Not hosted — tenant uploads the text and accepts legal liability before analysis",
+      "engine_capability": "Not hosted: tenant uploads the text and accepts legal liability before analysis",
       "current_version": "Current edition [VERIFY against DPM before go-live]",
       "source": "DPM Tunisia",
       "source_url": "",
@@ -307,7 +307,7 @@
       "regulation_id": "ORD-TN-DPM-2025-09",
       "reference": "Circulaire DPM du 04/09/2025",
       "short_code": "DPM circular 2025",
-      "title": "Circular to manufacturers of oral liquid preparations — verification of the identity of each container of glycerol, propylene glycol, sorbitol and polyethylene glycol, and limit testing for diethylene glycol and ethylene glycol",
+      "title": "Circular to manufacturers of oral liquid preparations, verification of the identity of each container of glycerol, propylene glycol, sorbitol and polyethylene glycol, and limit testing for diethylene glycol and ethylene glycol",
       "aliases": ["circulaire DPM", "DEG EG tunisie", "sirops", "excipients a risque"],
       "type": "Order/Circular",
       "authority": "Direction de la Pharmacie et du Médicament (DPM)",
@@ -316,7 +316,7 @@
       "industry": ["Pharmaceuticals"],
       "category": "Starting Materials & Supply Chain",
       "legal_status": "USER_UPLOAD",
-      "engine_capability": "Not hosted — tenant uploads the text and accepts legal liability before analysis",
+      "engine_capability": "Not hosted: tenant uploads the text and accepts legal liability before analysis",
       "current_version": "Issued 2025-09-04",
       "is_fabricated_for_demo": true,
       "fabrication_note": "Plausible national instrument invented for the demo; the underlying WHO/international expectation it reflects is real.",
@@ -337,7 +337,7 @@
       "industry": ["Pharmaceuticals"],
       "category": "Active Substance & Supply Chain",
       "legal_status": "INGESTIBLE",
-      "engine_capability": "Scheme rules and certificate metadata ingested — the referenced Ph. Eur. monograph text itself remains REFERENCE_ONLY",
+      "engine_capability": "Scheme rules and certificate metadata ingested, the referenced Ph. Eur. monograph text itself remains REFERENCE_ONLY",
       "current_version": "Current scheme rules",
       "source": "EDQM",
       "source_url": "https://www.edqm.eu/en/certification-of-suitability",
@@ -347,7 +347,7 @@
       "regulation_id": "SCHEME-WHO-CPP",
       "reference": "WHO Certification Scheme on the Quality of Pharmaceutical Products moving in International Commerce",
       "short_code": "WHO CPP",
-      "title": "Certificate of a Pharmaceutical Product (CPP) — the export certificate format required by most MENA and African importing authorities",
+      "title": "Certificate of a Pharmaceutical Product (CPP): the export certificate format required by most MENA and African importing authorities",
       "aliases": ["CPP", "certificate of pharmaceutical product", "certificat de produit pharmaceutique", "export certificate"],
       "type": "Guideline",
       "authority": "World Health Organization",
@@ -358,7 +358,7 @@
       "legal_status": "INGESTIBLE",
       "engine_capability": "Full text ingested & AI-analyzed",
       "current_version": "Current scheme",
-      "source": "WHO — free publication",
+      "source": "WHO: free publication",
       "source_url": "https://www.who.int/teams/health-product-policy-and-standards/standards-and-specifications/norms-and-standards-for-pharmaceuticals",
       "tags": ["WHO", "export", "CPP"]
     }
@@ -373,7 +373,7 @@
         "reference": "Loi n° 85-91 du 22 novembre 1985",
         "short_code": "Loi 85-91",
         "legal_status": "USER_UPLOAD",
-        "role": "Market access — legal basis of the AMM and of pharmaceutical establishment authorisation",
+        "role": "Market access: legal basis of the AMM and of pharmaceutical establishment authorisation",
         "applicability_score": 1.0,
         "confidence_score": 0.99,
         "verdict": "APPLICABLE",
@@ -389,7 +389,7 @@
         "reference": "Guide des BPF (Tunisia)",
         "short_code": "TN GMP",
         "legal_status": "USER_UPLOAD",
-        "role": "GMP — the standard the DPM inspects against",
+        "role": "GMP: the standard the DPM inspects against",
         "applicability_score": 1.0,
         "confidence_score": 0.98,
         "verdict": "APPLICABLE",
@@ -402,10 +402,10 @@
       },
       {
         "regulation_id": "GUID-EU-GMP-V4",
-        "reference": "EudraLex Vol. 4 — EU GMP Part I",
+        "reference": "EudraLex Vol. 4: EU GMP Part I",
         "short_code": "EU GMP",
         "legal_status": "INGESTIBLE",
-        "role": "GMP — basis of the ANSM third-country certificates and of the Tunisian guide",
+        "role": "GMP: basis of the ANSM third-country certificates and of the Tunisian guide",
         "applicability_score": 0.98,
         "confidence_score": 0.97,
         "verdict": "APPLICABLE",
@@ -416,11 +416,11 @@
         "version_status": "CURRENT",
         "why_applicable": "All three sites are listed as third-country manufacturers on EU marketing authorisations held by Pharmelis SAS and are inspected by ANSM against EU GMP.",
         "key_obligations": [
-          "Ch. 1 §1.10 — Product Quality Review",
-          "Ch. 5 — Production: qualification of suppliers, verification of the identity of each container of starting material",
-          "Ch. 6 — Quality Control: specifications, ongoing stability programme",
-          "Ch. 7 — Outsourced activities",
-          "Ch. 8 — Complaints, quality defects and recalls"
+          "Ch. 1 §1.10: Product Quality Review",
+          "Ch. 5: Production: qualification of suppliers, verification of the identity of each container of starting material",
+          "Ch. 6: Quality Control: specifications, ongoing stability programme",
+          "Ch. 7: Outsourced activities",
+          "Ch. 8: Complaints, quality defects and recalls"
         ]
       },
       {
@@ -428,7 +428,7 @@
         "reference": "EudraLex Vol. 4, Annex 15",
         "short_code": "Annex 15",
         "legal_status": "INGESTIBLE",
-        "role": "GMP — qualification and validation",
+        "role": "GMP: qualification and validation",
         "applicability_score": 0.96,
         "confidence_score": 0.96,
         "verdict": "APPLICABLE",
@@ -444,7 +444,7 @@
         "reference": "EudraLex Vol. 4, Annex 16",
         "short_code": "Annex 16",
         "legal_status": "INGESTIBLE",
-        "role": "GMP — QP certification and batch release for EU-bound batches",
+        "role": "GMP: QP certification and batch release for EU-bound batches",
         "applicability_score": 0.92,
         "confidence_score": 0.94,
         "verdict": "APPLICABLE",
@@ -460,7 +460,7 @@
         "reference": "ICH Q7",
         "short_code": "ICH Q7",
         "legal_status": "INGESTIBLE",
-        "role": "GMP for active pharmaceutical ingredients — supplier oversight",
+        "role": "GMP for active pharmaceutical ingredients: supplier oversight",
         "applicability_score": 0.88,
         "confidence_score": 0.93,
         "verdict": "APPLICABLE",
@@ -482,7 +482,7 @@
         "verdict": "APPLICABLE",
         "impact_level": "HIGH",
         "assignment_source": "ONBOARDING",
-        "tenant_version_held": "See per-product records — the sterile site still holds the 2005 original",
+        "tenant_version_held": "See per-product records: the sterile site still holds the 2005 original",
         "current_version": "Q9(R1) (2023)",
         "version_status": "SEE_PRODUCT",
         "why_applicable": "Risk management underpins the contamination control strategy, supplier risk assessment and the nitrosamine/excipient risk evaluations."
@@ -524,7 +524,7 @@
         "reference": "WHO Certification Scheme (CPP)",
         "short_code": "WHO CPP",
         "legal_status": "INGESTIBLE",
-        "role": "Export — certificate format required by importing authorities",
+        "role": "Export: certificate format required by importing authorities",
         "applicability_score": 0.95,
         "confidence_score": 0.96,
         "verdict": "APPLICABLE",
@@ -540,7 +540,7 @@
         "reference": "Regulation (EU) 2016/679 (GDPR)",
         "short_code": "GDPR",
         "legal_status": "INGESTIBLE",
-        "role": "Personal data — pharmacovigilance case data and EU clinical/complaint records",
+        "role": "Personal data: pharmacovigilance case data and EU clinical/complaint records",
         "applicability_score": 0.62,
         "confidence_score": 0.81,
         "verdict": "CONDITIONAL",
@@ -557,7 +557,7 @@
 
   "by_product": {
     "prd_glucoryl850": {
-      "product_name": "Glucoryl 850 — metformin hydrochloride 850 mg film-coated tablets",
+      "product_name": "Glucoryl 850: metformin hydrochloride 850 mg film-coated tablets",
       "galenic_form": "Film-coated tablet (solid oral)",
       "reference_count": { "company_level_inherited": 11, "product_specific": 12, "total_applicable": 23, "ruled_out": 4 },
       "version_health": { "current": 12, "outdated": 0, "not_assigned": 0 },
@@ -568,7 +568,7 @@
           "reference": "Directive 2001/83/EC",
           "short_code": "EU Med Code",
           "legal_status": "INGESTIBLE",
-          "role": "Market access — MA obligations, labelling, leaflet, SmPC content",
+          "role": "Market access: MA obligations, labelling, leaflet, SmPC content",
           "applicability_score": 0.97,
           "confidence_score": 0.96,
           "verdict": "APPLICABLE",
@@ -578,10 +578,10 @@
           "tenant_version_held": "Consolidated 2026-01",
           "current_version": "Consolidated 2026-01",
           "version_status": "CURRENT",
-          "key_obligations": ["Art. 8 & 10 — generic application", "Title V — labelling and package leaflet", "Art. 23 — keeping the dossier up to date"],
+          "key_obligations": ["Art. 8 & 10: generic application", "Title V: labelling and package leaflet", "Art. 23: keeping the dossier up to date"],
           "evidence": [
             { "type": "product_attribute", "field": "target_markets", "value": "EU via MAH Pharmelis SAS (FR/H/0912/001)" },
-            { "type": "product_document", "doc_id": "doc-amm-glu", "ref": "AMM & Export Registrations §3 — EU row" }
+            { "type": "product_document", "doc_id": "doc-amm-glu", "ref": "AMM & Export Registrations §3: EU row" }
           ],
           "linked_gaps": []
         },
@@ -590,7 +590,7 @@
           "reference": "Regulation (EC) No 1234/2008",
           "short_code": "Variations Reg",
           "legal_status": "INGESTIBLE",
-          "role": "Lifecycle — classification and submission of variations",
+          "role": "Lifecycle: classification and submission of variations",
           "applicability_score": 0.93,
           "confidence_score": 0.95,
           "verdict": "APPLICABLE",
@@ -599,7 +599,7 @@
           "tenant_version_held": "Consolidated",
           "current_version": "Consolidated",
           "version_status": "CURRENT",
-          "evidence": [{ "type": "product_document", "doc_id": "doc-amm-glu", "ref": "§4 — four variations applied 2023–2026" }],
+          "evidence": [{ "type": "product_document", "doc_id": "doc-amm-glu", "ref": "§4: four variations applied 2023–2026" }],
           "linked_gaps": []
         },
         {
@@ -607,7 +607,7 @@
           "reference": "Commission Delegated Regulation (EU) 2016/161",
           "short_code": "Safety features",
           "legal_status": "INGESTIBLE",
-          "role": "Packaging — unique identifier and anti-tampering device",
+          "role": "Packaging: unique identifier and anti-tampering device",
           "applicability_score": 0.9,
           "confidence_score": 0.92,
           "verdict": "APPLICABLE",
@@ -625,7 +625,7 @@
           "reference": "ICH M7(R2)",
           "short_code": "ICH M7",
           "legal_status": "INGESTIBLE",
-          "role": "Impurities — mutagenic impurity assessment and control, including N-nitrosamines",
+          "role": "Impurities: mutagenic impurity assessment and control, including N-nitrosamines",
           "applicability_score": 0.95,
           "confidence_score": 0.94,
           "verdict": "APPLICABLE",
@@ -636,7 +636,7 @@
           "version_status": "CURRENT",
           "why_applicable": "Chemically synthesised active substance whose class has documented NDMA findings; the product's own risk assessment RA-NDMA-GLU-850 cites the 3-step approach.",
           "key_obligations": ["Risk evaluation of the synthetic route and excipients", "Confirmatory testing where risk is identified", "Control strategy and dossier update"],
-          "evidence": [{ "type": "product_document", "doc_id": "doc-nitro-glu", "ref": "Nitrosamine Risk Assessment §3 — Step 1 only" }],
+          "evidence": [{ "type": "product_document", "doc_id": "doc-nitro-glu", "ref": "Nitrosamine Risk Assessment §3: Step 1 only" }],
           "linked_gaps": ["gap-glu-01"],
           "linked_change_events": ["CHG-2026-0713"]
         },
@@ -645,7 +645,7 @@
           "reference": "EMA nitrosamine Art. 5(3) outcome and Q&A",
           "short_code": "Nitrosamines Q&A",
           "legal_status": "INGESTIBLE",
-          "role": "Impurities — acceptable intakes and the 3-step approach",
+          "role": "Impurities: acceptable intakes and the 3-step approach",
           "applicability_score": 0.96,
           "confidence_score": 0.95,
           "verdict": "APPLICABLE",
@@ -653,8 +653,8 @@
           "assignment_source": "ENGINE_DETECTED",
           "detected_at": "2026-06-02T08:15:00Z",
           "accepted_by_user_at": "2026-06-03T10:40:00Z",
-          "tenant_version_held": "Rolling Q&A — snapshot 2026-06",
-          "current_version": "Rolling Q&A — snapshot 2026-06",
+          "tenant_version_held": "Rolling Q&A: snapshot 2026-06",
+          "current_version": "Rolling Q&A: snapshot 2026-06",
           "version_status": "CURRENT",
           "why_applicable": "Metformin is explicitly within the scope of the nitrosamine review; the acceptable intake used in the tenant's own assessment (96 ng/day) comes from this source.",
           "linked_gaps": ["gap-glu-01"]
@@ -664,7 +664,7 @@
           "reference": "ICH M9",
           "short_code": "ICH M9",
           "legal_status": "INGESTIBLE",
-          "role": "Generics — BCS-based biowaiver justification",
+          "role": "Generics: BCS-based biowaiver justification",
           "applicability_score": 0.84,
           "confidence_score": 0.88,
           "verdict": "APPLICABLE",
@@ -674,14 +674,14 @@
           "current_version": "Step 4 (2019)",
           "version_status": "CURRENT",
           "why_applicable": "The fed-state study was waived on a BCS-III justification accepted by the DPM.",
-          "evidence": [{ "type": "product_document", "doc_id": "doc-amm-glu", "ref": "§2 — fed-state waiver, BCS-III justification" }]
+          "evidence": [{ "type": "product_document", "doc_id": "doc-amm-glu", "ref": "§2: fed-state waiver, BCS-III justification" }]
         },
         {
           "regulation_id": "GUID-EU-BE",
           "reference": "Guideline on the Investigation of Bioequivalence",
           "short_code": "BE guideline",
           "legal_status": "INGESTIBLE",
-          "role": "Generics — design and acceptance criteria of the pivotal BE study",
+          "role": "Generics: design and acceptance criteria of the pivotal BE study",
           "applicability_score": 0.92,
           "confidence_score": 0.93,
           "verdict": "APPLICABLE",
@@ -690,14 +690,14 @@
           "tenant_version_held": "Rev. 1",
           "current_version": "Rev. 1",
           "version_status": "CURRENT",
-          "evidence": [{ "type": "product_document", "doc_id": "doc-amm-glu", "ref": "§2 — BE-MET-2021-07, 90 % CI within 80.00–125.00 %" }]
+          "evidence": [{ "type": "product_document", "doc_id": "doc-amm-glu", "ref": "§2: BE-MET-2021-07, 90 % CI within 80.00–125.00 %" }]
         },
         {
           "regulation_id": "ICH-Q1",
           "reference": "ICH Q1A(R2)",
           "short_code": "ICH Q1",
           "legal_status": "INGESTIBLE",
-          "role": "Quality — stability testing and shelf-life justification",
+          "role": "Quality: stability testing and shelf-life justification",
           "applicability_score": 0.96,
           "confidence_score": 0.96,
           "verdict": "APPLICABLE",
@@ -714,7 +714,7 @@
           "reference": "ICH Q2(R2)",
           "short_code": "ICH Q2",
           "legal_status": "INGESTIBLE",
-          "role": "Quality — analytical procedure validation",
+          "role": "Quality: analytical procedure validation",
           "applicability_score": 0.94,
           "confidence_score": 0.95,
           "verdict": "APPLICABLE",
@@ -723,14 +723,14 @@
           "tenant_version_held": "R2 (2023)",
           "current_version": "R2 (2023)",
           "version_status": "CURRENT",
-          "evidence": [{ "type": "product_document", "doc_id": "doc-spec-glu", "ref": "§4 — VAL-AM-GLU-2021-03 / 2023-11" }]
+          "evidence": [{ "type": "product_document", "doc_id": "doc-spec-glu", "ref": "§4: VAL-AM-GLU-2021-03 / 2023-11" }]
         },
         {
           "regulation_id": "ICH-Q3",
           "reference": "ICH Q3C / Q3D",
           "short_code": "ICH Q3",
           "legal_status": "INGESTIBLE",
-          "role": "Quality — residual solvents and elemental impurities",
+          "role": "Quality: residual solvents and elemental impurities",
           "applicability_score": 0.9,
           "confidence_score": 0.92,
           "verdict": "APPLICABLE",
@@ -739,14 +739,14 @@
           "tenant_version_held": "Current family",
           "current_version": "Current family",
           "version_status": "CURRENT",
-          "evidence": [{ "type": "product_document", "doc_id": "doc-spec-glu", "ref": "§3 lines 14–15 — RA-Q3D-GLU-2024" }]
+          "evidence": [{ "type": "product_document", "doc_id": "doc-spec-glu", "ref": "§3 lines 14–15: RA-Q3D-GLU-2024" }]
         },
         {
           "regulation_id": "CERT-EDQM-CEP",
           "reference": "EDQM CEP scheme",
           "short_code": "CEP",
           "legal_status": "INGESTIBLE",
-          "role": "Active substance — supplier's certificate of suitability",
+          "role": "Active substance: supplier's certificate of suitability",
           "applicability_score": 0.89,
           "confidence_score": 0.91,
           "verdict": "APPLICABLE",
@@ -763,7 +763,7 @@
           "reference": "European Pharmacopoeia",
           "short_code": "Ph. Eur.",
           "legal_status": "REFERENCE_ONLY",
-          "role": "Quality — monographs and general methods used in the specification",
+          "role": "Quality: monographs and general methods used in the specification",
           "applicability_score": 0.98,
           "confidence_score": 0.97,
           "verdict": "APPLICABLE",
@@ -773,19 +773,19 @@
           "current_version": "11.5",
           "version_status": "CURRENT",
           "engine_note": "Referenced by number only. Monograph 0931 and general chapters 2.9.3 / 2.9.5 / 2.5.12 / 2.6.12 are tracked for revision; their text is never hosted. Upload attempt grd-2026-0031 was blocked.",
-          "monographs_tracked": ["0931 — Metformin hydrochloride", "2.9.3 — Dissolution", "2.9.5 — Uniformity of mass", "2.5.12 — Water (Karl Fischer)", "2.6.12 / 5.1.4 — Microbiological quality"]
+          "monographs_tracked": ["0931: Metformin hydrochloride", "2.9.3: Dissolution", "2.9.5: Uniformity of mass", "2.5.12: Water (Karl Fischer)", "2.6.12 / 5.1.4: Microbiological quality"]
         }
       ],
       "ruled_out": [
         { "regulation_id": "GUID-EU-GMP-ANX1", "reference": "EudraLex Vol. 4, Annex 1", "verdict": "NOT_APPLICABLE", "confidence_score": 0.98, "reason": "Non-sterile solid oral dosage form; no sterile manufacturing step and no sterility requirement." },
         { "regulation_id": "REG-EU-2014-536", "reference": "EU Clinical Trials Regulation", "verdict": "NOT_APPLICABLE", "confidence_score": 0.94, "reason": "No clinical trial is conducted or sponsored by the tenant; the pivotal BE study was completed in 2021 by a CRO under the generic application route." },
         { "regulation_id": "CFR-21-211", "reference": "21 CFR 211", "verdict": "NOT_APPLICABLE", "confidence_score": 0.96, "reason": "No US market in the product's target markets. Becomes CONDITIONAL if a US registration is added." },
-        { "regulation_id": "REG-EC-2006-1901", "reference": "Paediatric Regulation", "verdict": "NOT_APPLICABLE", "confidence_score": 0.72, "reason": "Indication covers children from 10 years, but the product is an existing generic of an authorised reference product — no PIP obligation arises. Flagged low-confidence for human review." }
+        { "regulation_id": "REG-EC-2006-1901", "reference": "Paediatric Regulation", "verdict": "NOT_APPLICABLE", "confidence_score": 0.72, "reason": "Indication covers children from 10 years, but the product is an existing generic of an authorised reference product, no PIP obligation arises. Flagged low-confidence for human review." }
       ]
     },
 
     "prd_furolix20": {
-      "product_name": "Furolix 20 mg/2 mL — furosemide, solution for injection",
+      "product_name": "Furolix 20 mg/2 mL: furosemide, solution for injection",
       "galenic_form": "Solution for injection, amber glass ampoule (sterile)",
       "reference_count": { "company_level_inherited": 11, "product_specific": 10, "product_level_overrides": 1, "total_applicable": 20, "ruled_out": 4 },
       "override_note": "ICH Q9 appears in both lists: the company-level entry defers to the product record (version_status SEE_PRODUCT) because the Sidi Thabet site still holds the 2005 original while Ben Arous moved to Q9(R1). Counted once.",
@@ -798,7 +798,7 @@
           "reference": "EudraLex Vol. 4, Annex 1",
           "short_code": "Annex 1",
           "legal_status": "INGESTIBLE",
-          "role": "GMP — manufacture of sterile medicinal products",
+          "role": "GMP: manufacture of sterile medicinal products",
           "applicability_score": 0.99,
           "confidence_score": 0.98,
           "verdict": "APPLICABLE",
@@ -806,16 +806,16 @@
           "assignment_source": "USER",
           "assigned_at": "2026-05-28T09:20:00Z",
           "tenant_version_held": "2008 version (2008/11/25)",
-          "current_version": "2022 revision — in operation since 2023-08-25",
+          "current_version": "2022 revision: in operation since 2023-08-25",
           "version_status": "OUTDATED",
           "version_drift_days": 1069,
           "why_applicable": "Terminally sterilised small-volume parenteral filled under Grade A air supply in a Grade C background at the Sidi Thabet sterile site.",
           "key_obligations": [
-            "§2 — Contamination Control Strategy (introduced by the 2022 revision)",
-            "§4 — Premises, cleanroom qualification, airflow visualisation",
-            "§8 — Production and specific technologies, including terminal sterilisation and CCI",
-            "§8.30–8.32 — Visual inspection and inspector qualification",
-            "§9 — Environmental and process monitoring, risk-based sampling locations"
+            "§2: Contamination Control Strategy (introduced by the 2022 revision)",
+            "§4: Premises, cleanroom qualification, airflow visualisation",
+            "§8: Production and specific technologies, including terminal sterilisation and CCI",
+            "§8.30–8.32: Visual inspection and inspector qualification",
+            "§9: Environmental and process monitoring, risk-based sampling locations"
           ],
           "evidence": [
             { "type": "product_attribute", "field": "galenic_form", "value": "Sterile solution for injection" },
@@ -829,7 +829,7 @@
           "reference": "Directive 2001/83/EC",
           "short_code": "EU Med Code",
           "legal_status": "INGESTIBLE",
-          "role": "Market access — MA obligations, labelling, small-container particulars (Art. 55)",
+          "role": "Market access: MA obligations, labelling, small-container particulars (Art. 55)",
           "applicability_score": 0.97,
           "confidence_score": 0.96,
           "verdict": "APPLICABLE",
@@ -839,14 +839,14 @@
           "current_version": "Consolidated 2026-01",
           "version_status": "OUTDATED",
           "version_drift_days": 210,
-          "key_obligations": ["Art. 54–57 — labelling", "Art. 55 — small immediate packaging (ampoule ring print)", "Art. 59 — package leaflet"]
+          "key_obligations": ["Art. 54–57: labelling", "Art. 55: small immediate packaging (ampoule ring print)", "Art. 59: package leaflet"]
         },
         {
           "regulation_id": "REG-EC-2008-1234",
           "reference": "Regulation (EC) No 1234/2008",
           "short_code": "Variations Reg",
           "legal_status": "INGESTIBLE",
-          "role": "Lifecycle — variations",
+          "role": "Lifecycle: variations",
           "applicability_score": 0.93,
           "confidence_score": 0.95,
           "verdict": "APPLICABLE",
@@ -861,7 +861,7 @@
           "reference": "Commission Delegated Regulation (EU) 2016/161",
           "short_code": "Safety features",
           "legal_status": "INGESTIBLE",
-          "role": "Packaging — unique identifier and anti-tampering device",
+          "role": "Packaging: unique identifier and anti-tampering device",
           "applicability_score": 0.9,
           "confidence_score": 0.92,
           "verdict": "APPLICABLE",
@@ -878,7 +878,7 @@
           "reference": "ICH Q9(R1)",
           "short_code": "ICH Q9",
           "legal_status": "INGESTIBLE",
-          "role": "Quality risk management — the methodology the CCS must be built on",
+          "role": "Quality risk management: the methodology the CCS must be built on",
           "applicability_score": 0.95,
           "confidence_score": 0.94,
           "verdict": "APPLICABLE",
@@ -896,7 +896,7 @@
           "reference": "ICH Q1A(R2) + Q1B",
           "short_code": "ICH Q1",
           "legal_status": "INGESTIBLE",
-          "role": "Quality — stability, including photostability for a photolabile active substance",
+          "role": "Quality: stability, including photostability for a photolabile active substance",
           "applicability_score": 0.96,
           "confidence_score": 0.96,
           "verdict": "APPLICABLE",
@@ -905,14 +905,14 @@
           "tenant_version_held": "Q1A(R2) + Q1B",
           "current_version": "Q1A(R2) + Q1B",
           "version_status": "CURRENT",
-          "evidence": [{ "type": "product_document", "doc_id": "doc-stab-fur", "ref": "§5 — photostability, amber ampoule + carton" }]
+          "evidence": [{ "type": "product_document", "doc_id": "doc-stab-fur", "ref": "§5: photostability, amber ampoule + carton" }]
         },
         {
           "regulation_id": "ICH-Q2",
           "reference": "ICH Q2(R2)",
           "short_code": "ICH Q2",
           "legal_status": "INGESTIBLE",
-          "role": "Quality — analytical procedure validation",
+          "role": "Quality: analytical procedure validation",
           "applicability_score": 0.94,
           "confidence_score": 0.95,
           "verdict": "APPLICABLE",
@@ -929,7 +929,7 @@
           "reference": "ICH Q3C / Q3D",
           "short_code": "ICH Q3",
           "legal_status": "INGESTIBLE",
-          "role": "Quality — elemental impurities from glass contact and processing",
+          "role": "Quality: elemental impurities from glass contact and processing",
           "applicability_score": 0.88,
           "confidence_score": 0.9,
           "verdict": "APPLICABLE",
@@ -938,14 +938,14 @@
           "tenant_version_held": "Current family",
           "current_version": "Current family",
           "version_status": "CURRENT",
-          "evidence": [{ "type": "product_document", "doc_id": "doc-spec-fur", "ref": "§3 line 15 — RA-Q3D-FUR-2023" }]
+          "evidence": [{ "type": "product_document", "doc_id": "doc-spec-fur", "ref": "§3 line 15: RA-Q3D-FUR-2023" }]
         },
         {
           "regulation_id": "PH-EUR",
           "reference": "European Pharmacopoeia",
           "short_code": "Ph. Eur.",
           "legal_status": "REFERENCE_ONLY",
-          "role": "Quality — sterility, endotoxins, particulate contamination, visible particles",
+          "role": "Quality: sterility, endotoxins, particulate contamination, visible particles",
           "applicability_score": 0.99,
           "confidence_score": 0.98,
           "verdict": "APPLICABLE",
@@ -955,8 +955,8 @@
           "current_version": "11.5",
           "version_status": "OUTDATED",
           "version_drift_days": 2400,
-          "engine_note": "Referenced by number only; text never hosted. Upload attempt grd-2026-0033 was blocked. Version drift is tracked from the tenant's declared licence edition — Qurelio monitors that a newer edition exists, not what it says.",
-          "monographs_tracked": ["2.6.1 — Sterility", "2.6.14 — Bacterial endotoxins", "2.9.19 — Particulate contamination: sub-visible particles", "2.9.20 — Particulate contamination: visible particles", "2.9.17 — Extractable volume", "5.1.1 — Methods of preparation of sterile products"],
+          "engine_note": "Referenced by number only; text never hosted. Upload attempt grd-2026-0033 was blocked. Version drift is tracked from the tenant's declared licence edition. Qurelio monitors that a newer edition exists, not what it says.",
+          "monographs_tracked": ["2.6.1: Sterility", "2.6.14: Bacterial endotoxins", "2.9.19: Particulate contamination: sub-visible particles", "2.9.20: Particulate contamination: visible particles", "2.9.17: Extractable volume", "5.1.1: Methods of preparation of sterile products"],
           "linked_gaps": ["gap-fur-02", "gap-fur-03"]
         },
         {
@@ -964,7 +964,7 @@
           "reference": "ISO 15378:2017",
           "short_code": "ISO 15378",
           "legal_status": "REFERENCE_ONLY",
-          "role": "Packaging — GMP for primary packaging materials (glass ampoules)",
+          "role": "Packaging: GMP for primary packaging materials (glass ampoules)",
           "applicability_score": 0.71,
           "confidence_score": 0.83,
           "verdict": "APPLICABLE",
@@ -978,15 +978,15 @@
       ],
       "ruled_out": [
         { "regulation_id": "REG-EU-2014-536", "reference": "EU Clinical Trials Regulation", "verdict": "NOT_APPLICABLE", "confidence_score": 0.95, "reason": "Well-established-use / generic route; no clinical trial conducted." },
-        { "regulation_id": "GUID-EU-BE", "reference": "Bioequivalence guideline", "verdict": "NOT_APPLICABLE", "confidence_score": 0.93, "reason": "Intravenous solution with the same active substance and concentration as the reference product — biowaiver BW-FUR-2019-01; no bioequivalence study required." },
-        { "regulation_id": "GUID-EU-EXCIPIENTS", "reference": "Excipients labelling guideline", "verdict": "CONDITIONAL", "confidence_score": 0.86, "reason": "Only sodium is an excipient with a known effect at this level; the sodium statement is already present in SmPC §2. Applies, but with no open obligation — kept as CONDITIONAL rather than a gap." },
+        { "regulation_id": "GUID-EU-BE", "reference": "Bioequivalence guideline", "verdict": "NOT_APPLICABLE", "confidence_score": 0.93, "reason": "Intravenous solution with the same active substance and concentration as the reference product, biowaiver BW-FUR-2019-01; no bioequivalence study required." },
+        { "regulation_id": "GUID-EU-EXCIPIENTS", "reference": "Excipients labelling guideline", "verdict": "CONDITIONAL", "confidence_score": 0.86, "reason": "Only sodium is an excipient with a known effect at this level; the sodium statement is already present in SmPC §2. Applies, but with no open obligation: kept as CONDITIONAL rather than a gap." },
         { "regulation_id": "CFR-21-211", "reference": "21 CFR 211", "verdict": "NOT_APPLICABLE", "confidence_score": 0.96, "reason": "No US market." }
       ]
     },
 
     "prd_mycozan2": {
-      "product_name": "Mycozan 2 % cream — ketoconazole 20 mg/g",
-      "galenic_form": "Cream — oil-in-water emulsion (semi-solid, cutaneous)",
+      "product_name": "Mycozan 2 % cream: ketoconazole 20 mg/g",
+      "galenic_form": "Cream: oil-in-water emulsion (semi-solid, cutaneous)",
       "reference_count": { "company_level_inherited": 11, "product_specific": 9, "total_applicable": 20, "ruled_out": 3, "detected_missing": 2 },
       "version_health": { "current": 8, "outdated": 0, "not_tracked": 1, "not_assigned": 2 },
       "version_health_note": "See applicability_use_cases.json → UC-APP-03. This is the missing-reference product: the excipients labelling guideline is not on the product record although the engine determines it must be.",
@@ -997,7 +997,7 @@
           "reference": "Directive 2001/83/EC",
           "short_code": "EU Med Code",
           "legal_status": "INGESTIBLE",
-          "role": "Market access — MA obligations, labelling and leaflet",
+          "role": "Market access: MA obligations, labelling and leaflet",
           "applicability_score": 0.97,
           "confidence_score": 0.96,
           "verdict": "APPLICABLE",
@@ -1006,7 +1006,7 @@
           "tenant_version_held": "Consolidated 2026-01",
           "current_version": "Consolidated 2026-01",
           "version_status": "CURRENT",
-          "key_obligations": ["Title V — labelling and package leaflet", "Art. 54(d) — declaration of excipients with a known effect"],
+          "key_obligations": ["Title V: labelling and package leaflet", "Art. 54(d): declaration of excipients with a known effect"],
           "linked_gaps": ["gap-myc-01"]
         },
         {
@@ -1014,7 +1014,7 @@
           "reference": "Guideline on quality and equivalence of topical products",
           "short_code": "Topical guideline",
           "legal_status": "INGESTIBLE",
-          "role": "Quality — semi-solid CQAs, IVRT, equivalence of a topical generic",
+          "role": "Quality: semi-solid CQAs, IVRT, equivalence of a topical generic",
           "applicability_score": 0.93,
           "confidence_score": 0.92,
           "verdict": "APPLICABLE",
@@ -1025,8 +1025,8 @@
           "version_status": "CURRENT",
           "why_applicable": "Locally applied, locally acting cutaneous generic; Q1/Q2 sameness plus rheology, globule size and IVRT were used to support the biowaiver.",
           "evidence": [
-            { "type": "product_document", "doc_id": "doc-amm-myc", "ref": "§1 — BW-MYC-2020-02, IVRT-MYC-2019-11" },
-            { "type": "product_document", "doc_id": "doc-spec-myc", "ref": "§3 lines 7–8 — viscosity, globule size" }
+            { "type": "product_document", "doc_id": "doc-amm-myc", "ref": "§1: BW-MYC-2020-02, IVRT-MYC-2019-11" },
+            { "type": "product_document", "doc_id": "doc-spec-myc", "ref": "§3 lines 7–8: viscosity, globule size" }
           ]
         },
         {
@@ -1034,7 +1034,7 @@
           "reference": "Regulation (EC) No 1234/2008",
           "short_code": "Variations Reg",
           "legal_status": "INGESTIBLE",
-          "role": "Lifecycle — the route by which the artwork correction must be filed",
+          "role": "Lifecycle: the route by which the artwork correction must be filed",
           "applicability_score": 0.93,
           "confidence_score": 0.95,
           "verdict": "APPLICABLE",
@@ -1050,7 +1050,7 @@
           "reference": "Commission Delegated Regulation (EU) 2016/161",
           "short_code": "Safety features",
           "legal_status": "INGESTIBLE",
-          "role": "Packaging — unique identifier and anti-tampering device",
+          "role": "Packaging: unique identifier and anti-tampering device",
           "applicability_score": 0.82,
           "confidence_score": 0.89,
           "verdict": "APPLICABLE",
@@ -1067,7 +1067,7 @@
           "reference": "ICH Q1A(R2)",
           "short_code": "ICH Q1",
           "legal_status": "INGESTIBLE",
-          "role": "Quality — stability and in-use stability of a multi-dose container",
+          "role": "Quality: stability and in-use stability of a multi-dose container",
           "applicability_score": 0.96,
           "confidence_score": 0.96,
           "verdict": "APPLICABLE",
@@ -1076,7 +1076,7 @@
           "tenant_version_held": "Q1A(R2)",
           "current_version": "Q1A(R2)",
           "version_status": "CURRENT",
-          "key_obligations": ["§2.2.7 — in-use stability for multi-dose containers"],
+          "key_obligations": ["§2.2.7: in-use stability for multi-dose containers"],
           "linked_gaps": ["gap-myc-03"]
         },
         {
@@ -1084,7 +1084,7 @@
           "reference": "ICH Q2(R2)",
           "short_code": "ICH Q2",
           "legal_status": "INGESTIBLE",
-          "role": "Quality — analytical procedure validation",
+          "role": "Quality: analytical procedure validation",
           "applicability_score": 0.94,
           "confidence_score": 0.95,
           "verdict": "APPLICABLE",
@@ -1099,7 +1099,7 @@
           "reference": "ICH Q3D",
           "short_code": "ICH Q3",
           "legal_status": "INGESTIBLE",
-          "role": "Quality — elemental impurities",
+          "role": "Quality: elemental impurities",
           "applicability_score": 0.85,
           "confidence_score": 0.9,
           "verdict": "APPLICABLE",
@@ -1114,7 +1114,7 @@
           "reference": "European Pharmacopoeia",
           "short_code": "Ph. Eur.",
           "legal_status": "REFERENCE_ONLY",
-          "role": "Quality — microbiological quality and preservative efficacy methods",
+          "role": "Quality: microbiological quality and preservative efficacy methods",
           "applicability_score": 0.97,
           "confidence_score": 0.96,
           "verdict": "APPLICABLE",
@@ -1124,7 +1124,7 @@
           "current_version": "11.5",
           "version_status": "CURRENT",
           "engine_note": "Referenced by number only; text never hosted.",
-          "monographs_tracked": ["5.1.3 — Efficacy of antimicrobial preservation", "5.1.4 — Microbiological quality of non-sterile products", "2.6.12 / 2.6.13 — Microbial enumeration and specified micro-organisms", "2.9.28 — Minimum fill"],
+          "monographs_tracked": ["5.1.3: Efficacy of antimicrobial preservation", "5.1.4: Microbiological quality of non-sterile products", "2.6.12 / 2.6.13: Microbial enumeration and specified micro-organisms", "2.9.28: Minimum fill"],
           "linked_gaps": ["gap-myc-02"]
         },
         {
@@ -1132,7 +1132,7 @@
           "reference": "USP–NF",
           "short_code": "USP-NF",
           "legal_status": "REFERENCE_ONLY",
-          "role": "Quality — alternative compendial method for antimicrobial effectiveness in export dossiers",
+          "role": "Quality: alternative compendial method for antimicrobial effectiveness in export dossiers",
           "applicability_score": 0.64,
           "confidence_score": 0.79,
           "verdict": "CONDITIONAL",
@@ -1156,13 +1156,13 @@
           "applicability_score": 0.97,
           "confidence_score": 0.95,
           "detected_at": "2026-07-24T16:18:00Z",
-          "detected_by": "P3 obligation scoping — composition-to-labelling cross-read",
+          "detected_by": "P3 obligation scoping: composition-to-labelling cross-read",
           "why_it_must_apply": "The finished-product composition contains four excipients that carry mandatory route-specific warnings for the cutaneous route: cetostearyl alcohol (70 mg/g), methyl parahydroxybenzoate (1.5 mg/g), propyl parahydroxybenzoate (0.5 mg/g) and sodium sulfite (2.0 mg/g). Propylene glycol (100 mg/g) is named in the SmPC without its warning text. The reference that defines those warnings is not on the product record.",
           "evidence": [
-            { "type": "product_document", "doc_id": "doc-mfg-myc", "ref": "Batch formula §1 — full excipient list" },
-            { "type": "product_document", "doc_id": "doc-spec-myc", "ref": "§2 — composition per gram" },
-            { "type": "product_document", "doc_id": "doc-smpc-myc", "ref": "Part C — artwork check, 4 warnings absent" },
-            { "type": "product_document", "doc_id": "doc-amm-myc", "ref": "§4 — three contact-dermatitis PV reports closed as expected" }
+            { "type": "product_document", "doc_id": "doc-mfg-myc", "ref": "Batch formula §1: full excipient list" },
+            { "type": "product_document", "doc_id": "doc-spec-myc", "ref": "§2: composition per gram" },
+            { "type": "product_document", "doc_id": "doc-smpc-myc", "ref": "Part C: artwork check, 4 warnings absent" },
+            { "type": "product_document", "doc_id": "doc-amm-myc", "ref": "§4: three contact-dermatitis PV reports closed as expected" }
           ],
           "consequence_if_not_applied": "The labelling gap gap-myc-01 has no governing reference on the product record, so no obligation set is generated, no artwork check runs on future revisions, and the finding cannot be tracked to closure.",
           "recommended_action": "Assign the reference to Mycozan 2 % and re-run the compliance evaluation; the engine will emit 5 labelling obligations and link them to gap-myc-01.",
@@ -1179,7 +1179,7 @@
           "confidence_score": 0.66,
           "detected_at": "2026-07-24T16:18:00Z",
           "why_flagged": "Tinea corporis and cutaneous candidosis occur in paediatric patients and the SmPC sets no lower age limit, but no paediatric-specific data or excipient acceptability assessment exists for the paraben and propylene glycol content.",
-          "recommended_action": "Human review — decide whether a paediatric age limit or an excipient acceptability statement is needed.",
+          "recommended_action": "Human review: decide whether a paediatric age limit or an excipient acceptability statement is needed.",
           "user_action": "PENDING"
         }
       ],
@@ -1191,11 +1191,11 @@
     },
 
     "prd_pedialgic120": {
-      "product_name": "Pedialgic 120 mg/5 mL — paracetamol oral suspension, sugar-free",
+      "product_name": "Pedialgic 120 mg/5 mL: paracetamol oral suspension, sugar-free",
       "galenic_form": "Oral suspension (paediatric liquid, multi-dose bottle + dosing syringe)",
       "reference_count": { "company_level_inherited": 11, "product_specific": 12, "total_applicable": 23, "ruled_out": 3 },
       "version_health": { "current": 12, "outdated": 0, "not_assigned": 0 },
-      "version_health_note": "Left AS IS by design — see applicability_use_cases.json → UC-APP-04. This product is the control: its references are complete and current, so the compliance gaps that remain are unambiguously execution gaps, not reference-management gaps.",
+      "version_health_note": "Left AS IS by design: see applicability_use_cases.json → UC-APP-04. This product is the control: its references are complete and current, so the compliance gaps that remain are unambiguously execution gaps, not reference-management gaps.",
       "last_applicability_run": "2026-07-27T10:40:00Z",
       "product_specific_references": [
         {
@@ -1203,7 +1203,7 @@
           "reference": "Directive 2001/83/EC",
           "short_code": "EU Med Code",
           "legal_status": "INGESTIBLE",
-          "role": "Market access — MA obligations, labelling, leaflet, in-use period declaration",
+          "role": "Market access: MA obligations, labelling, leaflet, in-use period declaration",
           "applicability_score": 0.97,
           "confidence_score": 0.96,
           "verdict": "APPLICABLE",
@@ -1212,14 +1212,14 @@
           "tenant_version_held": "Consolidated 2026-01",
           "current_version": "Consolidated 2026-01",
           "version_status": "CURRENT",
-          "key_obligations": ["Title V — labelling and leaflet", "Art. 54(d) — excipients with a known effect", "Art. 54 — period after first opening"]
+          "key_obligations": ["Title V: labelling and leaflet", "Art. 54(d): excipients with a known effect", "Art. 54: period after first opening"]
         },
         {
           "regulation_id": "GUID-EU-EXCIPIENTS",
           "reference": "Excipients in the labelling and package leaflet",
           "short_code": "Excipients guideline",
           "legal_status": "INGESTIBLE",
-          "role": "Labelling — excipient-specific warnings for the oral route",
+          "role": "Labelling: excipient-specific warnings for the oral route",
           "applicability_score": 0.98,
           "confidence_score": 0.96,
           "verdict": "APPLICABLE",
@@ -1230,8 +1230,8 @@
           "current_version": "Current revision",
           "version_status": "CURRENT",
           "why_applicable": "Sorbitol, glycerol, propylene glycol, sodium benzoate and carmoisine all carry oral-route warnings; all five are declared in SmPC §2 and on the carton.",
-          "engine_note": "Contrast with prd_mycozan2, where the same reference is NOT assigned — the syrup's labelling is correct precisely because the reference is on its record.",
-          "evidence": [{ "type": "product_document", "doc_id": "doc-smpc-ped", "ref": "SmPC §2 + Part D — five excipients declared" }],
+          "engine_note": "Contrast with prd_mycozan2, where the same reference is NOT assigned, the syrup's labelling is correct precisely because the reference is on its record.",
+          "evidence": [{ "type": "product_document", "doc_id": "doc-smpc-ped", "ref": "SmPC §2 + Part D: five excipients declared" }],
           "linked_gaps": []
         },
         {
@@ -1239,7 +1239,7 @@
           "reference": "WHO guidance and alerts on DEG/EG in oral liquid medicines",
           "short_code": "WHO DEG/EG",
           "legal_status": "INGESTIBLE",
-          "role": "Starting materials — per-container identity and DEG/EG limit testing of high-risk excipients",
+          "role": "Starting materials: per-container identity and DEG/EG limit testing of high-risk excipients",
           "applicability_score": 0.99,
           "confidence_score": 0.97,
           "verdict": "APPLICABLE",
@@ -1250,10 +1250,10 @@
           "tenant_version_held": "Current",
           "current_version": "Current",
           "version_status": "CURRENT",
-          "why_applicable": "Paediatric oral liquid containing sorbitol 70 % (1 750 mg/5 mL), glycerol (500 mg/5 mL) and propylene glycol (200 mg/5 mL) — 980 kg across 32 containers per batch — sourced from a distributor whose upstream manufacturer is undocumented.",
+          "why_applicable": "Paediatric oral liquid containing sorbitol 70 % (1 750 mg/5 mL), glycerol (500 mg/5 mL) and propylene glycol (200 mg/5 mL), 980 kg across 32 containers per batch, sourced from a distributor whose upstream manufacturer is undocumented.",
           "evidence": [
-            { "type": "product_document", "doc_id": "doc-mfg-ped", "ref": "§5 + §5.1 — incoming control and supply-chain traceability tables" },
-            { "type": "product_document", "doc_id": "doc-spec-ped", "ref": "§3 line 17 — DEG/EG not tested, no limit" },
+            { "type": "product_document", "doc_id": "doc-mfg-ped", "ref": "§5 + §5.1: incoming control and supply-chain traceability tables" },
+            { "type": "product_document", "doc_id": "doc-spec-ped", "ref": "§3 line 17: DEG/EG not tested, no limit" },
             { "type": "product_document", "doc_id": "doc-deg-ped", "ref": "RA-DEG-PED-120 v0.2 DRAFT" }
           ],
           "linked_gaps": ["gap-ped-01"],
@@ -1264,7 +1264,7 @@
           "reference": "Circulaire DPM du 04/09/2025",
           "short_code": "DPM circular 2025",
           "legal_status": "USER_UPLOAD",
-          "role": "National instruction — the same obligation, addressed directly to this manufacturer",
+          "role": "National instruction: the same obligation, addressed directly to this manufacturer",
           "applicability_score": 1.0,
           "confidence_score": 0.99,
           "verdict": "APPLICABLE",
@@ -1285,7 +1285,7 @@
           "reference": "Regulation (EC) No 1901/2006",
           "short_code": "Paediatric Reg",
           "legal_status": "INGESTIBLE",
-          "role": "Paediatric — age-appropriate formulation, dosing device, excipient acceptability",
+          "role": "Paediatric: age-appropriate formulation, dosing device, excipient acceptability",
           "applicability_score": 0.94,
           "confidence_score": 0.93,
           "verdict": "APPLICABLE",
@@ -1302,7 +1302,7 @@
           "reference": "Regulation (EC) No 1234/2008",
           "short_code": "Variations Reg",
           "legal_status": "INGESTIBLE",
-          "role": "Lifecycle — variations",
+          "role": "Lifecycle: variations",
           "applicability_score": 0.93,
           "confidence_score": 0.95,
           "verdict": "APPLICABLE",
@@ -1317,7 +1317,7 @@
           "reference": "Commission Delegated Regulation (EU) 2016/161",
           "short_code": "Safety features",
           "legal_status": "INGESTIBLE",
-          "role": "Packaging — unique identifier and anti-tampering device",
+          "role": "Packaging: unique identifier and anti-tampering device",
           "applicability_score": 0.86,
           "confidence_score": 0.9,
           "verdict": "CONDITIONAL",
@@ -1335,7 +1335,7 @@
           "reference": "ICH Q1A(R2)",
           "short_code": "ICH Q1",
           "legal_status": "INGESTIBLE",
-          "role": "Quality — stability and in-use stability",
+          "role": "Quality: stability and in-use stability",
           "applicability_score": 0.96,
           "confidence_score": 0.96,
           "verdict": "APPLICABLE",
@@ -1344,8 +1344,8 @@
           "tenant_version_held": "Q1A(R2)",
           "current_version": "Q1A(R2)",
           "version_status": "CURRENT",
-          "key_obligations": ["§2.2.7 — in-use stability"],
-          "engine_note": "Fully covered — the 3-month in-use study is documented in doc-stab-ped §5.",
+          "key_obligations": ["§2.2.7: in-use stability"],
+          "engine_note": "Fully covered: the 3-month in-use study is documented in doc-stab-ped §5.",
           "linked_gaps": []
         },
         {
@@ -1353,7 +1353,7 @@
           "reference": "ICH Q2(R2)",
           "short_code": "ICH Q2",
           "legal_status": "INGESTIBLE",
-          "role": "Quality — analytical procedure validation, including the DEG/EG method that does not yet exist",
+          "role": "Quality: analytical procedure validation, including the DEG/EG method that does not yet exist",
           "applicability_score": 0.94,
           "confidence_score": 0.95,
           "verdict": "APPLICABLE",
@@ -1369,7 +1369,7 @@
           "reference": "ICH Q3C / Q3D",
           "short_code": "ICH Q3",
           "legal_status": "INGESTIBLE",
-          "role": "Quality — residual solvents and elemental impurities",
+          "role": "Quality: residual solvents and elemental impurities",
           "applicability_score": 0.87,
           "confidence_score": 0.9,
           "verdict": "APPLICABLE",
@@ -1384,7 +1384,7 @@
           "reference": "European Pharmacopoeia",
           "short_code": "Ph. Eur.",
           "legal_status": "REFERENCE_ONLY",
-          "role": "Quality — monographs, microbiological quality, preservative efficacy, deliverable volume",
+          "role": "Quality: monographs, microbiological quality, preservative efficacy, deliverable volume",
           "applicability_score": 0.97,
           "confidence_score": 0.96,
           "verdict": "APPLICABLE",
@@ -1394,14 +1394,14 @@
           "current_version": "11.5",
           "version_status": "CURRENT",
           "engine_note": "Referenced by number only; text never hosted.",
-          "monographs_tracked": ["5.1.3 — Efficacy of antimicrobial preservation", "5.1.4 — Microbiological quality of non-sterile products", "2.9.17 — Extractable volume", "2.2.3 — pH", "Sorbitol, glycerol and propylene glycol monographs (identity and DEG/EG limits)"]
+          "monographs_tracked": ["5.1.3: Efficacy of antimicrobial preservation", "5.1.4: Microbiological quality of non-sterile products", "2.9.17: Extractable volume", "2.2.3: pH", "Sorbitol, glycerol and propylene glycol monographs (identity and DEG/EG limits)"]
         },
         {
           "regulation_id": "STD-ISO-15378",
           "reference": "ISO 15378:2017",
           "short_code": "ISO 15378",
           "legal_status": "REFERENCE_ONLY",
-          "role": "Packaging — GMP for primary packaging materials (PET bottle, child-resistant closure, dosing syringe)",
+          "role": "Packaging: GMP for primary packaging materials (PET bottle, child-resistant closure, dosing syringe)",
           "applicability_score": 0.74,
           "confidence_score": 0.84,
           "verdict": "APPLICABLE",
@@ -1416,13 +1416,13 @@
       "ruled_out": [
         { "regulation_id": "GUID-EU-GMP-ANX1", "reference": "EudraLex Vol. 4, Annex 1", "verdict": "NOT_APPLICABLE", "confidence_score": 0.97, "reason": "Non-sterile oral liquid; preserved multi-dose product with microbial limits, not a sterility requirement." },
         { "regulation_id": "REG-EU-2014-536", "reference": "EU Clinical Trials Regulation", "verdict": "NOT_APPLICABLE", "confidence_score": 0.95, "reason": "Well-established-use paracetamol; no clinical trial conducted." },
-        { "regulation_id": "ICH-M7", "reference": "ICH M7(R2)", "verdict": "NOT_APPLICABLE", "confidence_score": 0.61, "reason": "Scoped out for this demo dataset (see _meta.scoping_note). In a real tenant M7 would be assessed for every chemically synthesised active substance — flagged low-confidence so the reviewer sees the scoping decision rather than a silent omission." }
+        { "regulation_id": "ICH-M7", "reference": "ICH M7(R2)", "verdict": "NOT_APPLICABLE", "confidence_score": 0.61, "reason": "Scoped out for this demo dataset (see _meta.scoping_note). In a real tenant M7 would be assessed for every chemically synthesised active substance, flagged low-confidence so the reviewer sees the scoping decision rather than a silent omission." }
       ]
     }
   },
 
   "cross_product_matrix": {
-    "legend": { "A": "APPLICABLE", "C": "CONDITIONAL", "N": "NOT_APPLICABLE", "M": "MISSING — engine says it applies, not on the product record", "I": "Inherited from company level" },
+    "legend": { "A": "APPLICABLE", "C": "CONDITIONAL", "N": "NOT_APPLICABLE", "M": "MISSING: engine says it applies, not on the product record", "I": "Inherited from company level" },
     "columns": ["Glucoryl 850 (tablet)", "Furolix (injectable)", "Mycozan (cream)", "Pedialgic (syrup)"],
     "rows": [
       { "reference": "Loi 85-91 (TN)", "values": ["I", "I", "I", "I"] },
@@ -1468,6 +1468,6 @@
     "products_with_all_references_current": ["prd_glucoryl850", "prd_pedialgic120"],
     "products_with_outdated_references": ["prd_furolix20"],
     "products_with_missing_references": ["prd_mycozan2"],
-    "note": "The four products are deliberately in four different applicability states — see applicability_use_cases.json."
+    "note": "The four products are deliberately in four different applicability states, see applicability_use_cases.json."
   }
 }

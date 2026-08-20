@@ -76,7 +76,7 @@ function mapApiToRow(c: {
     field: c.field,
     email: c.email,
     phone: c.phone,
-    companyCapacity: c.capacity?.trim() ? c.capacity : '—',
+    companyCapacity: c.capacity?.trim() ? c.capacity : '-',
     isActive: c.status === 'ACTIVE',
     status: c.status,
     isEmailVerified: c.isEmailVerified,

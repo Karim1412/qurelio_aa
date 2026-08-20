@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Upload } from '@/components/icons';
 import { cn } from '@/utils/cn';
 
-/** Outer shell: dashed rounded zone + drag highlight — matches dashboard “Upload new document”. */
+/** Outer shell: dashed rounded zone + drag highlight, matches dashboard “Upload new document”. */
 export function LibraryUploadDropSurface({
   isDragOver,
   disabled,

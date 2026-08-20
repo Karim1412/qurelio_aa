@@ -24,7 +24,7 @@ import * as XLSX from 'xlsx';
 import { Upload as UploadIcon } from '@/components/icons';
 
 function formatBytes(b?: number): string {
-  if (!b || b < 0) return '—';
+  if (!b || b < 0) return '-';
   if (b < 1024) return `${b} B`;
   if (b < 1024 * 1024) return `${(b / 1024).toFixed(1)} KB`;
   if (b < 1024 * 1024 * 1024) return `${(b / (1024 * 1024)).toFixed(1)} MB`;
@@ -716,7 +716,7 @@ export function FileEditorPage({ docId }: Props) {
                 <div className="flex justify-between gap-2">
                   <dt className="text-[var(--muted)]">Type</dt>
                   <dd className="truncate font-medium text-[var(--text-primary)]">
-                    {docName ? typeLabel(docName, docMime) : '—'}
+                    {docName ? typeLabel(docName, docMime) : '-'}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-2">
@@ -965,7 +965,7 @@ export function FileEditorPage({ docId }: Props) {
                 <span>
                   {replaceFile
                     ? `Replacement ready: ${replaceFile.name} (${formatBytes(replaceFile.size)})`
-                    : 'PDF editing is not supported in-app — upload a new version to replace it.'}
+                    : 'PDF editing is not supported in-app. Upload a new version to replace it.'}
                 </span>
                 <input
                   ref={replaceInputRef}

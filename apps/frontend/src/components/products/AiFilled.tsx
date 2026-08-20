@@ -17,7 +17,7 @@ import { cn } from '@/utils/cn';
 export function AiChip({ className }: { className?: string }) {
   return (
     <span
-      title="Filled from your uploaded documents — check it before continuing"
+      title="Filled from your uploaded documents. Check it before continuing"
       className={cn(
         'inline-flex items-center gap-1 rounded-full bg-[var(--brand-primary)]/10 px-2 py-0.5',
         'text-[10px] font-semibold uppercase tracking-wide text-[var(--brand-primary)]',
@@ -33,7 +33,7 @@ export function AiChip({ className }: { className?: string }) {
 interface AiLabelProps extends React.ComponentProps<typeof Label> {
   /** Renders the red asterisk used across the wizard for required fields. */
   required?: boolean;
-  /** Field key, e.g. `identity.name` — matched against `aiFields`. */
+  /** Field key, e.g. `identity.name`: matched against `aiFields`. */
   field?: string;
   aiFields?: string[];
 }
@@ -78,7 +78,7 @@ export function AiReviewBanner({
         </p>
         <p className="mt-0.5 text-[var(--muted)]">
           Fields marked <AiChip className="align-middle" /> were read by the AI and are{' '}
-          <strong>not verified</strong>. Correct anything that is wrong — what you leave here is what
+          <strong>not verified</strong>. Correct anything that is wrong. What you leave here is what
           gets saved.
         </p>
       </div>

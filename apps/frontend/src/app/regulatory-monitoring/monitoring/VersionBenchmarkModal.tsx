@@ -75,11 +75,11 @@ const BENCH_ROWS: {
   coverage: Coverage;
   coverageLabel: string;
 }[] = [
-  { prev: <span className="cl-none">— no equivalent —</span>, prevName: '', next: <span className="cl-ref">A.5.7</span>, nextName: 'Threat intelligence', changes: [{ kind: 'new', label: 'New' }], impact: 'Brand-new obligation. No policy or evidence on file — creates a gap for the connected-device risk profile.', coverage: 'missing', coverageLabel: 'Missing' },
-  { prev: <span className="cl-none">— no equivalent —</span>, prevName: '', next: <span className="cl-ref">A.5.23</span>, nextName: 'Information security for use of cloud services', changes: [{ kind: 'new', label: 'New' }], impact: <>Partially met by cloud-hosting policy <span className="cited">DOC-114</span>; supplier-side controls not yet evidenced.</>, coverage: 'partial', coverageLabel: 'Partial' },
-  { prev: <span className="cl-none">— no equivalent —</span>, prevName: '', next: <span className="cl-ref">A.8.28</span>, nextName: 'Secure coding', changes: [{ kind: 'new', label: 'New' }], impact: 'Directly relevant to device firmware. Ties to IEC 62304 software-lifecycle evidence — no dedicated secure-coding record yet.', coverage: 'missing', coverageLabel: 'Missing' },
-  { prev: <span className="cl-none">— no equivalent —</span>, prevName: '', next: <span className="cl-ref">A.8.12</span>, nextName: 'Data leakage prevention', changes: [{ kind: 'new', label: 'New' }], impact: 'New obligation for therapy-log data paths. No DLP control documented.', coverage: 'missing', coverageLabel: 'Missing' },
-  { prev: <><span className="cl-ref">A.5.1.1</span> + <span className="cl-ref">A.5.1.2</span></>, prevName: 'Policies for information security', next: <span className="cl-ref">A.5.1</span>, nextName: 'Policies for information security', changes: [{ kind: 'merged', label: 'Merged' }], impact: 'Two controls consolidated into one. Existing policy evidence maps across automatically — review scope only.', coverage: 'covered', coverageLabel: 'Covered' },
+  { prev: <span className="cl-none">no equivalent</span>, prevName: '', next: <span className="cl-ref">A.5.7</span>, nextName: 'Threat intelligence', changes: [{ kind: 'new', label: 'New' }], impact: 'Brand-new obligation. No policy or evidence on file, which creates a gap for the connected-device risk profile.', coverage: 'missing', coverageLabel: 'Missing' },
+  { prev: <span className="cl-none">no equivalent</span>, prevName: '', next: <span className="cl-ref">A.5.23</span>, nextName: 'Information security for use of cloud services', changes: [{ kind: 'new', label: 'New' }], impact: <>Partially met by cloud-hosting policy <span className="cited">DOC-114</span>; supplier-side controls not yet evidenced.</>, coverage: 'partial', coverageLabel: 'Partial' },
+  { prev: <span className="cl-none">no equivalent</span>, prevName: '', next: <span className="cl-ref">A.8.28</span>, nextName: 'Secure coding', changes: [{ kind: 'new', label: 'New' }], impact: 'Directly relevant to device firmware. Ties to IEC 62304 software-lifecycle evidence, with no dedicated secure-coding record yet.', coverage: 'missing', coverageLabel: 'Missing' },
+  { prev: <span className="cl-none">no equivalent</span>, prevName: '', next: <span className="cl-ref">A.8.12</span>, nextName: 'Data leakage prevention', changes: [{ kind: 'new', label: 'New' }], impact: 'New obligation for therapy-log data paths. No DLP control documented.', coverage: 'missing', coverageLabel: 'Missing' },
+  { prev: <><span className="cl-ref">A.5.1.1</span> + <span className="cl-ref">A.5.1.2</span></>, prevName: 'Policies for information security', next: <span className="cl-ref">A.5.1</span>, nextName: 'Policies for information security', changes: [{ kind: 'merged', label: 'Merged' }], impact: 'Two controls consolidated into one. Existing policy evidence maps across automatically. Review scope only.', coverage: 'covered', coverageLabel: 'Covered' },
   { prev: <><span className="cl-ref">A.9.1.1</span> + <span className="cl-ref">A.9.1.2</span></>, prevName: 'Access control policy / network access', next: <span className="cl-ref">A.5.15</span>, nextName: 'Access control', changes: [{ kind: 'merged', label: 'Merged' }, { kind: 'renamed', label: 'Renamed' }], impact: 'Moved to the Organizational theme and merged. Current access-control evidence re-maps; confirm the new control reference.', coverage: 'covered', coverageLabel: 'Covered' },
   { prev: <span className="cl-ref">A.12.4</span>, prevName: 'Logging and monitoring', next: <><span className="cl-ref">A.8.15</span> / <span className="cl-ref">A.8.16</span></>, nextName: 'Logging / Monitoring activities', changes: [{ kind: 'modified', label: 'Modified' }], impact: 'Split and expanded; A.8.16 adds anomaly-monitoring expectations. Existing logging evidence covers part of the new scope.', coverage: 'partial', coverageLabel: 'Partial' },
   { prev: <span className="cl-ref">A.17.1</span>, prevName: 'Information security continuity', next: <span className="cl-ref">A.5.30</span>, nextName: 'ICT readiness for business continuity', changes: [{ kind: 'new', label: 'New' }, { kind: 'modified', label: 'Reframed' }], impact: 'Reframed toward ICT readiness. Business-continuity plan exists but lacks the ICT-readiness testing the new control expects.', coverage: 'partial', coverageLabel: 'Partial' },
@@ -87,7 +87,7 @@ const BENCH_ROWS: {
 
 const FILTERS = ['All changes', 'New (11)', 'Merged (24)', 'Modified (20)', 'Impacts you (11)'];
 
-/* ── Scoped stylesheet — faithful to the mockup, prefixed under .qvb ──────── */
+/* ── Scoped stylesheet: faithful to the mockup, prefixed under .qvb ──────── */
 const STYLES = `
 .qvb-overlay{position:fixed;inset:0;z-index:60;background:rgba(11,22,32,.42);backdrop-filter:blur(2px)}
 .qvb{
@@ -304,14 +304,14 @@ export function VersionBenchmarkModal({ row, onOpenChange }: Props) {
               </div>
               <DialogPrimitive.Title asChild>
                 <h2 className="m-title">
-                  {focus.name} — {focus.current} vs {focus.latest}
+                  {focus.name}: {focus.current} vs {focus.latest}
                 </h2>
               </DialogPrimitive.Title>
               <div className="m-context">
                 <span className="ctx-chip">
                   <Package />
                   {row.name}
-                  {row.reference ? ` — ${row.reference}` : ''}
+                  {row.reference ? ` · ${row.reference}` : ''}
                 </span>
                 <span className="ctx-chip">
                   <Shield />
@@ -335,7 +335,7 @@ export function VersionBenchmarkModal({ row, onOpenChange }: Props) {
 
           {/* Body */}
           <div className="m-body">
-            {/* Compliance switcher — dynamic when a project has several standards */}
+            {/* Compliance switcher: dynamic when a project has several standards */}
             {row.items.length > 1 && (
               <div className="cswitch">
                 {row.items.map((it, i) => (
@@ -366,7 +366,7 @@ export function VersionBenchmarkModal({ row, onOpenChange }: Props) {
                 <div className="vc-meta">
                   <span>Applied reference on <b>{row.name}</b></span>
                   {focus.outdated ? (
-                    <span>Superseded — <b>update required</b></span>
+                    <span>Superseded: <b>update required</b></span>
                   ) : (
                     <span>Matches the latest published edition</span>
                   )}
@@ -512,7 +512,7 @@ export function VersionBenchmarkModal({ row, onOpenChange }: Props) {
                 <span className="q-badge"><Lock />AI-generated · Pending QM review</span>
               </div>
               <p>
-                {focus.latest} keeps every prior requirement but reorganises the control set and adds new controls —
+                {focus.latest} keeps every prior requirement but reorganises the control set and adds new controls,
                 several of which land squarely on this product&apos;s connected, software-controlled profile
                 (<span className="cited">A.5.7 threat intelligence</span>,{' '}
                 <span className="cited">A.8.28 secure coding</span>,{' '}

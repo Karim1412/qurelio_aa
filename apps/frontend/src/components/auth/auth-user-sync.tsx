@@ -37,7 +37,7 @@ export function AuthUserSync() {
           isVerified: row.isVerified ?? Boolean(row.isEmailVerified),
         });
       } catch {
-        /* invalid session — api interceptor may redirect */
+        /* invalid session: api interceptor may redirect */
       }
     })();
 

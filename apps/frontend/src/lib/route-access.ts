@@ -1,5 +1,5 @@
 /**
- * Super admins manage platform companies only — no tenant quality modules.
+ * Super admins manage platform companies only: no tenant quality modules.
  */
 
 import {

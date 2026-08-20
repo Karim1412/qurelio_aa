@@ -52,7 +52,7 @@ export function TrashFabGlobal() {
       const res = await documentApi.listTrash();
       setTrashedDocs(Array.isArray(res.data) ? res.data : []);
     } catch {
-      // silent — the FAB stays usable, the list just stays empty
+      // silent: the FAB stays usable, the list just stays empty
     } finally {
       setLoading(false);
     }
@@ -170,7 +170,7 @@ export function TrashFabGlobal() {
     <>
       <motion.button
         type="button"
-        aria-label={`Trash (${count} item${count === 1 ? '' : 's'}) — drop a document here to delete it`}
+        aria-label={`Trash (${count} item${count === 1 ? '' : 's'}). Drop a document here to delete it`}
         title="Drop a document here to move it to Trash · click to open"
         onClick={() => setOpen(true)}
         onDragEnter={(e) => {
@@ -402,7 +402,7 @@ function TrashListContent({
     d.type === 'ISO_NORM'
       ? 'Standard'
       : d.productId
-        ? `Product · ${d.product?.name ?? '—'}`
+        ? `Product · ${d.product?.name ?? '-'}`
         : d.type === 'PROCEDURE'
           ? 'Procedure'
           : d.type === 'EVIDENCE'
@@ -625,7 +625,7 @@ function TrashListContent({
                 <TableCell className="whitespace-nowrap text-xs text-[var(--muted)]">
                   {doc.archivedAt
                     ? new Date(doc.archivedAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })
-                    : '—'}
+                    : '-'}
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center justify-end gap-0.5" dir="ltr">
@@ -634,7 +634,7 @@ function TrashListContent({
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 rounded-md border border-emerald-500/40 bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/18 dark:text-emerald-400"
-                      title="Restore (undo) — file goes back to its original location"
+                      title="Restore (undo): file goes back to its original location"
                       disabled={restoring === doc.id}
                       onClick={async () => {
                         setRestoring(doc.id);

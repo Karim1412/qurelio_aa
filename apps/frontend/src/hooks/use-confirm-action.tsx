@@ -23,7 +23,7 @@ export type ConfirmActionOptions = {
 
 type Pending = ConfirmActionOptions & { resolve: (v: boolean) => void };
 
-/** Top band — works in light and dark (no fixed white/slate). */
+/** Top band: works in light and dark (no fixed white/slate). */
 const VARIANT_HEADER: Record<ConfirmActionVariant, string> = {
   destructive: 'bg-red-500/[0.09] dark:bg-red-950/45',
   default: 'bg-[var(--brand-primary)]/[0.09] dark:bg-[var(--brand-primary)]/[0.14]',

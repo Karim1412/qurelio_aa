@@ -14,7 +14,7 @@ const SITE_ROLES = ['Production', 'Warehouse', 'R&D Lab', 'Office', 'Distributio
 const EXPORT_MARKETS = [
   'European Union', 'USA (FDA-regulated)', 'USA (General)',
   'Gulf (GCC / GSO)', 'North Africa / Maghreb', 'Sub-Saharan Africa',
-  'United Kingdom', 'Canada', 'China', 'Domestic — Tunisia',
+  'United Kingdom', 'Canada', 'China', 'Domestic (Tunisia)',
 ];
 
 const INDUSTRY_LABELS = [
@@ -175,7 +175,7 @@ export function StepMarkets({ data, onChange }: StepMarketsProps) {
                   </div>
                   <div className="field col-span-2">
                     <label>Scope note</label>
-                    <input type="text" value={cert.scopeNote} onChange={(e) => updateCert(index, 'scopeNote', e.target.value)} placeholder="Optional — e.g. 'Manufacturing of denim fabrics, Monastir plant only'" />
+                    <input type="text" value={cert.scopeNote} onChange={(e) => updateCert(index, 'scopeNote', e.target.value)} placeholder="Optional: e.g. 'Manufacturing of denim fabrics, Monastir plant only'" />
                   </div>
                 </div>
               </div>

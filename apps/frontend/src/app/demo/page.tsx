@@ -9,7 +9,7 @@ import { DemoBookingModal } from '@/components/demo/DemoBookingModal';
 import { EA_RESPONSE_HOURS as DEMO_RESPONSE_HOURS } from '@/components/demo/demo-form-options';
 import { cn } from '@/utils/cn';
 
-/** Local calendar-day key (YYYY-MM-DD) — slots are grouped in the visitor's timezone. */
+/** Local calendar-day key (YYYY-MM-DD): slots are grouped in the visitor's timezone. */
 function dayKey(d: Date): string {
   const y = d.getFullYear();
   const m = `${d.getMonth() + 1}`.padStart(2, '0');
@@ -187,7 +187,7 @@ export default function BookDemoPage() {
             </div>
             <p className="text-sm font-semibold text-[var(--text-primary)]">No times available right now</p>
             <p className="mx-auto mt-1 max-w-sm text-[13px] text-[var(--muted)]">
-              New slots are opened regularly — please check back soon, or reach us from the contact
+              New slots are opened regularly. Please check back soon, or reach us from the contact
               section on the home page.
             </p>
           </div>

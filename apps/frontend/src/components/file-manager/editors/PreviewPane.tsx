@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { FileText, Image as ImageIcon } from '@/components/icons';
 
 interface Props {
-  /** The bytes currently in memory — preview shown from the same buffer the user will save. */
+  /** The bytes currently in memory: preview shown from the same buffer the user will save. */
   bytes: ArrayBuffer | Uint8Array | Blob | null;
   mimeType?: string;
   name: string;

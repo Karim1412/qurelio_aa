@@ -45,7 +45,7 @@ export function StepActivity({ data, onChange }: StepActivityProps) {
     <div className="wizard-panel">
       <div className="panel-header">
         <h2>Activity &amp; Products</h2>
-        <p>Describe what your company makes and how — the AI uses this as its primary context filter.</p>
+        <p>Describe what your company makes and how. The AI uses this as its primary context filter.</p>
       </div>
 
       <div className="tip">
@@ -82,7 +82,7 @@ export function StepActivity({ data, onChange }: StepActivityProps) {
               onChange={(products) => onChange({ products })}
               placeholder="Add a product and press Enter…"
             />
-            <div className="field-hint">List specific products — the AI matches these against the regulation landscape to detect missing standards.</div>
+            <div className="field-hint">List specific products. The AI matches these against the regulation landscape to detect missing standards.</div>
           </div>
         </div>
       </div>
@@ -103,7 +103,7 @@ export function StepActivity({ data, onChange }: StepActivityProps) {
           onChange={(rawMaterials) => onChange({ rawMaterials })}
           placeholder="Add a material and press Enter…"
         />
-        <div className="field-hint">Optional — helps the AI flag relevant chemical/material regulations (REACH, OEKO-TEX, etc.).</div>
+        <div className="field-hint">Optional: helps the AI flag relevant chemical/material regulations (REACH, OEKO-TEX, etc.).</div>
       </div>
 
       <div className="form-section">

@@ -1,6 +1,6 @@
 # Qurelio
 
-**AI-powered Quality Management System (QMS)** — a multi-tenant SaaS platform for ISO compliance. Companies upload ISO standards and product/evidence documents, run **AI-driven clause-by-clause conformity evaluations**, manage the resulting **non-conformities (CAPA)**, plan and score **audits**, generate **reports**, and chat with their workspace through a **RAG assistant**.
+**AI-powered Quality Management System (QMS)**: a multi-tenant SaaS platform for ISO compliance. Companies upload ISO standards and product/evidence documents, run **AI-driven clause-by-clause conformity evaluations**, manage the resulting **non-conformities (CAPA)**, plan and score **audits**, generate **reports**, and chat with their workspace through a **RAG assistant**.
 
 ---
 
@@ -21,15 +21,15 @@
 
 ## Features
 
-- **Authentication & multi-tenancy** — company registration with OTP email verification, JWT access/refresh tokens, account lockout, avatar upload, company invite codes, super-admin back office (approve / suspend / delete companies).
-- **Document management (DMS)** — products with a 5-step onboarding wizard, nested folders (file manager), document versioning, approval workflow (Draft → In Review → Approved/Rejected), ACL access rules (role / department / user), trash & restore, full audit trail. Documents are typed: ISO norm, product doc, procedure, evidence, workspace file.
-- **AI document ingestion** — on upload, files are OCR'd / text-extracted (PDF, DOCX, XLSX, images via Tesseract), structured into JSON by an LLM, and indexed into Pinecone for semantic retrieval.
-- **AI conformity evaluations** — queue-based (BullMQ) clause-by-clause assessment of evidence against ISO 9001 clauses, with live progress streamed over SSE, per-clause verdict override, conformity score, NC drafts, and PDF/XLSX export.
-- **Non-conformities & CAPA** — full NC lifecycle (Open → RCA → CAPA defined → In Progress → Pending Verification → Closed), 5-Why and Ishikawa/6M root-cause analysis with AI suggestions, corrective/preventive actions, effectiveness verification, KPIs, due-date reminders (cron).
-- **Audits** — internal / supplier / certification audits with hierarchical checklists (AI-suggested and AI-scored), findings that auto-create NCs, change log, export.
-- **Reports** — versioned report instances (audit, NC, CAPA, incident, complaint) with approval workflow and reusable templates, exported as branded PDFs.
-- **RAG workspace chat** — tenant-scoped chat grounded in the company's indexed documents and live operational data.
-- **Notifications** — in-app inbox (read/archive) fed by internal events (evaluation complete/failed, extraction complete, CAPA assigned / due soon) plus transactional email.
+- **Authentication & multi-tenancy**: company registration with OTP email verification, JWT access/refresh tokens, account lockout, avatar upload, company invite codes, super-admin back office (approve / suspend / delete companies).
+- **Document management (DMS)**: products with a 5-step onboarding wizard, nested folders (file manager), document versioning, approval workflow (Draft → In Review → Approved/Rejected), ACL access rules (role / department / user), trash & restore, full audit trail. Documents are typed: ISO norm, product doc, procedure, evidence, workspace file.
+- **AI document ingestion**: on upload, files are OCR'd / text-extracted (PDF, DOCX, XLSX, images via Tesseract), structured into JSON by an LLM, and indexed into Pinecone for semantic retrieval.
+- **AI conformity evaluations**: queue-based (BullMQ) clause-by-clause assessment of evidence against ISO 9001 clauses, with live progress streamed over SSE, per-clause verdict override, conformity score, NC drafts, and PDF/XLSX export.
+- **Non-conformities & CAPA**: full NC lifecycle (Open → RCA → CAPA defined → In Progress → Pending Verification → Closed), 5-Why and Ishikawa/6M root-cause analysis with AI suggestions, corrective/preventive actions, effectiveness verification, KPIs, due-date reminders (cron).
+- **Audits**: internal / supplier / certification audits with hierarchical checklists (AI-suggested and AI-scored), findings that auto-create NCs, change log, export.
+- **Reports**: versioned report instances (audit, NC, CAPA, incident, complaint) with approval workflow and reusable templates, exported as branded PDFs.
+- **RAG workspace chat**: tenant-scoped chat grounded in the company's indexed documents and live operational data.
+- **Notifications**: in-app inbox (read/archive) fed by internal events (evaluation complete/failed, extraction complete, CAPA assigned / due soon) plus transactional email.
 
 ## Tech Stack
 
@@ -38,13 +38,13 @@
 | Frontend | **Next.js 15** (App Router, standalone output, Turbopack), **React 19**, TypeScript |
 | UI | Tailwind CSS v4, Radix UI primitives, MUI (legacy surfaces), HugeIcons, Framer Motion, TipTap editor, Recharts, React Hook Form + Zod |
 | State | Zustand (auth store), Axios client with automatic JWT refresh |
-| API Gateway | **NestJS 10** — reverse proxy, centralized RBAC, rate limiting (throttler), Helmet, SSE/binary/multipart forwarding |
+| API Gateway | **NestJS 10**: reverse proxy, centralized RBAC, rate limiting (throttler), Helmet, SSE/binary/multipart forwarding |
 | Microservices | **NestJS 10** (auth, document, evaluation, notification), TypeORM 0.3, class-validator |
 | AI / RAG service | **Python 3.11 / FastAPI**, LangChain, OpenAI (`gpt-4o-mini` + `text-embedding-3-small`, configurable base URL / OpenRouter fallback), Tesseract OCR (eng/fra/ara), pypdf / python-docx / openpyxl |
 | Database | **PostgreSQL 16** (shared instance, each service owns its tables; `uuid-ossp`, `pg_trgm`) |
 | Vector store | **Pinecone** |
 | Queue / cache | **Redis 7** + BullMQ (evaluation jobs), `@nestjs/schedule` cron (CAPA reminders) |
-| Object storage | **MinIO** (S3-compatible; documents, versions, avatars — bucket `qurelio-docs`) |
+| Object storage | **MinIO** (S3-compatible; documents, versions, avatars, bucket `qurelio-docs`) |
 | Email | SMTP via Nodemailer (OTP, invitations, password reset) |
 | Auth | JWT (access + refresh) verified locally by every service with a shared secret; `X-Internal-Token` for service-to-service calls |
 | Containerization | Docker + Docker Compose, multi-stage `node:20-alpine` / `python:3.11-slim` images, non-root users, healthchecks |
@@ -61,7 +61,7 @@ The browser only ever talks to the **frontend** (port 3001), which rewrites `/ap
                         └──────┬───────┘
                                │ :3000
                         ┌──────▼───────┐
-                        │   Gateway    │  NestJS — JWT + RBAC + proxy
+                        │   Gateway    │  NestJS: JWT + RBAC + proxy
                         └──────┬───────┘
       ┌────────────┬───────────┼────────────┬─────────────────┐
       │ /auth      │ /documents│ /evaluations│ /notifications  │ /chat /ingest
@@ -90,13 +90,13 @@ Qurelio/
 ├── apps/
 │   ├── frontend/              # Next.js 15 UI (port 3001)
 │   ├── gateway/               # NestJS API gateway (port 3000)
-│   └── project/               # Secondary/prototype Next.js 13 app (Netlify + Supabase) — not part of the composed stack
+│   └── project/               # Secondary/prototype Next.js 13 app (Netlify + Supabase), not part of the composed stack
 ├── services/
 │   ├── auth-service/          # Users, companies, JWT, OTP, avatars (port 3002)
 │   ├── document-service/      # Products, folders, documents, versions, ACL (port 3003)
 │   ├── evaluation-service/    # Evaluations, NC/CAPA, audits, reports (port 3005)
 │   ├── notification-service/  # In-app notifications (port 3004)
-│   └── rag-service/           # Python FastAPI — ingestion, evaluation engine, chat, CAPA/audit AI (port 8000)
+│   └── rag-service/           # Python FastAPI, ingestion, evaluation engine, chat, CAPA/audit AI (port 8000)
 ├── docker/
 │   ├── docker-compose.yml     # Full-stack orchestration
 │   └── init-db.sql            # Postgres extensions + grants
@@ -104,7 +104,7 @@ Qurelio/
 └── tsconfig.base.json         # Shared TypeScript config
 ```
 
-> `.history/` is a VS Code Local History dump — ignore it.
+> `.history/` is a VS Code Local History dump: ignore it.
 
 ## Services & Ports
 
@@ -145,7 +145,7 @@ MINIO_BUCKET=qurelio-docs
 MINIO_PUBLIC_URL=http://localhost:9000
 
 # ── Email (SMTP via nodemailer) ───────────────────────────
-SENDGRID_API_KEY=            # legacy names — used as SMTP credentials
+SENDGRID_API_KEY=            # legacy names: used as SMTP credentials
 SENDGRID_SENDER_EMAIL=no-reply@example.com
 SENDGRID_TEMPLATE_ID=
 
@@ -238,7 +238,7 @@ cd services/document-service && npm install && npm run start:dev
 # 4. Evaluation service (port 3005)
 cd services/evaluation-service && npm install && npm run start:dev
 
-# 5. RAG service (port 8000) — needs Tesseract OCR installed for image OCR
+# 5. RAG service (port 8000): needs Tesseract OCR installed for image OCR
 cd services/rag-service
 python -m venv venv
 venv\Scripts\activate            # Windows   (Linux/macOS: source venv/bin/activate)
@@ -248,7 +248,7 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 # 6. Gateway (port 3000)
 cd apps/gateway && npm install && npm run start:dev
 
-# 7. Frontend (port 3001) — proxies /api to http://127.0.0.1:3000 by default
+# 7. Frontend (port 3001): proxies /api to http://127.0.0.1:3000 by default
 cd apps/frontend && npm install && npm run dev
 ```
 
@@ -256,29 +256,29 @@ Notes:
 
 - All NestJS services share the same scripts: `npm run start:dev` (watch mode), `npm run build`, `npm start` (runs `dist/main`).
 - The frontend defaults its `/api` rewrite to `http://127.0.0.1:3000` (the gateway), so no extra config is needed locally. Override with `API_PROXY_TARGET` if your gateway runs elsewhere.
-- You can skip `rag-service` for pure CRUD work — set `RAG_INGEST_ENABLED=false` for document-service so uploads don't wait on the extraction pipeline (AI evaluations and chat won't work without it).
+- You can skip `rag-service` for pure CRUD work: set `RAG_INGEST_ENABLED=false` for document-service so uploads don't wait on the extraction pipeline (AI evaluations and chat won't work without it).
 - Production build of the frontend: `npm run build && npm run start` (standalone Next.js output, port 3001).
 
 ## Default Accounts & Roles
 
 A **super admin** is bootstrapped automatically (auth-service startup initializer, plus a standalone `seed.ts` script):
 
-- **Email:** `admin@qurelio.com` — **Password:** `SuperAdmin@2024!` *(change immediately in any real deployment)*
+- **Email:** `admin@qurelio.com`: **Password:** `SuperAdmin@2024!` *(change immediately in any real deployment)*
 
 Roles:
 
 | Role | Scope |
 |---|---|
-| `SUPER_ADMIN` | Platform back office — manages companies only, blocked from tenant features |
-| `DIRECTOR` | Company owner — user management, full tenant access |
-| `QUALITY_MANAGER` | QMS operations — evaluations, NC/CAPA, audits, reports |
+| `SUPER_ADMIN` | Platform back office: manages companies only, blocked from tenant features |
+| `DIRECTOR` | Company owner: user management, full tenant access |
+| `QUALITY_MANAGER` | QMS operations: evaluations, NC/CAPA, audits, reports |
 | `AUDITOR` | Audit execution and findings |
 | `OPERATOR` | Day-to-day document/task work |
 
 ## Key Conventions
 
-- **Single entry point:** the browser never calls microservices directly — everything goes through the frontend `/api` rewrite → gateway. The gateway enforces RBAC per route prefix and forwards SSE, binary downloads, and multipart uploads with dedicated handlers.
+- **Single entry point:** the browser never calls microservices directly, everything goes through the frontend `/api` rewrite → gateway. The gateway enforces RBAC per route prefix and forwards SSE, binary downloads, and multipart uploads with dedicated handlers.
 - **Service-to-service auth:** internal endpoints (extraction callbacks, notifications, chat context) are guarded by the shared `DOCUMENT_INTERNAL_TOKEN` sent as `X-Internal-Token`.
-- **Database:** one PostgreSQL instance; each service owns its own tables via TypeORM `synchronize: true` (fine for development — disable for production migrations).
-- **Path alias (frontend):** `@/*` → `src/*`; icons must be imported from `@/components/icons` (HugeIcons wrapper), design tokens via CSS variables — see `apps/frontend/CLAUDE.md` for full frontend conventions.
+- **Database:** one PostgreSQL instance; each service owns its own tables via TypeORM `synchronize: true` (fine for development, disable for production migrations).
+- **Path alias (frontend):** `@/*` → `src/*`; icons must be imported from `@/components/icons` (HugeIcons wrapper), design tokens via CSS variables, see `apps/frontend/CLAUDE.md` for full frontend conventions.
 - **Tests:** no test runner is currently wired in any package.

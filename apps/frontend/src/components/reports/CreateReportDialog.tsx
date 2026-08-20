@@ -114,7 +114,7 @@ export function CreateReportDialog({
 
       toast.success(
         selectedTemplate
-          ? 'Report created — fill in the template fields in the detail panel'
+          ? 'Report created. Fill in the template fields in the detail panel'
           : 'Report created successfully',
       );
       setFormData({ type: '', title: '', severity: '' });
@@ -146,7 +146,7 @@ export function CreateReportDialog({
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Template — pick first for best UX */}
+          {/* Template: pick first for best UX */}
           <div>
             <label className="text-sm font-medium text-gray-700 block mb-2">
               Template (recommended)
@@ -175,7 +175,7 @@ export function CreateReportDialog({
             )}
             {selectedTemplate && (
               <p className="text-xs text-gray-600 mt-2">
-                {selectedTemplate.description || 'Template selected'} — type is set to{' '}
+                {selectedTemplate.description || 'Template selected'}, type is set to{' '}
                 <span className="font-medium">{selectedTemplate.reportType}</span>.
               </p>
             )}

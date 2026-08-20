@@ -151,7 +151,7 @@ export function UploadDocumentDialog({
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [dragOver, setDragOver] = useState(false);
   const [uploading, setUploading] = useState(false);
-  /** Copyright guardrail — the acknowledgement the server requires for licensed standards. */
+  /** Copyright guardrail: the acknowledgement the server requires for licensed standards. */
   const [copyrightAccepted, setCopyrightAccepted] = useState(false);
   const [phase, setPhase] = useState<UploadPhase>('configure');
   const [docStatuses, setDocStatuses] = useState<DocStatusItem[]>([]);
@@ -436,10 +436,10 @@ export function UploadDocumentDialog({
   const fileAccept = uploadCategory === 'standard' ? '.pdf,application/pdf' : undefined;
   const dropHintSubtext =
     uploadCategory === 'standard'
-      ? 'PDF only — single file'
+      ? 'PDF only, single file'
       : uploadCategory === 'other'
-        ? 'Word, Excel, PDF, images — single file'
-        : 'PDF, DOCX, XLSX, images — one or more files';
+        ? 'Word, Excel, PDF, images, single file'
+        : 'PDF, DOCX, XLSX, images, one or more files';
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -538,12 +538,12 @@ export function UploadDocumentDialog({
                     />
                   </div>
 
-                  {/* Standing policy notice — shown for every standard upload. */}
+                  {/* Standing policy notice: shown for every standard upload. */}
                   <div className="flex items-start gap-2.5 rounded-xl border border-[var(--callout-info-border)] bg-[var(--callout-info-bg)] p-3">
                     <Info className="mt-0.5 h-4 w-4 shrink-0 text-[var(--brand-primary)]" />
                     <p className="text-[12px] leading-relaxed text-[var(--callout-info-text)]">
                       Qurelio accepts only documents that are{' '}
-                      <strong>free to use and published to the public</strong> — for example EU
+                      <strong>free to use and published to the public</strong>, for example EU
                       Regulations and Directives, EudraLex, MDCG guidance, 21 CFR, WHO, EMA and ICH
                       texts. Standards sold under licence (ISO, IEC, EN, ASTM, DIN, BSI…) may not be
                       redistributed, and uploading a purchased or reproduced copy may infringe the
@@ -551,7 +551,7 @@ export function UploadDocumentDialog({
                     </p>
                   </div>
 
-                  {/* Live alert — appears as soon as the ID names a licensed body. */}
+                  {/* Live alert: appears as soon as the ID names a licensed body. */}
                   {copyrightFinding && (
                     <div className="rounded-xl border border-amber-300 bg-amber-50 p-3.5">
                       <p className="flex items-center gap-2 text-[13px] font-semibold text-amber-900">

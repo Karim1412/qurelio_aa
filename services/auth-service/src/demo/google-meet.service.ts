@@ -13,7 +13,7 @@ export interface CreatedMeeting {
  * Auth is OAuth2 with a stored refresh token rather than a service account: a
  * service account needs domain-wide delegation, which only exists on Google
  * Workspace. A refresh token works with an ordinary Gmail account, so this costs
- * nothing — the Calendar API itself is free, subject to daily quota.
+ * nothing: the Calendar API itself is free, subject to daily quota.
  *
  * Every failure here is non-fatal by design. Confirming a demo must succeed even
  * if Google is misconfigured, rate-limited or down; the admin can still paste a
@@ -35,7 +35,7 @@ export class GoogleMeetService implements OnModuleInit {
   onModuleInit() {
     if (this.isConfigured()) {
       this.logger.log(
-        `Google Meet: configured (calendar "${this.cfg('GOOGLE_CALENDAR_ID') || 'primary'}") — confirmations will carry a Meet link`,
+        `Google Meet: configured (calendar "${this.cfg('GOOGLE_CALENDAR_ID') || 'primary'}"), confirmations will carry a Meet link`,
       );
       return;
     }
@@ -43,7 +43,7 @@ export class GoogleMeetService implements OnModuleInit {
       (k) => !this.cfg(k),
     );
     this.logger.warn(
-      `Google Meet: OFF — missing ${missing.join(', ')}. Demos still confirm and email, ` +
+      `Google Meet: OFF: missing ${missing.join(', ')}. Demos still confirm and email, ` +
         'but with no join link unless the admin pastes one.',
     );
   }

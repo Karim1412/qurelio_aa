@@ -4,7 +4,7 @@
  * The Documents step runs first: uploaded files are OCR'd and structured by the
  * RAG service, which returns `extractedStructured.productProfile`. This module
  * folds one or more of those extractions into the wizard's step data so the user
- * lands on Identity with the form already filled — and only has to verify or
+ * lands on Identity with the form already filled, and only has to verify or
  * correct it.
  *
  * Every value produced here is a *suggestion*: the caller records which fields
@@ -154,7 +154,7 @@ function isoDate(value: unknown): string {
   return parsed.toISOString().slice(0, 10);
 }
 
-/** Longest non-empty candidate — later documents often carry a fuller value than the first. */
+/** Longest non-empty candidate: later documents often carry a fuller value than the first. */
 function richest(...candidates: unknown[]): string {
   let best = '';
   for (const c of candidates) {
@@ -397,12 +397,12 @@ export interface PrefillSuggestion {
 
 function preview(value: unknown): string {
   if (Array.isArray(value)) {
-    if (value.length === 0) return '—';
+    if (value.length === 0) return '-';
     if (typeof value[0] === 'object') return `${value.length} entr${value.length > 1 ? 'ies' : 'y'}`;
     return value.join(', ');
   }
   const s = text(value);
-  return s || '—';
+  return s || '-';
 }
 
 function sameValue(a: unknown, b: unknown): boolean {
@@ -457,7 +457,7 @@ export function diffPrefill<T extends Record<string, any>>(
  *
  * A field is written when it is still empty, or when it holds a value an earlier
  * analysis produced (`replaceable`). Anything the user typed or corrected is left
- * alone — re-running the analysis must never overwrite their work.
+ * alone: re-running the analysis must never overwrite their work.
  */
 export function applyPrefill<T extends Record<string, any>>(
   current: T,

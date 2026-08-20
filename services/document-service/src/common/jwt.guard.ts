@@ -1,4 +1,4 @@
-// common/jwt.guard.ts  — inline JWT verification for child services
+// common/jwt.guard.ts : inline JWT verification for child services
 // Each service verifies the token independently (no call to auth-service)
 import { Injectable, CanActivate, ExecutionContext,
          UnauthorizedException, ForbiddenException, SetMetadata } from '@nestjs/common';
@@ -9,7 +9,7 @@ export const Public = () => SetMetadata('isPublic', true);
 export const Roles  = (...r: string[]) => SetMetadata('roles', r);
 
 export const CurrentUser = (target: any, key: string, index: number) => {
-  // param decorator placeholder — use req.user in controllers
+  // param decorator placeholder: use req.user in controllers
 };
 
 @Injectable()

@@ -1,4 +1,4 @@
-"""Structured extraction (JSON) via OpenAI-compatible API — mirrors former document-service OCR step."""
+"""Structured extraction (JSON) via OpenAI-compatible API, mirrors former document-service OCR step."""
 from __future__ import annotations
 
 import asyncio
@@ -47,8 +47,8 @@ BASE_SHAPE = """{
 }"""
 
 PRODUCT_EXTRA = """
-For PRODUCT_DOC or EVIDENCE, set "fileSummary" (one rich paragraph: purpose of the document, product family/models, scope of information — like a datasheet overview; for product photos, still give a concise overview of what the image shows) and "visualDescription" (for PDFs: describe figures, diagrams, dimension drawings, label photos, and layout; for photos of products: include warning stickers, hazard plates, pictograms, and legible label text; for pure text PDFs summarise layout and any visible structure; use null only when truly N/A).
-Also include "productProfile" (use null for unknown fields — never use empty strings, always null):
+For PRODUCT_DOC or EVIDENCE, set "fileSummary" (one rich paragraph: purpose of the document, product family/models, scope of information, like a datasheet overview; for product photos, still give a concise overview of what the image shows) and "visualDescription" (for PDFs: describe figures, diagrams, dimension drawings, label photos, and layout; for photos of products: include warning stickers, hazard plates, pictograms, and legible label text; for pure text PDFs summarise layout and any visible structure; use null only when truly N/A).
+Also include "productProfile" (use null for unknown fields, never use empty strings, always null):
 "productProfile": {
   "basicInformation": {
     "reference": string or null,
@@ -86,8 +86,8 @@ Also include "productProfile" (use null for unknown fields — never use empty s
 }
 
 Manual / datasheet discipline (critical for UI cards and the technical specifications table):
-- "sections": one entry per logical chapter or major heading in the document (e.g. General overview, Installation, Warnings, Technical specifications, Safety, Maintenance). Use clauseNumber null unless the source uses explicit numbering (then preserve it). "heading" = short chapter title; "content" = full explanatory prose for that chapter; "bullets" = discrete facts, specs lines, warnings, or list items that belong under that heading (do not bury table rows only in prose — mirror important tables into traceabilityRows).
-- "traceabilityRows": every technical table you find (electrical, weights, dimensions, speeds, materials, ordering codes, etc.) — one row per table row with Category / Parameter / Value / Unit / Notes; use "—" for unit when absent.
+- "sections": one entry per logical chapter or major heading in the document (e.g. General overview, Installation, Warnings, Technical specifications, Safety, Maintenance). Use clauseNumber null unless the source uses explicit numbering (then preserve it). "heading" = short chapter title; "content" = full explanatory prose for that chapter; "bullets" = discrete facts, specs lines, warnings, or list items that belong under that heading (do not bury table rows only in prose, mirror important tables into traceabilityRows).
+- "traceabilityRows": every technical table you find (electrical, weights, dimensions, speeds, materials, ordering codes, etc.), one row per table row with Category / Parameter / Value / Unit / Notes; use "-" for unit when absent.
 - "keyPoints": 5–12 short bullets an engineer or QA reader would want at a glance (safety, compliance, main specs, maintenance).
 - Prefer filling basicInformation (reference, modelNumber, revision, category, subCategory, manufacturer) from title blocks and body text."""
 
@@ -104,15 +104,15 @@ For "standardMetadata":
 - "categories": Exact standard family type: "ISO", "EN", "EN ISO", "ISO/IEC", "IEC", "ASTM", "ANSI", "IEEE", "BSI", "DIN", "NF", "Regulation", "Directive", "FDA", "MDR", or the specific national code (e.g., "GOST" for Russia, "JIS" for Japan, "GB" for China). For harmonised with annexes (e.g. "EN 61010-1:2010/A12:2019 + Annex ZA"), still use "EN" and "IEC" as separate categories.
 - "effectiveDate": Year or YYYY-MM-DD format from title block.
 
-=== Clause/Section Extraction Rules — ALL Standard Families ===
+=== Clause/Section Extraction Rules: ALL Standard Families ===
 
 **1. Numbering & Clause ID ("clauseNumber")**
   ISO-style dotted: "1", "4.1", "4.1.2", "5.2.3.4"
   EN front matter: "Foreword", "Introduction", "0", "1", "2", etc.
   Annexes: "Annex A", "Annex B", "Annex ZA" (national annex), "Annex ZA.1", "Annex ZA.2", etc. (use exactly)
   IEC sections: Use IEC clause numbering as printed; if mixed (e.g., "61010-1:2010" with "IEC 61010-1" in heading, extract "61010-1" as reference in metadata and keep clause numbers as ISO-style within)
-  ASTM / ANSI sections: "Scope", "Normative References", "Terms and Definitions", "Test Method", "Report" — use section name as clauseNumber if no numbers; if numbered (e.g., "1.", "1.1", "2."), use them.
-  Regulations (FDA, GDPR, etc.): "Article 5", "Section 820.3", "21 CFR 820.20(a)" — use the official article/section number.
+  ASTM / ANSI sections: "Scope", "Normative References", "Terms and Definitions", "Test Method", "Report", use section name as clauseNumber if no numbers; if numbered (e.g., "1.", "1.1", "2."), use them.
+  Regulations (FDA, GDPR, etc.): "Article 5", "Section 820.3", "21 CFR 820.20(a)", use the official article/section number.
   Tables, Figures: If numbered and titled, treat as own clause (e.g., "Table 1", "Figure 2.1"); else skip unless critical context.
 
 **2. Heading ("heading")**
@@ -121,13 +121,13 @@ For "standardMetadata":
   For TOC entries with only page: heading="[Section Title]", and put "Printed page: 45" as first line in "content".
   Preserve language mix if source uses multiple languages in same clause.
 
-**3. Content ("content") — COMPLETENESS IS CRITICAL**
+**3. Content ("content"): COMPLETENESS IS CRITICAL**
   Every SHALL / MUST / SHALL NOT requirement must be included in full.
-  Numbered sub-requirements: a) b) c) d) ... and all nested bullets / sub-lists — preserve exact numbering.
+  Numbered sub-requirements: a) b) c) d) ... and all nested bullets / sub-lists: preserve exact numbering.
   All NOTES, examples, annexes text for that clause.
   Tables: Convert to readable text (rows as "Row N: Col1 value, Col2 value, Col3 value...").
   Cross-references: Keep as printed (e.g., "See 4.2" or "Per Annex C").
-  If chunk boundary splits a clause: Include what you have; add to "importantNotes": ["This clause content may be incomplete due to document chunk boundary — full text includes continuation"].
+  If chunk boundary splits a clause: Include what you have; add to "importantNotes": ["This clause content may be incomplete due to document chunk boundary, full text includes continuation"].
   When TOC shows "Printed page: 45", put it as first line: "Printed page: 45\n\n" then body text.
   Minimum length: If a clause has only 1–2 sentences, still include fully; do not skip short clauses.
 
@@ -141,7 +141,7 @@ For "standardMetadata":
   Each bullet = one list item (do NOT flatten multiple items into one).
   Cap at ~80 bullets per clause; if more, summarise in "content" and highlight top bullets.
 
-**5. Summary ("summary") — NEW FIELD**
+**5. Summary ("summary"): NEW FIELD**
   One concise sentence (max ~200 chars) answering: "What does this clause mandate / establish?"
   Examples:
     - Clause 4.1 (Context of org): "Organization must determine internal/external issues affecting QMS ability to achieve objectives."
@@ -150,7 +150,7 @@ For "standardMetadata":
     - FDA 21 CFR 820.3 (Management responsibility): "Manufacturer must establish quality policy and assign responsibility for QMS compliance."
   Use null only if clause is purely structural (e.g., "Table of Contents", blank annex introduction).
 
-**6. Important Notes ("importantNotes") — NEW FIELD**
+**6. Important Notes ("importantNotes"): NEW FIELD**
   Array of strings (max ~5 items), each highlighting:
     - Regulatory criticality ("This is a SHALL requirement; non-compliance = product recall risk")
     - Cross-clause dependencies ("Depends on 4.2 and 4.3 being in place")
@@ -399,7 +399,7 @@ CERT_FIELDS = ("standardName", "certifyingBody", "certificateNumber", "marketSco
 
 
 def _merge_onboarding(acc: Any, part: Any) -> Dict[str, Any]:
-    """Union the wizard pre-fill draft across chunks — richest scalar wins, lists are unioned."""
+    """Union the wizard pre-fill draft across chunks: richest scalar wins, lists are unioned."""
     a = acc if isinstance(acc, dict) else {}
     b = part if isinstance(part, dict) else {}
     if not a and not b:
@@ -407,7 +407,7 @@ def _merge_onboarding(acc: Any, part: Any) -> Dict[str, Any]:
     out: Dict[str, Any] = {}
 
     for fld in ONBOARDING_SCALARS:
-        # Enum-ish fields must not be lengthened by concatenation — pick the richer single value.
+        # Enum-ish fields must not be lengthened by concatenation, pick the richer single value.
         picked = _str_pick_longer(a.get(fld), b.get(fld))
         if picked:
             out[fld] = picked
@@ -677,7 +677,7 @@ def _parse_json(raw: str, doc_type: str) -> Dict[str, Any]:
         # pre-fill the product wizard with. The usual cause is STRUCTURE_MAX_TOKENS
         # cutting the JSON mid-object, so log enough to tell truncation apart.
         logger.warning(
-            "structure: could not parse model JSON (%s) — doc_type=%s, raw_len=%s, ends_with=%r",
+            "structure: could not parse model JSON (%s): doc_type=%s, raw_len=%s, ends_with=%r",
             exc,
             doc_type,
             len(raw or ""),
@@ -698,7 +698,7 @@ def _parse_json(raw: str, doc_type: str) -> Dict[str, Any]:
 
 ONBOARDING_SYSTEM = """You read a product document and pre-fill a product onboarding form that a quality manager then verifies.
 
-Return ONLY this JSON object — no prose, no markdown fence:
+Return ONLY this JSON object: no prose, no markdown fence:
 {
   "productName": string|null, "sku": string|null, "brandName": string|null,
   "productFamily": string|null, "category": string|null,
@@ -714,15 +714,15 @@ Return ONLY this JSON object — no prose, no markdown fence:
   "productCertifications": [{"standardName": string, "certifyingBody": string|null, "certificateNumber": string|null, "marketScope": string|null, "issueDate": "YYYY-MM-DD"|null, "expiryDate": "YYYY-MM-DD"|null}]|null
 }
 
-Rules — a wrong value costs the user more than a missing one:
+Rules: a wrong value costs the user more than a missing one:
 - Use null for anything the document does not state. Never guess, never return an empty string.
 - productName = the commercial designation as printed, not the file name. sku = manufacturer reference or model number. brandName = trade mark. productFamily = range/series.
 - productType: "finished" = ready to sell, "semi_finished" = needs further processing, "component" = supplied into another product, "raw_material" = feedstock, "service" = a service.
-- intendedUse: 2-3 sentences — what it is, who uses it, how and where, and any hazard or special condition. Ground every clause in the document.
+- intendedUse: 2-3 sentences: what it is, who uses it, how and where, and any hazard or special condition. Ground every clause in the document.
 - description: one sentence. Keep every list to at most 8 entries, shortest useful wording.
-- targetUsers ONLY from: ["B2B — Industrial","B2B — Commercial","B2C — General consumers","B2C — Children / Minors","Medical professionals","Food service / Catering","Government / Public sector"]
-- targetMarkets ONLY from: ["European Union","USA (FDA-regulated)","USA (General)","Gulf (GCC / GSO)","North Africa / Maghreb","Sub-Saharan Africa","United Kingdom","Domestic — Tunisia"] — infer from declared markets, languages, market-specific marks, or the regulations cited.
-- industryLabels ONLY from: ["CE Marking","FDA Registration","Halal","Kosher","REACH compliant","RoHS compliant","Ecolabel","OEKO-TEX"] — only what the document actually claims.
+- targetUsers ONLY from: ["B2B (Industrial)","B2B (Commercial)","B2C (General consumers)","B2C (Children / Minors)","Medical professionals","Food service / Catering","Government / Public sector"]
+- targetMarkets ONLY from: ["European Union","USA (FDA-regulated)","USA (General)","Gulf (GCC / GSO)","North Africa / Maghreb","Sub-Saharan Africa","United Kingdom","Domestic (Tunisia)"]. Infer from declared markets, languages, market-specific marks, or the regulations cited.
+- industryLabels ONLY from: ["CE Marking","FDA Registration","Halal","Kosher","REACH compliant","RoHS compliant","Ecolabel","OEKO-TEX"]. Only what the document actually claims.
 - productionProcesses ONLY from: ["Production / Assembly","Quality Control","Procurement","Dyeing & Finishing","Packaging","Logistics / Warehousing"]
 - applicableRegulations = regulation/directive references cited (e.g. "Regulation (EU) 2017/745", "REACH", "21 CFR 820"). requiredCertifications = certification schemes required or targeted.
 - productCertifications: only certificates the document actually evidences; null otherwise."""
@@ -837,10 +837,10 @@ async def structure_content(
         else:
             vision_hint = (
                 f"{hints}\n\nThis is an image of a product or product-related document. Analyse it thoroughly:\n"
-                "1. \"visualDescription\": Write a rich, detailed description of EVERYTHING visible — product shape, colours, controls, "
+                "1. \"visualDescription\": Write a rich, detailed description of EVERYTHING visible, product shape, colours, controls, "
                 "large red emergency-stop or similar safety controls, packaging, labels. "
                 "Explicitly describe any warning stickers, hazard plates, pictograms (triangle exclamation, high voltage, pinch, hot surface, etc.), "
-                "multilingual caution text (French/English/other), and any legible sticker text — quote short phrases verbatim when readable. "
+                "multilingual caution text (French/English/other), and any legible sticker text, quote short phrases verbatim when readable. "
                 "If a warning symbol is present but text is unreadable, say so. Also note certification marks (CE, ISO, RoHS, UL, etc.), "
                 "serial/model/reference numbers, barcodes/QR codes, languages on labels, power/voltage markings, and traceability stamps.\n"
                 "2. \"fileSummary\": One concise paragraph (even for a raw product photo) summarising what the image establishes: "
@@ -850,7 +850,7 @@ async def structure_content(
                 "For safetyWarnings list every distinct hazard or safety message: copy sticker/plate wording where possible; "
                 "if only a pictogram is visible, describe the symbol and location on the product. "
                 "For traceabilityRows extract every spec row visible (dimensions, weight, power, voltage, speed, capacity, etc.). "
-                "Use null only when genuinely not visible — do not guess."
+                "Use null only when genuinely not visible: do not guess."
             )
         # Some provider proxies reject large JSON bodies (413). If image is still too big,
         # fallback to OCR/text-only extraction instead of failing the whole document.
@@ -913,7 +913,7 @@ async def structure_content(
             "=== STANDARDS EXTRACTION (ISO/EN/IEC/ASTM/ANSI/Regulations) ===\n"
             "1. Fill standardMetadata.reference from title block (e.g., 'EN ISO 9001:2015', 'IEC 60601-1:2005+AMD1:2012', 'FDA 21 CFR 820').\n"
             "2. standardMetadata.categories: Exact family type (ISO, EN, EN ISO, ISO/IEC, IEC, ASTM, ANSI, IEEE, DIN, BSI, NF, Regulation, FDA, etc.).\n"
-            "3. Extract EVERY clause/subclause/annex — do NOT skip any, even short ones. Preserve exact numbering.\n"
+            "3. Extract EVERY clause/subclause/annex: do NOT skip any, even short ones. Preserve exact numbering.\n"
             "4. For each section:\n"
             "   - clauseNumber: Exact label (4.1.2, Annex A, Article 5, Scope, etc.)\n"
             "   - heading: Title only (no numbers, no page leaders, no page numbers)\n"
@@ -936,7 +936,7 @@ async def structure_content(
         use = chunks[:MAX_STRUCTURE_CHUNKS]
         if len(chunks) > MAX_STRUCTURE_CHUNKS:
             logger.warning(
-                "structure_content: processing first %s/%s chunks — tail not structured (raise STRUCTURE_MAX_INPUT_CHARS or split file)",
+                "structure_content: processing first %s/%s chunks, tail not structured (raise STRUCTURE_MAX_INPUT_CHARS or split file)",
                 MAX_STRUCTURE_CHUNKS,
                 len(chunks),
             )
@@ -982,7 +982,7 @@ async def structure_content(
         )
         merged_iso = await _run_chunked_merge(
             iso_chunks,
-            "Chunk from this standards document — keep clause anchors exactly as printed",
+            "Chunk from this standards document: keep clause anchors exactly as printed",
             concurrency=ISO_CHUNK_CONCURRENCY,
         )
         if merged_iso and merged_iso.get("sections"):
@@ -993,7 +993,7 @@ async def structure_content(
         pchunks = _chunk_text(full_text, size=PRODUCT_CHUNK_CHARS, overlap=PRODUCT_CHUNK_OVERLAP)
         merged_p = await _run_chunked_merge(
             pchunks,
-            "Portion of this product or evidence document — extract identifiers, tables, and chapter text visible in THIS portion",
+            "Portion of this product or evidence document: extract identifiers, tables, and chapter text visible in THIS portion",
             concurrency=PRODUCT_CHUNK_CONCURRENCY,
         )
         if merged_p and (merged_p.get("sections") or merged_p.get("productProfile")):

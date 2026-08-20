@@ -44,7 +44,7 @@ export function buildNcWhyPlaceholders(params: {
       ? `Why has a systemic fix for ${clauseLabel} not already been implemented?`
       : 'Why has a systemic fix not already been put in place?',
     rootCause: clauseRef
-      ? `Summarize the root cause for ${clauseLabel}${reqHint ? ` — requirement: ${reqHint}` : ''}.`
+      ? `Summarize the root cause for ${clauseLabel}${reqHint ? `, requirement: ${reqHint}` : ''}.`
       : 'Summarize the verified root cause.',
   };
 }

@@ -13,7 +13,7 @@ export type AgentStreamEvent = {
   type: string;
   evaluation_id: string;
   ts: number;
-  // Discriminated payload depending on `type` — typed loosely so the panel can render new event kinds without a code change.
+  // Discriminated payload depending on `type`: typed loosely so the panel can render new event kinds without a code change.
   [key: string]: unknown;
 };
 

@@ -6,7 +6,7 @@ export function getExtractedCategory(doc: {
   tags?: string[] | null;
   extractedStructured?: { classification?: string; title?: string } | null;
 } | null): string {
-  if (!doc) return '—';
+  if (!doc) return '-';
   const ws = doc.workspaceCategory?.trim();
   if (ws) return ws;
   const tag = doc.tags?.[0];
@@ -16,7 +16,7 @@ export function getExtractedCategory(doc: {
     const c = (st as { classification?: string }).classification;
     if (c && String(c).trim()) return String(c).trim();
   }
-  return '—';
+  return '-';
 }
 
 export function getBestProductCategoryFromDocs(
@@ -24,30 +24,30 @@ export function getBestProductCategoryFromDocs(
 ): string {
   for (const d of docs) {
     const c = getExtractedCategory(d);
-    if (c !== '—') return c;
+    if (c !== '-') return c;
   }
-  return '—';
+  return '-';
 }
 
 export function formatUploadedRelative(doc: { createdAt?: string | Date }): string {
-  if (!doc.createdAt) return '—';
+  if (!doc.createdAt) return '-';
   return formatDistanceToNow(new Date(doc.createdAt), { addSuffix: true });
 }
 
 export function getDocReference(doc: { isoStandard?: string | null } | null): string {
   const ref = doc?.isoStandard?.trim();
-  return ref || '—';
+  return ref || '-';
 }
 
 export function formatDocEffectiveDate(doc: {
   effectiveDate?: string | Date | null;
   createdAt?: string | Date;
 } | null): string {
-  if (!doc) return '—';
+  if (!doc) return '-';
   const raw = doc.effectiveDate ?? doc.createdAt;
-  if (!raw) return '—';
+  if (!raw) return '-';
   const d = new Date(raw);
-  return Number.isNaN(d.getTime()) ? '—' : d.toLocaleDateString();
+  return Number.isNaN(d.getTime()) ? '-' : d.toLocaleDateString();
 }
 
 /** Workflow status for product / shared files (DOC-004). */
@@ -66,7 +66,7 @@ export function getStandardLibraryCategory(doc: {
   tags?: string[] | null;
   extractedStructured?: { classification?: string; title?: string } | null;
 } | null): string {
-  if (!doc) return '—';
+  if (!doc) return '-';
   const tag = doc.tags?.[0]?.trim();
   if (tag === 'EN') return 'EN standard';
   if (tag === 'ISO_NORM') return 'ISO standard';
@@ -78,7 +78,7 @@ export function formatAddedByShort(
   currentUserId: string | undefined,
   nameMap: Map<string, string>,
 ): string {
-  if (!doc.uploadedBy) return 'Added by —';
+  if (!doc.uploadedBy) return 'Added by -';
   if (doc.uploadedBy === currentUserId) return 'Added by you';
   const n = nameMap.get(doc.uploadedBy);
   return `Added by ${n || doc.uploadedBy.slice(0, 8) + '…'}`;
@@ -90,7 +90,7 @@ export function formatAddedByLine(
   nameMap: Map<string, string>,
 ): string {
   const when = formatUploadedRelative(doc);
-  if (!doc.uploadedBy) return `${when} · Added by —`;
+  if (!doc.uploadedBy) return `${when} · Added by -`;
   if (doc.uploadedBy === currentUserId) return `${when} · Added by you`;
   const n = nameMap.get(doc.uploadedBy);
   return `${when} · Added by ${n || doc.uploadedBy.slice(0, 8) + '…'}`;
@@ -102,9 +102,9 @@ export function displayUserName(
   nameMap: Map<string, string>,
   opts?: { preferFullName?: boolean },
 ): string {
-  if (!userId) return '—';
+  if (!userId) return '-';
   if (userId === currentUserId) {
-    if (opts?.preferFullName) return '—'; // caller resolves from auth profile
+    if (opts?.preferFullName) return '-'; // caller resolves from auth profile
     return 'You';
   }
   return nameMap.get(userId) || userId.slice(0, 8) + '…';
@@ -157,7 +157,7 @@ export function isoNormEvalReference(doc: {
  * If the file name differs from the norm ref, append it so two PDFs for the same norm are distinguishable.
  */
 export function formatIsoNormSelectLabel(n: { isoStandard?: string | null; name?: string | null }): string {
-  const ref = n.isoStandard?.trim() || n.name?.trim() || '—';
+  const ref = n.isoStandard?.trim() || n.name?.trim() || '-';
   const file = n.name?.trim() || '';
   if (file && file !== ref) return `${ref} · ${file}`;
   return ref;

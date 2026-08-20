@@ -54,10 +54,10 @@ function seedFromNc(title: string, description: string) {
   };
 }
 
-/** Word-wrap without truncating — full branch text visible in the diagram. */
+/** Word-wrap without truncating: full branch text visible in the diagram. */
 function wrapBranchTextFull(raw: string, maxCharsPerLine: number): string[] {
   const clean = raw.replace(/</g, ' ').replace(/\s+/g, ' ').trim();
-  if (!clean) return ['—'];
+  if (!clean) return ['-'];
   const words = clean.split(' ');
   const lines: string[] = [];
   let line = '';
@@ -71,7 +71,7 @@ function wrapBranchTextFull(raw: string, maxCharsPerLine: number): string[] {
     }
   }
   if (line) lines.push(line);
-  return lines.length ? lines : ['—'];
+  return lines.length ? lines : ['-'];
 }
 
 type BoneRender = {

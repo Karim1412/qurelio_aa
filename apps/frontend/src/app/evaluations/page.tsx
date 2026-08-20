@@ -121,7 +121,7 @@ export default function EvaluationsPage() {
    *
    * Each declared certificate / standard / regulation is resolved to the library
    * document that satisfies it. A declaration with no activated document is still
-   * listed, disabled, so the gap is visible rather than silently absent — an
+   * listed, disabled, so the gap is visible rather than silently absent, an
    * evaluation needs a real document with clauses to score against.
    *
    * `value` is `documentId::declaration` so choosing an entry records both the
@@ -471,7 +471,7 @@ export default function EvaluationsPage() {
                 const score =
                   ev.conformityScore != null && typeof ev.conformityScore === 'number'
                     ? `${ev.conformityScore.toFixed(1)}%`
-                    : '—';
+                    : '-';
                 return (
                   <TableRow key={ev.id}>
                     <TableCell className="font-medium">{pair.isoLine}</TableCell>
@@ -565,7 +565,7 @@ export default function EvaluationsPage() {
             <DialogTitle>New conformity evaluation</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-2">
-            {/* 1 — the product drives which standards are relevant below. */}
+            {/* 1: the product drives which standards are relevant below. */}
             <div>
               <Label>
                 <span className="mr-1.5 text-[var(--brand-primary)]">1.</span>Product document
@@ -593,7 +593,7 @@ export default function EvaluationsPage() {
               >
                 {products.length === 0 ? (
                   <option value="" disabled>
-                    No products yet — upload under Product documents
+                    No products yet. Upload under Product documents
                   </option>
                 ) : (
                   <>
@@ -609,7 +609,7 @@ export default function EvaluationsPage() {
               </select>
             </div>
 
-            {/* 2 — the standard to evaluate against, listed from what the product declares. */}
+            {/* 2: the standard to evaluate against, listed from what the product declares. */}
             <div>
               <Label>
                 <span className="mr-1.5 text-[var(--brand-primary)]">2.</span>Standard document
@@ -645,7 +645,7 @@ export default function EvaluationsPage() {
                   <optgroup label="Declared by this product">
                     {declaredOptions.map((o) => (
                       <option key={o.value} value={o.value} title={o.label}>
-                        {o.sourceLabel} — {o.label.length > 95 ? `${o.label.slice(0, 95)}…` : o.label}
+                        {o.sourceLabel}: {o.label.length > 95 ? `${o.label.slice(0, 95)}…` : o.label}
                       </option>
                     ))}
                   </optgroup>
@@ -653,10 +653,10 @@ export default function EvaluationsPage() {
 
                 {/* Declared but not in the library: shown so the gap is obvious, not selectable. */}
                 {unmatchedDeclarations.length > 0 && (
-                  <optgroup label="Declared — not in Standards Library">
+                  <optgroup label="Declared: not in Standards Library">
                     {unmatchedDeclarations.map((o) => (
                       <option key={o.value} value="" disabled title={o.value}>
-                        {o.sourceLabel} — {o.value.length > 80 ? `${o.value.slice(0, 80)}…` : o.value}
+                        {o.sourceLabel}: {o.value.length > 80 ? `${o.value.slice(0, 80)}…` : o.value}
                       </option>
                     ))}
                   </optgroup>
@@ -677,7 +677,7 @@ export default function EvaluationsPage() {
 
               {form.productId && declaredStandards.length === 0 && (
                 <p className="mt-1 text-[11px] text-[var(--muted)]">
-                  This product declares no certifications or regulations yet — add them in the
+                  This product declares no certifications or regulations yet. Add them in the
                   product form (Markets and Certifications steps) to see them listed here.
                 </p>
               )}

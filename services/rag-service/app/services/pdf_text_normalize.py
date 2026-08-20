@@ -1,6 +1,6 @@
 """
 Repair PDF text where extractors emit spaces between individual glyphs
-(e.g. "C o n t r o l" / "9 . 2 . 1") — common with some IEC/BS EN PDF encodings.
+(e.g. "C o n t r o l" / "9 . 2 . 1"): common with some IEC/BS EN PDF encodings.
 """
 from __future__ import annotations
 

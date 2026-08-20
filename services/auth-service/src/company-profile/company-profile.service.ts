@@ -32,7 +32,7 @@ export class CompanyProfileService {
     return profile;
   }
 
-  /** Save Step 1 — Company Identity. */
+  /** Save Step 1: Company Identity. */
   async updateIdentity(companyId: string, dto: UpdateIdentityDto): Promise<CompanyProfile> {
     const profile = await this.getProfile(companyId);
     Object.assign(profile, dto);
@@ -44,7 +44,7 @@ export class CompanyProfileService {
     return profile;
   }
 
-  /** Save Step 2 — Activity & Products. */
+  /** Save Step 2: Activity & Products. */
   async updateActivity(companyId: string, dto: UpdateActivityDto): Promise<CompanyProfile> {
     const profile = await this.getProfile(companyId);
     Object.assign(profile, dto);
@@ -56,7 +56,7 @@ export class CompanyProfileService {
     return profile;
   }
 
-  /** Save Step 3 — Markets & Compliance. */
+  /** Save Step 3: Markets & Compliance. */
   async updateMarkets(companyId: string, dto: UpdateMarketsDto): Promise<CompanyProfile> {
     const profile = await this.getProfile(companyId);
     Object.assign(profile, dto);
@@ -68,7 +68,7 @@ export class CompanyProfileService {
     return profile;
   }
 
-  /** Save Step 4 — Quality Team & Context. */
+  /** Save Step 4: Quality Team & Context. */
   async updateQuality(companyId: string, dto: UpdateQualityDto): Promise<CompanyProfile> {
     const profile = await this.getProfile(companyId);
     Object.assign(profile, dto);

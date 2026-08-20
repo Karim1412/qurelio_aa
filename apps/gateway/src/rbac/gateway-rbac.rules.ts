@@ -17,7 +17,7 @@ export const PUBLIC_ROUTES: ReadonlyArray<{ method: string; path: string }> = [
   { method: 'POST', path: '/auth/reset-password' },
   { method: 'POST', path: '/auth/setup-account' },
   { method: 'POST', path: '/auth/contact' },
-  /** Public "Book a demo" page — browse open slots and submit a request. */
+  /** Public "Book a demo" page: browse open slots and submit a request. */
   { method: 'GET', path: '/demo/slots' },
   { method: 'POST', path: '/demo/bookings' },
 ];
@@ -101,7 +101,7 @@ export const CUSTOM_RULES: CustomRule[] = [
       /^\/evaluations\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(p),
     roles: ['DIRECTOR', 'QUALITY_MANAGER', 'AUDITOR'],
   },
-  /** NC reads (list, KPIs, single NC, why-analysis) — explicit so tenant roles always match before any future PREFIX tightening. */
+  /** NC reads (list, KPIs, single NC, why-analysis), explicit so tenant roles always match before any future PREFIX tightening. */
   {
     test: (m, p) => m === 'GET' && (p === '/nc' || p.startsWith('/nc/')),
     roles: ['DIRECTOR', 'QUALITY_MANAGER', 'AUDITOR', 'OPERATOR'],
@@ -154,7 +154,7 @@ export const PREFIX_RULES: PrefixRule[] = [
     methods: ['POST', 'PATCH', 'DELETE'],
     roles: ['DIRECTOR'],
   },
-  // Company profile (onboarding) — read for all tenant roles, write for director only
+  // Company profile (onboarding): read for all tenant roles, write for director only
   {
     prefix: '/company/profile',
     methods: ['GET'],

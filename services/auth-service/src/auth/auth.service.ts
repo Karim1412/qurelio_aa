@@ -880,7 +880,7 @@ export class AuthService {
       return { message: 'Password reset code sent to your email' };
     }
 
-    // Prevent enumeration — always return success
+    // Prevent enumeration: always return success
     return { message: 'If an account exists, a reset code has been sent' };
   }
 

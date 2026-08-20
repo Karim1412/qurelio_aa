@@ -268,7 +268,7 @@ export function HeroSection() {
           className="mx-auto max-w-2xl text-base leading-relaxed text-[var(--muted)] sm:text-lg"
         >
           One platform to show your products meet the laws and regulations of every
-          market you sell to. Documents, audits, non-conformities and evidence —
+          market you sell to. Documents, audits, non-conformities and evidence:
           organised, scored, and audit-ready every day, not just at certification time.
         </motion.p>
 

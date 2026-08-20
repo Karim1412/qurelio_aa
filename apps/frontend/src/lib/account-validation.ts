@@ -26,7 +26,7 @@ function phonePreprocess(val: unknown): string {
   return String(val);
 }
 
-/** Required phone — accepts `undefined` from PhoneInput before submit. */
+/** Required phone: accepts `undefined` from PhoneInput before submit. */
 export const zPhoneE164Required = z.preprocess(
   phonePreprocess,
   z

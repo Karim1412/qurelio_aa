@@ -143,7 +143,7 @@ export default function ProfilePage() {
           });
         }
       } catch {
-        /* session invalid — interceptor may redirect */
+        /* session invalid: interceptor may redirect */
       }
     })();
     return () => {
@@ -264,20 +264,20 @@ export default function ProfilePage() {
 
   const infoRows: { label: string; value: string; mono?: boolean }[] = isDirector
     ? [
-        { label: 'Company', value: user?.company?.name || '—' },
+        { label: 'Company', value: user?.company?.name || '-' },
         {
           label: 'Workspace code',
-          value: user?.company?.companyCode || '—',
+          value: user?.company?.companyCode || '-',
           mono: true,
         },
         { label: 'Role', value: roleLabel(user?.role) },
         { label: 'Status', value: user?.isActive ? 'Active' : 'Inactive' },
       ]
     : [
-        { label: 'Company', value: user?.company?.name || '—' },
+        { label: 'Company', value: user?.company?.name || '-' },
         {
           label: 'Workspace code',
-          value: user?.company?.companyCode || '—',
+          value: user?.company?.companyCode || '-',
           mono: true,
         },
         { label: 'Role', value: roleLabel(user?.role) },
@@ -464,7 +464,7 @@ export default function ProfilePage() {
               Manage your account information and security preferences.
             </motion.p>
 
-            {/* Email chip only — other details are in the bento grid below */}
+            {/* Email chip only: other details are in the bento grid below */}
             <motion.div
               variants={{ hidden: { opacity: 0, y: 6 }, show: { opacity: 1, y: 0 } }}
               transition={{ duration: 0.55, ease: SOFT_EASE }}
@@ -501,7 +501,7 @@ export default function ProfilePage() {
         </div>
       </motion.section>
 
-      {/* ─── Innovative bento info grid — 3 cards, distinct personalities ─── */}
+      {/* ─── Innovative bento info grid: 3 cards, distinct personalities ─── */}
       <motion.div
         initial="hidden"
         animate="show"
@@ -547,7 +547,7 @@ export default function ProfilePage() {
               Organization
             </span>
             <p className="mt-3 text-[22px] font-semibold leading-tight tracking-tight text-[var(--text-primary)]">
-              {user?.company?.name || '—'}
+              {user?.company?.name || '-'}
             </p>
             <p className="mt-1 text-[12px] text-[var(--muted)]">
               The workspace you are signed into right now.
@@ -601,7 +601,7 @@ export default function ProfilePage() {
               className="mt-3 font-mono text-[22px] font-semibold leading-tight tracking-[0.08em] text-[var(--text-primary)]"
               style={{ wordBreak: 'break-all' }}
             >
-              {user?.company?.companyCode || '—'}
+              {user?.company?.companyCode || '-'}
             </p>
             <p className="mt-1 text-[12px] text-[var(--muted)]">
               Unique identifier for your tenant.
@@ -643,7 +643,7 @@ export default function ProfilePage() {
             </span>
             <div>
               <p className="text-[18px] font-semibold tracking-tight text-[var(--text-primary)]">
-                {roleLabel(user?.role) || '—'}
+                {roleLabel(user?.role) || '-'}
               </p>
               <span
                 className={cn(
@@ -979,7 +979,7 @@ export default function ProfilePage() {
                             Change password
                           </h2>
                           <p className="mt-0.5 text-[12px] text-[var(--muted)]">
-                            Keep your account safe — use a strong, unique password.
+                            Keep your account safe. Use a strong, unique password.
                           </p>
                         </div>
                       </div>

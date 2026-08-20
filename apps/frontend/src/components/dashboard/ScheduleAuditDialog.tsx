@@ -180,7 +180,7 @@ export function ScheduleAuditDialog({
         isoDocumentId: form.isoDocumentId || undefined,
         scopeClauseRefs: form.scopeClauseRefs,
       });
-      toast.success('Audit scheduled — opening the audits page');
+      toast.success('Audit scheduled. Opening the audits page');
       onCreated?.();
       onOpenChange(false);
       router.push('/audits');
@@ -197,7 +197,7 @@ export function ScheduleAuditDialog({
         <DialogHeader>
           <DialogTitle>Schedule a new audit</DialogTitle>
           <DialogDescription>
-            Fill in the details — the audit will be added to your audits page.
+            Fill in the details. The audit will be added to your audits page.
           </DialogDescription>
         </DialogHeader>
 
@@ -291,7 +291,7 @@ export function ScheduleAuditDialog({
                   <span className="text-xs text-[var(--muted)]">Select a standard to load clauses.</span>
                 ) : auditClauseOptions.length === 0 ? (
                   <span className="text-xs text-amber-700">
-                    No clauses in this document — run extraction and activate the standard in the file library.
+                    No clauses in this document. Run extraction and activate the standard in the file library.
                   </span>
                 ) : (
                   auditClauseOptions.map((c) => (

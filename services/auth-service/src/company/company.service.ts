@@ -167,7 +167,7 @@ export class CompanyService implements OnModuleInit {
     if (seatsAfter < threshold) return;
     if (seatsBefore >= threshold) return;
 
-    const title = 'Team size — approaching your plan limit';
+    const title = 'Team size: approaching your plan limit';
     const message =
       `You are using ${seatsAfter} of ${maxSeats} seats on your current plan. ` +
       'Remove inactive users from User Management or contact support to increase your company size.';
@@ -468,11 +468,11 @@ export class CompanyService implements OnModuleInit {
         companyId:       cid,
         isActive:        true,
         isEmailVerified: false,   // reset until they set their password
-        passwordHash:    '',    // NOT NULL column — same as new invite until setup-account
+        passwordHash:    '',    // NOT NULL column: same as new invite until setup-account
       });
       userId = existing.id;
     } else {
-      // New invite — no `users` row until invitee completes setup-account (OTP in link).
+      // New invite: no `users` row until invitee completes setup-account (OTP in link).
       const pendingInvite = this.pendingRepo.create({
         email:   emailKey,
         kind:    PendingRegistrationKind.INVITED_USER,
@@ -507,7 +507,7 @@ export class CompanyService implements OnModuleInit {
     const frontendUrl = process.env.FRONTEND_URL || 'http://127.0.0.1:3001';
     const setupLink   = `${frontendUrl}/auth/setup-account?email=${encodeURIComponent(emailKey)}&code=${code}`;
 
-    // Fire invite email in background — don't block the director's response
+    // Fire invite email in background: don't block the director's response
     setImmediate(() => {
       this.mail.sendSetPasswordEmail({
         to:        emailKey,

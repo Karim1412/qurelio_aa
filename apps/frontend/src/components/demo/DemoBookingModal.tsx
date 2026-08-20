@@ -150,7 +150,7 @@ interface Props {
 }
 
 /**
- * Booking popup — the Early Access questionnaire.
+ * Booking popup: the Early Access questionnaire.
  *
  * Picking a slot and qualifying happen in one step, so a booking and its answers
  * are a single request the admin sees in one list.
@@ -282,7 +282,7 @@ export function DemoBookingModal({ slot, onClose, onBooked }: Props) {
 
           <div className="mt-4">
             <div className="mb-1.5 flex items-center justify-between text-[11px] font-medium text-[var(--muted)]">
-              <span>Step {step + 1} of {STEPS.length} — {STEPS[step]}</span>
+              <span>Step {step + 1} of {STEPS.length}: {STEPS[step]}</span>
               <span>{Math.round(progress)}%</span>
             </div>
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--nav-hover)]">
@@ -302,7 +302,7 @@ export function DemoBookingModal({ slot, onClose, onBooked }: Props) {
                 <Input type="email" value={form.email} onChange={(e) => set('email', e.target.value)} placeholder="you@company.com" />
                 {personalEmailHint && (
                   <p className="mt-1.5 rounded-lg bg-amber-50 px-3 py-2 text-[11px] leading-relaxed text-amber-800">
-                    A work address helps us prepare your demo — but this one is fine if it is the
+                    A work address helps us prepare your demo, but this one is fine if it is the
                     address you actually work from.
                   </p>
                 )}
@@ -387,7 +387,7 @@ export function DemoBookingModal({ slot, onClose, onBooked }: Props) {
 
               <Question
                 n={12}
-                label={`Your main day-to-day challenges — ${EA_MAX_CHALLENGES} answers maximum`}
+                label={`Your main day-to-day challenges (${EA_MAX_CHALLENGES} answers maximum)`}
                 required
                 help={`${form.challenges.length} of ${EA_MAX_CHALLENGES} selected`}
               >
@@ -425,7 +425,7 @@ export function DemoBookingModal({ slot, onClose, onBooked }: Props) {
               <Question
                 n={16}
                 label="Anything specific you'd like to see during the demo?"
-                help="A concrete case, a regulatory text, a specific bottleneck — we'll build the demo around it."
+                help="A concrete case, a regulatory text, a specific bottleneck. We'll build the demo around it."
               >
                 <Textarea rows={3} value={form.description} onChange={(e) => set('description', e.target.value)} />
               </Question>

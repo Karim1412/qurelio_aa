@@ -148,8 +148,8 @@ class CapaAiService:
                 {
                     "title": title[:500],
                     "description": description[:4000],
-                    "iso_clause": iso_clause or "—",
-                    "classification": classification or "—",
+                    "iso_clause": iso_clause or "-",
+                    "classification": classification or "-",
                     "history_block": history_block[:8000],
                 }
             )
@@ -194,7 +194,7 @@ class CapaAiService:
                 {
                     "title": title[:500],
                     "description": description[:4000],
-                    "iso_clause": iso_clause or "—",
+                    "iso_clause": iso_clause or "-",
                     "history_block": history_block[:6000],
                 }
             )

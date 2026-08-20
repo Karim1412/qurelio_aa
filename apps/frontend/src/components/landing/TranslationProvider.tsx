@@ -108,7 +108,7 @@ async function translateOne(q: string, target: Lang): Promise<string> {
   const trimmed = q.trim();
   if (!trimmed) return q;
 
-  // 1) LibreTranslate (uses the user-provided API shape — auto source detect)
+  // 1) LibreTranslate (uses the user-provided API shape, auto source detect)
   const lt = await tryLibreTranslate(trimmed, target);
   if (lt) return lt;
 

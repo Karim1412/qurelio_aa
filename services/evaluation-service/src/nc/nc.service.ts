@@ -48,7 +48,7 @@ export class NCService {
     return (this.cfg.get<string>('DOCUMENT_INTERNAL_TOKEN') || '').trim();
   }
 
-  /** Clause number only (e.g. "4.1") — strips titles accidentally stored in isoClause. */
+  /** Clause number only (e.g. "4.1"): strips titles accidentally stored in isoClause. */
   private normalizeIsoClauseRef(raw: string): string {
     const s = (raw || '').trim();
     if (!s) return '';
@@ -139,7 +139,7 @@ export class NCService {
         ? `Why has a systemic fix for ${clauseLabel} of ${std} not already been implemented?`
         : 'Why has a systemic fix not already been put in place for this type of issue?',
       rootCauseSuggestion: clauseRef
-        ? `Review ${clauseLabel} of ${std}${reqBit ? ` — requirement: ${reqBit}` : ''} against the NC description; common patterns are unclear ownership, missing documented criteria, weak verification, or inadequate competence for the task behind "${title.slice(0, 80)}${title.length > 80 ? '…' : ''}".`
+        ? `Review ${clauseLabel} of ${std}${reqBit ? `, requirement: ${reqBit}` : ''} against the NC description; common patterns are unclear ownership, missing documented criteria, weak verification, or inadequate competence for the task behind "${title.slice(0, 80)}${title.length > 80 ? '…' : ''}".`
         : `Review ${clauseLabel} together with the NC description; a common pattern is unclear ownership, missing documented criteria, weak verification of outputs, or inadequate competence on the specific task behind "${title.slice(0, 80)}${title.length > 80 ? '…' : ''}".`,
     };
   }
@@ -177,7 +177,7 @@ export class NCService {
     if (nc.status === NCStatus.ROOT_CAUSE_ANALYSIS) return NCStatus.CAPA_DEFINED;
     // Keep accumulating more CAPA actions without regressing status.
     if (nc.status === NCStatus.CAPA_DEFINED) return NCStatus.CAPA_DEFINED;
-    // CAPA added directly from OPEN (emergency / AI-evaluation shortcut) — jump to IN_PROGRESS.
+    // CAPA added directly from OPEN (emergency / AI-evaluation shortcut), jump to IN_PROGRESS.
     return NCStatus.IN_PROGRESS;
   }
 
@@ -369,7 +369,7 @@ export class NCService {
         companyId,
         userId,
         'info',
-        `NC · Root cause analysis in progress — ${nc.title || 'NC'}`,
+        `NC · Root cause analysis in progress: ${nc.title || 'NC'}`,
         { ncId: id },
       );
     }
@@ -387,7 +387,7 @@ export class NCService {
       companyId,
       userId,
       'info',
-      `NC · Root cause analysis started — ${nc.title || 'NC'}`,
+      `NC · Root cause analysis started: ${nc.title || 'NC'}`,
       { ncId: id },
     );
     return this.getOne(id, companyId);
@@ -410,7 +410,7 @@ export class NCService {
       companyId,
       userId,
       'success',
-      `NC · CAPA execution started — ${nc.title || 'NC'}`,
+      `NC · CAPA execution started: ${nc.title || 'NC'}`,
       { ncId: id },
     );
     return this.getOne(id, companyId);
@@ -429,7 +429,7 @@ export class NCService {
       companyId,
       userId,
       'error',
-      `NC · Rejected — ${nc.title || 'NC'}`,
+      `NC · Rejected: ${nc.title || 'NC'}`,
       { ncId: id },
     );
     return { message: 'NC marked as rejected' };
@@ -518,7 +518,7 @@ export class NCService {
         companyId,
         actorUserId,
         'info',
-        `CAPA · Status updated — ${updated.title} (NC: ${ncTitle}) → ${dto.actionStatus}`,
+        `CAPA · Status updated: ${updated.title} (NC: ${ncTitle}) → ${dto.actionStatus}`,
         { capaId, ncId: updated.nonConformityId },
       );
     }
@@ -558,10 +558,10 @@ export class NCService {
         companyId,
         dto.verifiedBy,
         'success',
-        `NC · Verified effective & closed — ${nc.title || 'NC'}`,
+        `NC · Verified effective & closed: ${nc.title || 'NC'}`,
         { ncId },
       );
-      return { message: 'NC closed — CAPA verified effective' };
+      return { message: 'NC closed. CAPA verified effective' };
     }
     if (dto.rejectNc) {
       await this.ncRepo.update(ncId, { status: NCStatus.REJECTED });
@@ -569,7 +569,7 @@ export class NCService {
         companyId,
         dto.verifiedBy,
         'error',
-        `NC · Rejected at verification — ${nc.title || 'NC'}`,
+        `NC · Rejected at verification: ${nc.title || 'NC'}`,
         { ncId },
       );
       return { message: 'NC rejected after verification' };
@@ -578,10 +578,10 @@ export class NCService {
       companyId,
       dto.verifiedBy,
       'warning',
-      `NC · Verification recorded (not effective) — ${nc.title || 'NC'}`,
+      `NC · Verification recorded (not effective): ${nc.title || 'NC'}`,
       { ncId },
     );
-    return { message: 'Verification failed — NC remains in verification' };
+    return { message: 'Verification failed. NC remains in verification' };
   }
 
   /**
@@ -670,7 +670,7 @@ export class NCService {
       return {
         ncId: id,
         branches: {
-          man: 'People / competence / communication (template — connect to your NC in the editor).',
+          man: 'People / competence / communication (template: connect to your NC in the editor).',
           machine: 'Tools, equipment, or software limitations.',
           material: 'Inputs, specifications, or data quality issues.',
           method: 'Procedure clarity vs actual practice.',

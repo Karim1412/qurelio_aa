@@ -33,7 +33,7 @@ def _clean_clause_ref(ref: str) -> str:
     """Collapse a clause id the heading regex captured more than once.
 
     PDF annex pages repeat their header on consecutive lines, and the greedy
-    heading pattern swallows every copy — "ANNEX X ANNEX X ANNEX X ANNEX X".
+    heading pattern swallows every copy: "ANNEX X ANNEX X ANNEX X ANNEX X".
     Handles any repeat count, not just doubling.
     """
     r = " ".join((ref or "").split())
@@ -53,7 +53,7 @@ def _clean_clause_ref(ref: str) -> str:
     return r
 
 
-# A numbered point inside a section: "1.", "2)", "3.1", "3.1." — these carry the
+# A numbered point inside a section: "1.", "2)", "3.1", "3.1.", these carry the
 # actual requirements, and their numbers are the clause versions an auditor cites.
 _NUMBERED_POINT = re.compile(r"^\s*(\d{1,2}(?:\.\d{1,3}){0,3})\s*[.)]?\s+(?=\S)")
 # Lettered sub-item: "(a) …" / "a) …"
@@ -156,7 +156,7 @@ class IngestionService:
         )
         # Pinecone connection is best-effort at startup. If DNS/api.pinecone.io is
         # unreachable when the container boots (e.g. transient network glitch on
-        # the Docker host), don't crash the whole rag-service — defer the index
+        # the Docker host), don't crash the whole rag-service, defer the index
         # attach to the first call that actually needs it. Routes that don't use
         # vectors (health, SSE evaluation streams) keep working in the meantime.
         self._pc = Pinecone(api_key=settings.PINECONE_API_KEY)
@@ -165,7 +165,7 @@ class IngestionService:
             self._ensure_pinecone_index()
         except Exception as e:
             logger.warning(
-                "Pinecone unreachable at startup (%s) — service started in degraded mode; "
+                "Pinecone unreachable at startup (%s): service started in degraded mode; "
                 "indexing/search will retry connecting on first call.",
                 e,
             )
@@ -232,7 +232,7 @@ class IngestionService:
                     pages.append(p.extract_text() or "")
             return pages
         except Exception as e:
-            logger.warning("Per-page PDF extraction failed (%s) — indexing without pages", e)
+            logger.warning("Per-page PDF extraction failed (%s), indexing without pages", e)
             return None
 
     def _extract(self, data: bytes, mime: str) -> Tuple[str, int]:
@@ -333,7 +333,7 @@ class IngestionService:
             if r.is_error:
                 body = (r.text or "")[:500]
                 logger.error(
-                    "document-service callback failed: %s %s — %s (set matching DOCUMENT_INTERNAL_TOKEN on both services)",
+                    "document-service callback failed: %s %s: %s (set matching DOCUMENT_INTERNAL_TOKEN on both services)",
                     r.status_code,
                     url,
                     body,
@@ -360,7 +360,7 @@ class IngestionService:
                 return None
             except Exception as e:
                 logger.error(
-                    "Embedding failed (batch %s-%s) with base_url=%s model=%s: %s — a 401 here "
+                    "Embedding failed (batch %s-%s) with base_url=%s model=%s: %s, a 401 here "
                     "usually means EMBEDDING_BASE_URL and EMBEDDING_API_KEY belong to different "
                     "providers; leave both blank to inherit the working OPENAI_* pair.",
                     i, i + len(batch), self._embedding_base_url, settings.EMBEDDING_MODEL, e,
@@ -368,7 +368,7 @@ class IngestionService:
                 return None
             if not vecs or len(vecs) != len(batch):
                 logger.error(
-                    "Embedding response invalid: got %s vectors for %s chunks — check EMBEDDING_MODEL "
+                    "Embedding response invalid: got %s vectors for %s chunks, check EMBEDDING_MODEL "
                     "(OpenRouter: use openai/text-embedding-3-small)",
                     len(vecs or []),
                     len(batch),
@@ -378,7 +378,7 @@ class IngestionService:
             if width != EMBEDDING_DIMENSION:
                 logger.error(
                     "Embedding model '%s' returned %d-dimension vectors but the index expects "
-                    "%d — refusing to upsert vectors Pinecone would reject.",
+                    "%d: refusing to upsert vectors Pinecone would reject.",
                     settings.EMBEDDING_MODEL, width, EMBEDDING_DIMENSION,
                 )
                 return None
@@ -422,7 +422,7 @@ class IngestionService:
 
                 # Prefer the numbered points inside the section: those are the
                 # auditable requirements, and their numbers ("3.1", "3.1 (a)") are
-                # the clause versions an auditor cites — not the section header.
+                # the clause versions an auditor cites: not the section header.
                 points = _split_numbered_points(body)
                 if points:
                     section_title = title or _clean_clause_ref(ref)
@@ -467,7 +467,7 @@ class IngestionService:
         vectors = await self._embed_document_chunks(chunks)
         if vectors is None:
             logger.error(
-                "Vector indexing skipped for %s — document stays READY but not searchable. "
+                "Vector indexing skipped for %s: document stays READY but not searchable. "
                 "Set EMBEDDING_MODEL=openai/text-embedding-3-small when using OpenRouter.",
                 document_id,
             )
@@ -610,7 +610,7 @@ class IngestionService:
         structured = _trim_structured_for_storage(structured)
         flattened = flatten_for_search(raw_text, structured)
         # Standards are re-indexed from this stored text on activation, so a tight
-        # cap silently truncated them to the preamble — the normative clauses and
+        # cap silently truncated them to the preamble: the normative clauses and
         # annexes never reached the vector store and evaluations found no clauses.
         # extracted_text is a Postgres `text` column and the callback body limit is
         # 25 MB, so this bound only guards against pathological files.
@@ -631,7 +631,7 @@ class IngestionService:
         copyright_note = describe_copyright(finding) if finding else None
         if finding:
             logger.warning(
-                "Copyright guardrail: quarantining %s — rule=%s evidence=%r",
+                "Copyright guardrail: quarantining %s: rule=%s evidence=%r",
                 doc_id, finding.rule, finding.evidence[:120],
             )
 
@@ -744,7 +744,7 @@ class IngestionService:
                 logger.info("Deleted %d vector(s) for doc %s", deleted, document_id)
                 return
         except Exception as e:
-            logger.warning("Prefix delete unavailable for %s (%s) — trying filter", document_id, e)
+            logger.warning("Prefix delete unavailable for %s (%s), trying filter", document_id, e)
 
         try:
             index.delete(filter={"document_id": {"$eq": document_id}}, namespace=company_id)

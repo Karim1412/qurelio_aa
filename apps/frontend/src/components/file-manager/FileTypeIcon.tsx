@@ -3,7 +3,7 @@
 import React from 'react';
 
 /**
- * Realistic Windows-style file & folder glyphs (drawn as SVG — we can't ship
+ * Realistic Windows-style file & folder glyphs (drawn as SVG, we can't ship
  * Microsoft's proprietary icons, so these are faithful look-alikes: a sheet
  * with a folded corner and a coloured type ribbon, and a yellow folder).
  */

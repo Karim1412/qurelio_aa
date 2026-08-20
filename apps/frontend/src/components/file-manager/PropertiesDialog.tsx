@@ -40,7 +40,7 @@ interface AccessRule {
 }
 
 const APP_ROLES: { id: string; label: string; description: string }[] = [
-  { id: 'DIRECTOR', label: 'Director', description: 'Company admin — always has access.' },
+  { id: 'DIRECTOR', label: 'Director', description: 'Company admin, always has access.' },
   {
     id: 'QUALITY_MANAGER',
     label: 'Quality Manager',
@@ -99,7 +99,7 @@ interface Props {
 }
 
 function formatBytes(b?: number): string {
-  if (!b || b < 0) return '—';
+  if (!b || b < 0) return '-';
   if (b < 1024) return `${b} B`;
   if (b < 1024 * 1024) return `${(b / 1024).toFixed(1)} KB`;
   if (b < 1024 * 1024 * 1024) return `${(b / (1024 * 1024)).toFixed(1)} MB`;
@@ -107,9 +107,9 @@ function formatBytes(b?: number): string {
 }
 
 function formatExact(iso?: string): string {
-  if (!iso) return '—';
+  if (!iso) return '-';
   const d = new Date(iso);
-  if (!Number.isFinite(d.getTime())) return '—';
+  if (!Number.isFinite(d.getTime())) return '-';
   return d.toLocaleString(undefined, {
     day: '2-digit',
     month: 'short',
@@ -120,9 +120,9 @@ function formatExact(iso?: string): string {
 }
 
 function formatRelative(iso?: string): string {
-  if (!iso) return '—';
+  if (!iso) return '-';
   const d = new Date(iso);
-  if (!Number.isFinite(d.getTime())) return '—';
+  if (!Number.isFinite(d.getTime())) return '-';
   const diff = (Date.now() - d.getTime()) / 1000;
   if (diff < 60) return 'just now';
   if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
@@ -208,7 +208,7 @@ export function PropertiesDialog({ target, usersById, folders, starred, onClose 
             .filter((r) => r.kind === 'USER' && r.userId)
             .map((r) => r.userId as string);
           setSharedUserIds(ids);
-          // Normalise (drop ids — we don't need them on the client to re-save).
+          // Normalise (drop ids: we don't need them on the client to re-save).
           const clean = fetched.map((r) => ({
             kind: r.kind,
             userId: r.userId,
@@ -532,7 +532,7 @@ export function PropertiesDialog({ target, usersById, folders, starred, onClose 
                       <span>{displayName(uploader)}</span>
                     </span>
                   ) : (
-                    '—'
+                    '-'
                   )
                 }
               />
@@ -545,7 +545,7 @@ export function PropertiesDialog({ target, usersById, folders, starred, onClose 
                       <span>{displayName(lastEditor.user)}</span>
                     </span>
                   ) : audit && audit.length === 0 ? (
-                    '—'
+                    '-'
                   ) : !audit ? (
                     <span className="text-[var(--muted)]">Loading…</span>
                   ) : (
@@ -802,7 +802,7 @@ function AccessTab({
           </p>
           <p className="mt-0.5 text-[11px] leading-snug text-[var(--muted)]">
             {ruleCount === 0
-              ? "No rules — every member of the workspace can view this file. Add at least one rule below to restrict it."
+              ? "No rules. Every member of the workspace can view this file. Add at least one rule below to restrict it."
               : 'Only matching members, roles or departments can access this file. The company Director always has access.'}
           </p>
         </div>

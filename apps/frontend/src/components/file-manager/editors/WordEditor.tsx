@@ -27,7 +27,7 @@ export function WordEditor({ bytes, onChange, initialHtml, fontSize }: Props) {
   const [loading, setLoading] = useState(!initialHtml);
   const [error, setError] = useState<string | null>(null);
   const editorRef = useRef<HTMLDivElement>(null);
-  // Track whether the user has typed since first render — avoid clobbering the cursor on reload.
+  // Track whether the user has typed since first render, avoid clobbering the cursor on reload.
   const hydratedRef = useRef(false);
 
   useEffect(() => {

@@ -36,7 +36,7 @@ export function getDashboardTabs(role?: string | null): DashboardTab[] {
 
 /**
  * Index of the currently active tab for a pathname, or -1 when the current
- * route is not a top-level tab (e.g. a detail page) — in that case swipe
+ * route is not a top-level tab (e.g. a detail page): in that case swipe
  * navigation should stay inert.
  */
 export function activeTabIndex(tabs: DashboardTab[], pathname: string | null): number {

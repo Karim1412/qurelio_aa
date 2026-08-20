@@ -104,7 +104,7 @@ export function FolderGlobeOverlay({
   folders: GlobeFolder[];
   /** Fetch the documents inside a folder. */
   onLoadDocs: (folderId: string) => Promise<GlobeDoc[]>;
-  /** Open a file (editor) — overlay closes afterwards. */
+  /** Open a file (editor): overlay closes afterwards. */
   onOpenFile: (id: string) => void;
   onClose: () => void;
 }) {
@@ -251,7 +251,7 @@ export function FolderGlobeOverlay({
     return () => ro.disconnect();
   }, [open]);
 
-  // Animation frame loop — writes transforms straight to the DOM.
+  // Animation frame loop: writes transforms straight to the DOM.
   useEffect(() => {
     if (!open || nodes.length === 0) return;
     let raf = 0;

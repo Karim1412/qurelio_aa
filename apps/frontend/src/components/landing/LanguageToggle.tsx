@@ -129,7 +129,7 @@ export function LanguageToggle({ compact = false }: { compact?: boolean }) {
   };
 
   // iOS-style "tab/window close": the panel zooms back, fades, and softly blurs
-  // away — same feel as flicking a Safari tab into the stack.
+  // away: same feel as flicking a Safari tab into the stack.
   const tabCloseExit = {
     opacity: 0,
     scale: 0.7,

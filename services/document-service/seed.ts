@@ -1,5 +1,5 @@
 /**
- * Demo seed — creates several products (projects) with documents for the
+ * Demo seed: creates several products (projects) with documents for the
  * "Byrsa Pharma" pharmaceutical scenario (06_Demo_Data_Pharma).
  *
  * Products come from each pharma product folder's product.json; every product
@@ -10,7 +10,7 @@
  *   SEED_DB_HOST=localhost SEED_DB_PORT=5433 SEED_MINIO_ENDPOINT=localhost \
  *     npx ts-node seed.ts
  *
- * (5433 = the host port Postgres is published on — see docker-compose.yml.)
+ * (5433 = the host port Postgres is published on, see docker-compose.yml.)
  * Optionally target a specific tenant with SEED_COMPANY_ID=<uuid>; otherwise
  * the first company in the database is used.
  */
@@ -68,21 +68,21 @@ type SeedProduct = Partial<Product> & { name: string };
 
 const PHARMA_PRODUCTS: SeedProduct[] = [
   {
-    name: 'Furolix 20 mg/2 mL — furosemide, solution for injection',
+    name: 'Furolix 20 mg/2 mL: furosemide, solution for injection',
     reference: 'BYR-FUR-020',
     sku: 'BYR-FUR-020',
-    description: 'Sterile, preservative-free aqueous solution of furosemide 10 mg/mL for intravenous or intramuscular administration, filled in 2 mL amber Type I glass ampoules and terminally sterilised by moist heat (121 °C, F0 ≥ 15 min) at the Sidi Thabet sterile site. Supplied in cartons of 10 and hospital cartons of 50. Photolabile — protected by amber glass and the outer carton.',
+    description: 'Sterile, preservative-free aqueous solution of furosemide 10 mg/mL for intravenous or intramuscular administration, filled in 2 mL amber Type I glass ampoules and terminally sterilised by moist heat (121 °C, F0 ≥ 15 min) at the Sidi Thabet sterile site. Supplied in cartons of 10 and hospital cartons of 50. Photolabile, protected by amber glass and the outer carton.',
     brandName: 'Furolix',
     productFamily: 'Byrsa Sterile Injectables',
     productType: 'finished',
     productStatus: 'active',
     categoryTags: [
-      'Medicinal product for human use — sterile small-volume parenteral (ampoule)',
+      'Medicinal product for human use: sterile small-volume parenteral (ampoule)',
     ],
-    intendedUse: 'Oedema associated with congestive heart failure, hepatic cirrhosis or renal disease including nephrotic syndrome, where a rapid onset of diuresis is required or oral administration is not practicable; acute pulmonary oedema; adjunct in hypertensive crisis. Administered by healthcare professionals in hospital and emergency settings. Adults: 20–40 mg by slow intravenous injection over 1–2 minutes, not exceeding 4 mg/minute; paediatric 0.5–1 mg/kg per dose (max 20 mg/day). Single-dose container — any unused portion is discarded. Incompatible with acidic solutions (pH < 7), notably glucose 5 %.',
+    intendedUse: 'Oedema associated with congestive heart failure, hepatic cirrhosis or renal disease including nephrotic syndrome, where a rapid onset of diuresis is required or oral administration is not practicable; acute pulmonary oedema; adjunct in hypertensive crisis. Administered by healthcare professionals in hospital and emergency settings. Adults: 20–40 mg by slow intravenous injection over 1–2 minutes, not exceeding 4 mg/minute; paediatric 0.5–1 mg/kg per dose (max 20 mg/day). Single-dose container; any unused portion is discarded. Incompatible with acidic solutions (pH < 7), notably glucose 5 %.',
     targetUsers: [
       'Hospital prescribers, nurses, hospital pharmacists',
-      'B2B — hospital tenders, wholesalers',
+      'B2B: hospital tenders, wholesalers',
     ],
     keyMaterials: [
       'Furosemide (active substance, CEP-covered API)',
@@ -105,25 +105,25 @@ const PHARMA_PRODUCTS: SeedProduct[] = [
       'European Union (via MAH Pharmelis SAS)',
     ],
     requiredCertifications: [
-      'Marketing authorisation (AMM) — DPM Tunisia',
-      'GMP certificate, sterile scope — DPM Tunisia',
-      'EU GMP certificate for a third-country sterile site — ANSM (France)',
+      'Marketing authorisation (AMM): DPM Tunisia',
+      'GMP certificate, sterile scope: DPM Tunisia',
+      'EU GMP certificate for a third-country sterile site: ANSM (France)',
       'WHO-format Certificate of a Pharmaceutical Product (CPP)',
-      'CEP for the active substance — EDQM (supplier-held)',
-      'Ph. Eur. monographs and general chapters 2.6.1 / 2.6.14 / 2.9.19 / 2.9.20 / 5.1.1 (USER_SUPPLIED — referenced by number only)',
+      'CEP for the active substance: EDQM (supplier-held)',
+      'Ph. Eur. monographs and general chapters 2.6.1 / 2.6.14 / 2.9.19 / 2.9.20 / 5.1.1 (USER_SUPPLIED: referenced by number only)',
     ],
     applicableRegulations: [
       'Loi n° 85-91 du 22 novembre 1985 réglementant les activités pharmaceutiques (Tunisia)',
-      'Directive 2001/83/EC — Community code relating to medicinal products for human use',
-      'EudraLex Volume 4 — EU GMP Part I and **Annex 1 (2022 revision)**, Annex 15, Annex 16',
-      'Regulation (EC) No 1234/2008 — variations',
-      'Commission Delegated Regulation (EU) 2016/161 — safety features',
+      'Directive 2001/83/EC: Community code relating to medicinal products for human use',
+      'EudraLex Volume 4: EU GMP Part I and **Annex 1 (2022 revision)**, Annex 15, Annex 16',
+      'Regulation (EC) No 1234/2008: variations',
+      'Commission Delegated Regulation (EU) 2016/161: safety features',
       'ICH Q1A(R2), Q1B, Q3D, Q7, Q9(R1), Q10',
-      'WHO TRS — GMP for sterile pharmaceutical products',
+      'WHO TRS: GMP for sterile pharmaceutical products',
     ],
     industryLabels: [],
     productionSites: [
-      'Sidi Thabet Sterile Site — line SVP-1',
+      'Sidi Thabet Sterile Site: line SVP-1',
     ],
     productionProcesses: [
       'Water for injections production and distribution',
@@ -133,16 +133,16 @@ const PHARMA_PRODUCTS: SeedProduct[] = [
       'Filling and tip-sealing (Grade A air supply in Grade C background)',
       'Terminal moist-heat sterilisation (121 °C, F0 ≥ 15)',
       '100 % visual inspection',
-      'Quality Control — sterility, endotoxins, particulates',
+      'Quality Control: sterility, endotoxins, particulates',
     ],
     criticalSuppliers: [
-      'Anhui Kangtai Fine Chemicals Co. Ltd, China — furosemide API (CEP R1-CEP-2018-244/02)',
-      'Verrerie Médicale Adriatica S.p.A. — amber Type I ampoules (primary source)',
-      'Sfax Glass Industries — ampoules (secondary source)',
+      'Anhui Kangtai Fine Chemicals Co. Ltd, China: furosemide API (CEP R1-CEP-2018-244/02)',
+      'Verrerie Médicale Adriatica S.p.A.: amber Type I ampoules (primary source)',
+      'Sfax Glass Industries: ampoules (secondary source)',
     ],
     productCertifications: [
       {
-        standardName: 'Marketing Authorisation (AMM) — Tunisia',
+        standardName: 'Marketing Authorisation (AMM): Tunisia',
         certifyingBody: 'Direction de la Pharmacie et du Médicament (DPM)',
         certificateNumber: 'AMM 2019-0207/DPM',
         marketScope: 'Tunisia',
@@ -150,7 +150,7 @@ const PHARMA_PRODUCTS: SeedProduct[] = [
         expiryDate: '2029-06-10',
       },
       {
-        standardName: 'GMP Certificate — sterile products, terminally sterilised SVP',
+        standardName: 'GMP Certificate: sterile products, terminally sterilised SVP',
         certifyingBody: 'DPM Tunisia',
         certificateNumber: 'GMP/TN-2024-0069',
         marketScope: 'Tunisia + export',
@@ -158,7 +158,7 @@ const PHARMA_PRODUCTS: SeedProduct[] = [
         expiryDate: '2027-02-18',
       },
       {
-        standardName: 'EU GMP Certificate — third-country sterile site',
+        standardName: 'EU GMP Certificate: third-country sterile site',
         certifyingBody: 'ANSM (France)',
         certificateNumber: 'FR/GMP/2024/0188',
         marketScope: 'European Union / EEA',
@@ -179,7 +179,7 @@ const PHARMA_PRODUCTS: SeedProduct[] = [
     seedFolder: 'Furolix_Injectable',
   },
   {
-    name: 'Glucoryl 850 — metformin hydrochloride 850 mg film-coated tablets',
+    name: 'Glucoryl 850: metformin hydrochloride 850 mg film-coated tablets',
     reference: 'BYR-GLU-850',
     sku: 'BYR-GLU-850',
     description: 'Generic immediate-release film-coated tablet of metformin hydrochloride 850 mg for the treatment of type 2 diabetes mellitus. Manufactured by high-shear wet granulation, compression and aqueous film coating at the Ben Arous plant. Packed in PVC/PVDC–aluminium blisters, carton of 30 tablets. Bioequivalence to the reference product demonstrated in study BE-MET-2021-07.',
@@ -188,12 +188,12 @@ const PHARMA_PRODUCTS: SeedProduct[] = [
     productType: 'finished',
     productStatus: 'active',
     categoryTags: [
-      'Medicinal product for human use — solid oral form (film-coated tablet)',
+      'Medicinal product for human use: solid oral form (film-coated tablet)',
     ],
-    intendedUse: 'Treatment of type 2 diabetes mellitus, particularly in overweight patients, when dietary management and exercise alone do not achieve adequate glycaemic control — in adults as monotherapy or in combination with other oral antidiabetic agents or insulin, and in children from 10 years of age and adolescents. Prescription-only (liste I). Usual starting dose 850 mg once or twice daily with or after meals; maximum 3 000 mg daily in divided doses. Contraindicated in severe renal impairment (GFR < 30 mL/min/1.73 m²) and in conditions predisposing to lactic acidosis.',
+    intendedUse: 'Treatment of type 2 diabetes mellitus, particularly in overweight patients, when dietary management and exercise alone do not achieve adequate glycaemic control, in adults as monotherapy or in combination with other oral antidiabetic agents or insulin, and in children from 10 years of age and adolescents. Prescription-only (liste I). Usual starting dose 850 mg once or twice daily with or after meals; maximum 3 000 mg daily in divided doses. Contraindicated in severe renal impairment (GFR < 30 mL/min/1.73 m²) and in conditions predisposing to lactic acidosis.',
     targetUsers: [
       'Prescribers and pharmacists',
-      'B2B — wholesalers, tender bodies',
+      'B2B: wholesalers, tender bodies',
       'Patients (self-administration)',
     ],
     keyMaterials: [
@@ -201,7 +201,7 @@ const PHARMA_PRODUCTS: SeedProduct[] = [
       'Povidone K30 (binder)',
       'Maize starch (diluent/disintegrant)',
       'Magnesium stearate, vegetable origin (lubricant)',
-      'Opadry II White 85F18422 — hypromellose, titanium dioxide E171, macrogol 3350, talc',
+      'Opadry II White 85F18422: hypromellose, titanium dioxide E171, macrogol 3350, talc',
       'PVC/PVDC 250/60 µm forming film + 20 µm aluminium lidding',
     ],
     physicalForm: 'Solid',
@@ -217,19 +217,19 @@ const PHARMA_PRODUCTS: SeedProduct[] = [
       'European Union (via MAH Pharmelis SAS)',
     ],
     requiredCertifications: [
-      'Marketing authorisation (AMM) — DPM Tunisia',
-      'GMP certificate — DPM Tunisia',
-      'EU GMP certificate for a third-country site — ANSM (France)',
+      'Marketing authorisation (AMM): DPM Tunisia',
+      'GMP certificate: DPM Tunisia',
+      'EU GMP certificate for a third-country site: ANSM (France)',
       'WHO-format Certificate of a Pharmaceutical Product (CPP)',
-      'CEP for the active substance — EDQM (supplier-held)',
-      'Ph. Eur. monographs (USER_SUPPLIED — referenced by number only, never hosted)',
+      'CEP for the active substance: EDQM (supplier-held)',
+      'Ph. Eur. monographs (USER_SUPPLIED: referenced by number only, never hosted)',
     ],
     applicableRegulations: [
       'Loi n° 85-91 du 22 novembre 1985 réglementant les activités pharmaceutiques (Tunisia)',
-      'Directive 2001/83/EC — Community code relating to medicinal products for human use',
-      'EudraLex Volume 4 — EU GMP, Part I and Annexes 15 & 16',
-      'Regulation (EC) No 1234/2008 — variations',
-      'Commission Delegated Regulation (EU) 2016/161 — safety features',
+      'Directive 2001/83/EC: Community code relating to medicinal products for human use',
+      'EudraLex Volume 4: EU GMP, Part I and Annexes 15 & 16',
+      'Regulation (EC) No 1234/2008: variations',
+      'Commission Delegated Regulation (EU) 2016/161: safety features',
       'ICH Q1A(R2), Q3C, Q3D, M7(R2), Q7, Q9(R1), Q10',
     ],
     industryLabels: [],
@@ -246,14 +246,14 @@ const PHARMA_PRODUCTS: SeedProduct[] = [
       'Quality Control (chemical/physical, microbiological)',
     ],
     criticalSuppliers: [
-      'Shreeji Actives Pvt Ltd, India — metformin hydrochloride API (CEP R1-CEP-2016-118, single source)',
-      'Colorcon — Opadry II film coat',
-      'Univar Maghreb — povidone, maize starch',
-      'Klöckner Pentaplast / Amcor Tunisia — primary and secondary packaging',
+      'Shreeji Actives Pvt Ltd, India: metformin hydrochloride API (CEP R1-CEP-2016-118, single source)',
+      'Colorcon: Opadry II film coat',
+      'Univar Maghreb: povidone, maize starch',
+      'Klöckner Pentaplast / Amcor Tunisia: primary and secondary packaging',
     ],
     productCertifications: [
       {
-        standardName: 'Marketing Authorisation (AMM) — Tunisia',
+        standardName: 'Marketing Authorisation (AMM): Tunisia',
         certifyingBody: 'Direction de la Pharmacie et du Médicament (DPM)',
         certificateNumber: 'AMM 2022-0418/DPM',
         marketScope: 'Tunisia',
@@ -261,7 +261,7 @@ const PHARMA_PRODUCTS: SeedProduct[] = [
         expiryDate: '2027-03-13',
       },
       {
-        standardName: 'GMP Certificate — non-sterile solid oral & semi-solid forms',
+        standardName: 'GMP Certificate: non-sterile solid oral & semi-solid forms',
         certifyingBody: 'DPM Tunisia',
         certificateNumber: 'GMP/TN-2023-0142',
         marketScope: 'Tunisia + export',
@@ -269,7 +269,7 @@ const PHARMA_PRODUCTS: SeedProduct[] = [
         expiryDate: '2027-09-11',
       },
       {
-        standardName: 'EU GMP Certificate — third-country manufacturing site',
+        standardName: 'EU GMP Certificate: third-country manufacturing site',
         certifyingBody: 'ANSM (France)',
         certificateNumber: 'FR/GMP/2024/0731',
         marketScope: 'European Union / EEA',
@@ -290,7 +290,7 @@ const PHARMA_PRODUCTS: SeedProduct[] = [
     seedFolder: 'Glucoryl850_Tablet',
   },
   {
-    name: 'Mycozan 2 % cream — ketoconazole 20 mg/g',
+    name: 'Mycozan 2 % cream: ketoconazole 20 mg/g',
     reference: 'BYR-MYC-020',
     sku: 'BYR-MYC-020',
     description: 'Topical imidazole antifungal cream, 2 % ketoconazole in an oil-in-water emulsion, manufactured by hot-process emulsification and high-shear homogenisation at the Ben Arous semi-solid suite. Preserved with methyl and propyl parahydroxybenzoate; contains 10 % w/w propylene glycol. Packed in 30 g internally lacquered aluminium tubes.',
@@ -299,17 +299,17 @@ const PHARMA_PRODUCTS: SeedProduct[] = [
     productType: 'finished',
     productStatus: 'active',
     categoryTags: [
-      'Medicinal product for human use — semi-solid cutaneous form (cream)',
+      'Medicinal product for human use: semi-solid cutaneous form (cream)',
     ],
     intendedUse: 'Topical treatment of dermatomycoses caused by dermatophytes and/or yeasts: tinea corporis, tinea cruris, tinea pedis, tinea manuum, cutaneous candidosis, pityriasis versicolor and seborrhoeic dermatitis. Applied once or twice daily to the affected area and immediately surrounding skin for 2–6 weeks depending on indication. Cutaneous use only; not for ophthalmic, oral or intravaginal use. Multi-dose container used by the patient over several weeks.',
     targetUsers: [
       'Patients (self-application)',
       'Prescribers, dermatologists, pharmacists',
-      'B2B — wholesalers and distributors',
+      'B2B: wholesalers and distributors',
     ],
     keyMaterials: [
       'Ketoconazole (active substance, CEP-covered API)',
-      'Propylene glycol 10 % w/w — high-risk excipient, distributor-supplied',
+      'Propylene glycol 10 % w/w: high-risk excipient, distributor-supplied',
       'Cetostearyl alcohol / stearyl alcohol (consistency agents)',
       'Polysorbate 60 and sorbitan monostearate (emulsifier pair)',
       'Isopropyl myristate (emollient)',
@@ -330,25 +330,25 @@ const PHARMA_PRODUCTS: SeedProduct[] = [
       'European Union (via MAH Pharmelis SAS)',
     ],
     requiredCertifications: [
-      'Marketing authorisation (AMM) — DPM Tunisia',
-      'GMP certificate (semi-solid scope) — DPM Tunisia',
-      'EU GMP certificate for a third-country site — ANSM (France)',
+      'Marketing authorisation (AMM): DPM Tunisia',
+      'GMP certificate (semi-solid scope): DPM Tunisia',
+      'EU GMP certificate for a third-country site: ANSM (France)',
       'WHO-format Certificate of a Pharmaceutical Product (CPP)',
-      'CEP for the active substance — EDQM (supplier-held)',
-      'Ph. Eur. 5.1.3 / 5.1.4 and USP ⟨51⟩ (USER_SUPPLIED — referenced by number only, never hosted)',
+      'CEP for the active substance: EDQM (supplier-held)',
+      'Ph. Eur. 5.1.3 / 5.1.4 and USP ⟨51⟩ (USER_SUPPLIED: referenced by number only, never hosted)',
     ],
     applicableRegulations: [
       'Loi n° 85-91 du 22 novembre 1985 réglementant les activités pharmaceutiques (Tunisia)',
-      'Directive 2001/83/EC — Community code relating to medicinal products for human use (labelling, Title V)',
+      'Directive 2001/83/EC: Community code relating to medicinal products for human use (labelling, Title V)',
       'EU guideline on excipients in the labelling and package leaflet of medicinal products for human use',
-      'EudraLex Volume 4 — EU GMP Part I (Ch. 5 supplier qualification, Ch. 6 QC)',
-      'Regulation (EC) No 1234/2008 — variations',
-      'Commission Delegated Regulation (EU) 2016/161 — safety features',
+      'EudraLex Volume 4: EU GMP Part I (Ch. 5 supplier qualification, Ch. 6 QC)',
+      'Regulation (EC) No 1234/2008: variations',
+      'Commission Delegated Regulation (EU) 2016/161: safety features',
       'ICH Q1A(R2), Q3D, Q7, Q9(R1), Q10',
     ],
     industryLabels: [],
     productionSites: [
-      'Ben Arous Solid & Semi-Solid Plant — semi-solid suite SS-2',
+      'Ben Arous Solid & Semi-Solid Plant: semi-solid suite SS-2',
     ],
     productionProcesses: [
       'Dispensing',
@@ -357,18 +357,18 @@ const PHARMA_PRODUCTS: SeedProduct[] = [
       'Active addition at 45 °C and controlled cooling (≤ 1.5 °C/min)',
       'Aluminium tube filling and crimping',
       'Cartoning',
-      'Quality Control — physicochemical, rheology, microbiology',
+      'Quality Control: physicochemical, rheology, microbiology',
     ],
     criticalSuppliers: [
-      'Ravensa Fine Chemicals S.L., Spain — ketoconazole API (CEP R1-CEP-2015-097/03)',
-      'Chemitrade Maghreb SARL — propylene glycol (DISTRIBUTOR, questionnaire-qualified only)',
-      'Univar Maghreb — parabens, sodium sulfite, isopropyl myristate',
-      'Peter Greven — cetostearyl and stearyl alcohol',
-      'Tuboplast Maghreb — aluminium tubes',
+      'Ravensa Fine Chemicals S.L., Spain: ketoconazole API (CEP R1-CEP-2015-097/03)',
+      'Chemitrade Maghreb SARL: propylene glycol (DISTRIBUTOR, questionnaire-qualified only)',
+      'Univar Maghreb: parabens, sodium sulfite, isopropyl myristate',
+      'Peter Greven: cetostearyl and stearyl alcohol',
+      'Tuboplast Maghreb: aluminium tubes',
     ],
     productCertifications: [
       {
-        standardName: 'Marketing Authorisation (AMM) — Tunisia',
+        standardName: 'Marketing Authorisation (AMM): Tunisia',
         certifyingBody: 'Direction de la Pharmacie et du Médicament (DPM)',
         certificateNumber: 'AMM 2020-0533/DPM',
         marketScope: 'Tunisia',
@@ -376,7 +376,7 @@ const PHARMA_PRODUCTS: SeedProduct[] = [
         expiryDate: '2030-09-07',
       },
       {
-        standardName: 'GMP Certificate — non-sterile solid oral & semi-solid forms',
+        standardName: 'GMP Certificate: non-sterile solid oral & semi-solid forms',
         certifyingBody: 'DPM Tunisia',
         certificateNumber: 'GMP/TN-2023-0142',
         marketScope: 'Tunisia + export',
@@ -384,7 +384,7 @@ const PHARMA_PRODUCTS: SeedProduct[] = [
         expiryDate: '2027-09-11',
       },
       {
-        standardName: 'EU GMP Certificate — third-country manufacturing site',
+        standardName: 'EU GMP Certificate: third-country manufacturing site',
         certifyingBody: 'ANSM (France)',
         certificateNumber: 'FR/GMP/2024/0731',
         marketScope: 'European Union / EEA',
@@ -405,7 +405,7 @@ const PHARMA_PRODUCTS: SeedProduct[] = [
     seedFolder: 'Mycozan_Cream',
   },
   {
-    name: 'Pedialgic 120 mg/5 mL — paracetamol oral suspension, sugar-free',
+    name: 'Pedialgic 120 mg/5 mL: paracetamol oral suspension, sugar-free',
     reference: 'BYR-PED-120',
     sku: 'BYR-PED-120',
     description: 'Sugar-free paediatric paracetamol oral suspension, strawberry-flavoured, preserved with sodium benzoate and suspended with xanthan gum and microcrystalline cellulose/carmellose. Manufactured on line LIQ-1 at the Grombalia liquids plant. Supplied in a 100 mL amber PET bottle with a child-resistant closure, bottle adapter and a 5 mL graduated oral syringe. Vehicle contains three high-risk polyol/glycol excipients: sorbitol 70 %, glycerol and propylene glycol.',
@@ -414,19 +414,19 @@ const PHARMA_PRODUCTS: SeedProduct[] = [
     productType: 'finished',
     productStatus: 'active',
     categoryTags: [
-      'Medicinal product for human use — oral liquid (suspension), paediatric',
+      'Medicinal product for human use: oral liquid (suspension), paediatric',
     ],
     intendedUse: 'Short-term symptomatic treatment of mild to moderate pain and/or fever in infants and children weighing 4 kg to 32 kg (approximately 1 month to 12 years). Dosing is by body weight: 15 mg/kg per dose up to four times daily, minimum interval 4 hours, maximum 60 mg/kg per day. Administered by parents and carers using the graduated oral syringe supplied; the bottle must be shaken before each use. OTC pharmacy sale. In-use period 3 months after first opening.',
     targetUsers: [
       'Parents and carers (paediatric patients from 1 month)',
       'Pharmacists, paediatricians',
-      'B2B — wholesalers, public tenders',
+      'B2B: wholesalers, public tenders',
     ],
     keyMaterials: [
       'Paracetamol, micronised (active substance, CEP-covered API)',
-      'Sorbitol 70 % non-crystallising — HIGH-RISK EXCIPIENT (1 750 mg/5 mL)',
-      'Glycerol — HIGH-RISK EXCIPIENT (500 mg/5 mL)',
-      'Propylene glycol — HIGH-RISK EXCIPIENT (200 mg/5 mL)',
+      'Sorbitol 70 % non-crystallising: HIGH-RISK EXCIPIENT (1 750 mg/5 mL)',
+      'Glycerol: HIGH-RISK EXCIPIENT (500 mg/5 mL)',
+      'Propylene glycol: HIGH-RISK EXCIPIENT (200 mg/5 mL)',
       'Xanthan gum, microcrystalline cellulose + carmellose sodium (suspending system)',
       'Sodium benzoate E211 (preservative), citrate buffer',
       'Strawberry flavour (propylene glycol carrier), carmoisine E122',
@@ -446,26 +446,26 @@ const PHARMA_PRODUCTS: SeedProduct[] = [
       'European Union (via MAH Pharmelis SAS)',
     ],
     requiredCertifications: [
-      'Marketing authorisation (AMM) — DPM Tunisia — EXPIRES 2026-11-21, renewal overdue',
-      'GMP certificate (liquid oral scope) — DPM Tunisia',
-      'EU GMP certificate for a third-country site — ANSM (France)',
-      'WHO-format Certificate of a Pharmaceutical Product (CPP) — supports 6 export registrations',
-      'CEP for the active substance — EDQM (supplier-held)',
-      'Ph. Eur. 5.1.3 / 5.1.4 and ISO 15378 (USER_SUPPLIED — referenced by number only, never hosted)',
+      'Marketing authorisation (AMM), DPM Tunisia: EXPIRES 2026-11-21, renewal overdue',
+      'GMP certificate (liquid oral scope): DPM Tunisia',
+      'EU GMP certificate for a third-country site: ANSM (France)',
+      'WHO-format Certificate of a Pharmaceutical Product (CPP): supports 6 export registrations',
+      'CEP for the active substance: EDQM (supplier-held)',
+      'Ph. Eur. 5.1.3 / 5.1.4 and ISO 15378 (USER_SUPPLIED: referenced by number only, never hosted)',
     ],
     applicableRegulations: [
       'Loi n° 85-91 du 22 novembre 1985 réglementant les activités pharmaceutiques (Tunisia)',
-      'DPM circular of 2025-09-04 — per-container identity and DEG/EG testing for oral liquid manufacturers',
-      'Directive 2001/83/EC — Community code relating to medicinal products for human use',
-      'EudraLex Volume 4 — EU GMP Part I, Chapter 5 (starting materials and suppliers), Chapter 6 (QC)',
-      'Commission Delegated Regulation (EU) 2016/161 — safety features',
-      'Regulation (EC) No 1234/2008 — variations',
+      'DPM circular of 2025-09-04: per-container identity and DEG/EG testing for oral liquid manufacturers',
+      'Directive 2001/83/EC: Community code relating to medicinal products for human use',
+      'EudraLex Volume 4: EU GMP Part I, Chapter 5 (starting materials and suppliers), Chapter 6 (QC)',
+      'Commission Delegated Regulation (EU) 2016/161: safety features',
+      'Regulation (EC) No 1234/2008: variations',
       'WHO guidance and medical product alerts on contaminated paediatric oral liquids',
       'ICH Q1A(R2), Q3D, Q7, Q9(R1), Q10',
     ],
     industryLabels: [],
     productionSites: [
-      'Grombalia Liquids & Packaging Plant — line LIQ-1',
+      'Grombalia Liquids & Packaging Plant: line LIQ-1',
     ],
     productionProcesses: [
       'Purified water production and distribution',
@@ -474,18 +474,18 @@ const PHARMA_PRODUCTS: SeedProduct[] = [
       'Micronised API dispersion and homogenisation',
       'Volumetric filling, child-resistant closure application, induction sealing',
       'Packing with dosing syringe and leaflet',
-      'Quality Control — physicochemical, dose uniformity, microbiology',
+      'Quality Control: physicochemical, dose uniformity, microbiology',
     ],
     criticalSuppliers: [
-      'Anhui Kangtai Fine Chemicals Co. Ltd, China — paracetamol API (CEP R1-CEP-2017-315/02)',
-      'Chemitrade Maghreb SARL — sorbitol 70 %, glycerol, propylene glycol (DISTRIBUTOR; questionnaire-qualified 2021, never audited; upstream manufacturer undocumented)',
-      'Aromatica Tunisie — strawberry flavour (propylene glycol carrier)',
-      'Univar Maghreb — sodium benzoate, buffers',
-      'Emballages du Cap Bon — amber PET bottles, child-resistant closures, oral syringes',
+      'Anhui Kangtai Fine Chemicals Co. Ltd, China: paracetamol API (CEP R1-CEP-2017-315/02)',
+      'Chemitrade Maghreb SARL: sorbitol 70 %, glycerol, propylene glycol (DISTRIBUTOR; questionnaire-qualified 2021, never audited; upstream manufacturer undocumented)',
+      'Aromatica Tunisie: strawberry flavour (propylene glycol carrier)',
+      'Univar Maghreb: sodium benzoate, buffers',
+      'Emballages du Cap Bon: amber PET bottles, child-resistant closures, oral syringes',
     ],
     productCertifications: [
       {
-        standardName: 'Marketing Authorisation (AMM) — Tunisia',
+        standardName: 'Marketing Authorisation (AMM): Tunisia',
         certifyingBody: 'Direction de la Pharmacie et du Médicament (DPM)',
         certificateNumber: 'AMM 2021-0692/DPM',
         marketScope: 'Tunisia (and the basis for 6 export registrations + the CPP)',
@@ -493,7 +493,7 @@ const PHARMA_PRODUCTS: SeedProduct[] = [
         expiryDate: '2026-11-21',
       },
       {
-        standardName: 'GMP Certificate — non-sterile liquid oral forms',
+        standardName: 'GMP Certificate: non-sterile liquid oral forms',
         certifyingBody: 'DPM Tunisia',
         certificateNumber: 'GMP/TN-2024-0211',
         marketScope: 'Tunisia + export',
@@ -501,7 +501,7 @@ const PHARMA_PRODUCTS: SeedProduct[] = [
         expiryDate: '2027-04-30',
       },
       {
-        standardName: 'EU GMP Certificate — third-country manufacturing site',
+        standardName: 'EU GMP Certificate: third-country manufacturing site',
         certifyingBody: 'ANSM (France)',
         certificateNumber: 'FR/GMP/2025/0104',
         marketScope: 'European Union / EEA',
@@ -529,18 +529,18 @@ const DOC_CATEGORY_JSON: Record<string, Record<string, string>> = {
     "Finished Product Specification (sterile SVP).docx": "Specification",
     "Manufacturing Process & Batch Formula.docx": "Technical File",
     "Stability Study Report (ICH Q1A + Q1B).docx": "Test Report",
-    "Certificate of Analysis — batch FUR20-2602.docx": "Test Report",
+    "Certificate of Analysis, batch FUR20-2602.docx": "Test Report",
     "SmPC & Package Leaflet + Labelling.docx": "Specification",
     "GMP Certificate (sterile scope) & WHO-format CPP.docx": "Certificate",
     "Product Quality Review (PQR) 2025.docx": "Quality Plan",
-    "Sterility Assurance & Contamination Control Strategy (Annex 1) — DRAFT.docx": "Quality Plan"
+    "Sterility Assurance & Contamination Control Strategy (Annex 1) DRAFT.docx": "Quality Plan"
   },
   "Glucoryl850_Tablet": {
     "Marketing Authorisation (AMM) & Export Registrations.docx": "Certificate",
     "Finished Product Specification (release & shelf-life).docx": "Specification",
     "Manufacturing Process & Batch Formula.docx": "Technical File",
     "Stability Study Report (ICH Q1A(R2)).docx": "Test Report",
-    "Certificate of Analysis — batch GLU850-2603.docx": "Test Report",
+    "Certificate of Analysis, batch GLU850-2603.docx": "Test Report",
     "SmPC & Package Leaflet + Labelling.docx": "Specification",
     "GMP Certificate & WHO-format CPP.docx": "Certificate",
     "Product Quality Review (PQR) 2025.docx": "Quality Plan",
@@ -551,7 +551,7 @@ const DOC_CATEGORY_JSON: Record<string, Record<string, string>> = {
     "Finished Product Specification (semi-solid).docx": "Specification",
     "Manufacturing Process & Batch Formula (O-W emulsion).docx": "Technical File",
     "Stability Study Report (ICH Q1A(R2)).docx": "Test Report",
-    "Certificate of Analysis — batch MYC02-2601.docx": "Test Report",
+    "Certificate of Analysis, batch MYC02-2601.docx": "Test Report",
     "SmPC & Package Leaflet + Labelling.docx": "Specification",
     "GMP Certificate & WHO-format CPP.docx": "Certificate",
     "Product Quality Review (PQR) 2025.docx": "Quality Plan",
@@ -562,17 +562,17 @@ const DOC_CATEGORY_JSON: Record<string, Record<string, string>> = {
     "Finished Product Specification (oral suspension).docx": "Specification",
     "Manufacturing Process & Batch Formula.docx": "Technical File",
     "Stability Study Report (ICH Q1A(R2)) incl. in-use study.docx": "Test Report",
-    "Certificate of Analysis — batch PED120-2605.docx": "Test Report",
+    "Certificate of Analysis, batch PED120-2605.docx": "Test Report",
     "SmPC & Package Leaflet + Labelling + dosing device.docx": "Specification",
     "GMP Certificate & WHO-format CPP.docx": "Certificate",
     "Product Quality Review (PQR) 2025.docx": "Quality Plan",
-    "Excipient Risk Assessment — DEG-EG in high-risk excipients — DRAFT.docx": "Technical File"
+    "Excipient Risk Assessment (DEG-EG in high-risk excipients) DRAFT.docx": "Technical File"
   }
 };
 
 /**
  * Document category per file, keyed by seed folder. Generated from each
- * product.json `documents[]` in 06_Demo_Data_Pharma — the folder name comes from
+ * product.json `documents[]` in 06_Demo_Data_Pharma, the folder name comes from
  * the product's `seedFolder`, so every product gets its own document set.
  */
 const DOC_CATEGORY: Record<string, Record<string, string>> = DOC_CATEGORY_JSON;
@@ -591,7 +591,7 @@ const ds = new DataSource({
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB,
   entities: [Document, DocumentVersion, Product, FileFolder, DocumentAccessRule, DocumentAuditEvent],
-  // Tables are already created by the services (auth + document) — no DDL from the seed.
+  // Tables are already created by the services (auth + document), no DDL from the seed.
   synchronize: false,
 });
 
@@ -625,13 +625,13 @@ async function seed() {
           'Medical Devices',
           DEMO_EMAIL,
           '+33 4 00 00 00 00',
-          'Demo tenant — AlphaFlow medical devices (seeded)',
+          'Demo tenant: AlphaFlow medical devices (seeded)',
           '184',
           DEMO_PASSWORD_HASH,
         ],
       );
       companyId = inserted[0].id;
-      console.log(`+ demo company created — login: ${DEMO_EMAIL} / ${DEMO_PASSWORD}`);
+      console.log(`+ demo company created: login: ${DEMO_EMAIL} / ${DEMO_PASSWORD}`);
     }
   }
   // Prefer a real member of the tenant; otherwise attribute to the company (director) principal.
@@ -675,7 +675,7 @@ async function seed() {
     if (seedFolder) productIds.set(seedFolder, product.id);
   }
 
-  // ── Product documents — each product gets its own folder ─────────────────
+  // ── Product documents: each product gets its own folder ─────────────────
   const minio = new Minio.Client({
     endPoint: MINIO_ENDPOINT,
     port: MINIO_PORT,
@@ -696,7 +696,7 @@ async function seed() {
     // Idempotent per product: an existing document set is left untouched.
     const existingDocs = await docRepo.count({ where: { productId } });
     if (existingDocs > 0) {
-      console.log(`= ${p.name} already has ${existingDocs} document(s) — skipping`);
+      console.log(`= ${p.name} already has ${existingDocs} document(s): skipping`);
       continue;
     }
 

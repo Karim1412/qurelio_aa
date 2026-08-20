@@ -160,8 +160,8 @@ export default function AdminDemoPage() {
         status !== 'CONFIRMED'
           ? 'Requester notified'
           : link
-            ? 'Demo confirmed — Meet link sent'
-            : 'Demo confirmed — no meeting link (add one and re-confirm if needed)',
+            ? 'Demo confirmed, Meet link sent'
+            : 'Demo confirmed, no meeting link (add one and re-confirm if needed)',
       );
       setRespondTo(null);
       setRespondNote('');
@@ -178,7 +178,7 @@ export default function AdminDemoPage() {
     try {
       const res = await demoApi.deleteBooking(deleteTarget.id);
       const released = (res.data as { slotReleased?: boolean })?.slotReleased;
-      toast.success(released ? 'Request deleted — slot released' : 'Request deleted');
+      toast.success(released ? 'Request deleted, slot released' : 'Request deleted');
       setDeleteTarget(null);
       await load();
     } catch (e: any) {
@@ -439,7 +439,7 @@ export default function AdminDemoPage() {
               {isPastDay && (
                 <p className="mt-3 flex items-start gap-2 rounded-xl bg-amber-50 p-3 text-[12px] text-amber-800">
                   <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" />
-                  This day has passed. Slots can only be added for future times — visitors never see
+                  This day has passed. Slots can only be added for future times. Visitors never see
                   past slots.
                 </p>
               )}
@@ -526,7 +526,7 @@ export default function AdminDemoPage() {
         onDone={() => { setBulkOpen(false); void load(); }}
       />
 
-      {/* Delete a request — permanent, so it is confirmed */}
+      {/* Delete a request: permanent, so it is confirmed */}
       <Dialog open={!!deleteTarget} onOpenChange={(v) => !v && setDeleteTarget(null)}>
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -560,7 +560,7 @@ export default function AdminDemoPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Delete a request — permanent, so it is confirmed */}
+      {/* Delete a request: permanent, so it is confirmed */}
       <Dialog open={!!deleteTarget} onOpenChange={(v) => !v && setDeleteTarget(null)}>
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -600,7 +600,7 @@ export default function AdminDemoPage() {
           <DialogHeader>
             <DialogTitle>{answersOpen?.companyName}</DialogTitle>
             <DialogDescription className="text-[13px]">
-              {answersOpen?.fullName ?? '—'}{answersOpen?.role ? ` · ${answersOpen.role}` : ''}
+              {answersOpen?.fullName ?? '-'}{answersOpen?.role ? ` · ${answersOpen.role}` : ''}
             </DialogDescription>
           </DialogHeader>
           {answersOpen && (
@@ -640,7 +640,7 @@ export default function AdminDemoPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Delete a request — permanent, so it is confirmed */}
+      {/* Delete a request: permanent, so it is confirmed */}
       <Dialog open={!!deleteTarget} onOpenChange={(v) => !v && setDeleteTarget(null)}>
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -674,7 +674,7 @@ export default function AdminDemoPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Delete a request — permanent, so it is confirmed */}
+      {/* Delete a request: permanent, so it is confirmed */}
       <Dialog open={!!deleteTarget} onOpenChange={(v) => !v && setDeleteTarget(null)}>
         <DialogContent className="max-w-md">
           <DialogHeader>

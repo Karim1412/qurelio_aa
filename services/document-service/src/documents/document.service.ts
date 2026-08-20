@@ -30,7 +30,7 @@ const ALLOWED_MIMES = new Set([
   'application/json',
   'application/zip',
   'application/x-zip-compressed',
-  'application/octet-stream', // browsers send this for .csv/.txt/.zip — gated by extension below
+  'application/octet-stream', // browsers send this for .csv/.txt/.zip, gated by extension below
   'image/jpeg', 'image/png', 'image/tiff', 'image/gif', 'image/webp', 'image/svg+xml',
 ]);
 /**
@@ -51,7 +51,7 @@ const MAX_BYTES = 50 * 1024 * 1024;
 /**
  * Onboarding wizard folder that the user has not activated yet. Such a product is
  * invisible everywhere (library, archive, pickers) and is deleted if the wizard is
- * cancelled — only "Save & activate" turns it into a real product.
+ * cancelled: only "Save & activate" turns it into a real product.
  */
 export const PRODUCT_DRAFT_STATUS = 'DRAFT';
 
@@ -142,7 +142,7 @@ export class DocumentService {
       .createQueryBuilder('p')
       .leftJoinAndSelect('p.documents', 'd')
       .where('p.companyId = :companyId', { companyId })
-      // Wizard drafts are not products yet — they appear nowhere until activated.
+      // Wizard drafts are not products yet: they appear nowhere until activated.
       .andWhere('(p.onboardingStatus IS NULL OR p.onboardingStatus != :draft)', {
         draft: PRODUCT_DRAFT_STATUS,
       })
@@ -169,7 +169,7 @@ export class DocumentService {
     if (!product) throw new NotFoundException('Product not found');
 
     /** Hard-delete: physical storage + versions + ACL + DB rows for every doc in the folder, then the product row.
-     *  Done in one shot whether or not the product was archived first — caller has already confirmed via destructive UI.
+     *  Done in one shot whether or not the product was archived first, caller has already confirmed via destructive UI.
      */
     const docs = await this.docRepo.find({ where: { productId } });
     for (const doc of docs) {
@@ -278,7 +278,7 @@ export class DocumentService {
   }
 
   // ────────────────────────────────────────────────────────────
-  // FILE MANAGER — nestable folder tree
+  // FILE MANAGER: nestable folder tree
   // ────────────────────────────────────────────────────────────
 
   async listFolders(companyId: string) {
@@ -461,7 +461,7 @@ export class DocumentService {
     /**
      * Copyright guardrail: Qurelio only accepts freely usable, publicly published
      * documents. A title that names a licensed standards body is refused unless
-     * the uploader explicitly accepts responsibility — the acknowledgement is then
+     * the uploader explicitly accepts responsibility, the acknowledgement is then
      * stored on the row as evidence that the warning was shown.
      */
     const copyrightAck =
@@ -744,8 +744,8 @@ export class DocumentService {
 
     /**
      * Copyright guardrail: the content scan found publisher boilerplate. The
-     * document stays stored but is held back — no vectors were written, and
-     * activation is refused — until a Quality Manager accepts responsibility.
+     * document stays stored but is held back: no vectors were written, and
+     * activation is refused: until a Quality Manager accepts responsibility.
      * An acknowledgement already given at upload is not overridden.
      */
     if (quarantine && !doc.copyrightAcknowledged) {
@@ -798,7 +798,7 @@ export class DocumentService {
    * Quality Manager accepts responsibility for a quarantined document.
    *
    * This lifts the hold so the standard can be activated and indexed. The
-   * decision is recorded — who, when, and what the scan matched — because it is
+   * decision is recorded: who, when, and what the scan matched, because it is
    * the evidence that the warning was shown and accepted.
    */
   async acknowledgeCopyright(
@@ -1027,7 +1027,7 @@ export class DocumentService {
 
     /**
      * Files uploaded into an unactivated onboarding draft are not part of the library
-     * yet — the product itself does not exist as far as the user is concerned. Applied
+     * yet: the product itself does not exist as far as the user is concerned. Applied
      * unconditionally so they stay out of the trash view too.
      */
     qb.andWhere(
@@ -1117,7 +1117,7 @@ export class DocumentService {
         throw new ForbiddenException('Access denied');
     }
     if (!skipAudit) await this.audit.log(companyId, id, auditUserId, 'VIEW', {});
-    /** Use GET /documents/:id/download (proxied through API) — avoids MinIO presign host/Docker DNS issues. */
+    /** Use GET /documents/:id/download (proxied through API), avoids MinIO presign host/Docker DNS issues. */
     return { ...doc, sizeBytes: Number(doc.sizeBytes), downloadUrl: null };
   }
 
@@ -1138,7 +1138,7 @@ export class DocumentService {
     await this.audit.log(companyId, id, userId, 'DOWNLOAD', {});
     const stream = await this.storage.getObjectStream(doc.storageKey);
     const filename = doc.name?.trim() || 'document';
-    /** ISO standards are uploaded as PDF; DB mime can be wrong after pipeline — always serve as PDF. */
+    /** ISO standards are uploaded as PDF; DB mime can be wrong after pipeline, always serve as PDF. */
     const mimeType =
       doc.type === DocumentType.ISO_NORM
         ? 'application/pdf'
@@ -1292,7 +1292,7 @@ export class DocumentService {
         );
       }
     } else if (doc.productId && doc.type !== DocumentType.WORKSPACE_FILE) {
-      /** DOC-007: product-linked files — Company Admin (Director) archives. */
+      /** DOC-007: product-linked files: Company Admin (Director) archives. */
       if (actorRole !== 'DIRECTOR') {
         throw new ForbiddenException('Only Company Admin can archive product documents');
       }
@@ -1362,7 +1362,7 @@ export class DocumentService {
     if (doc.copyrightQuarantined) {
       throw new ForbiddenException(
         doc.copyrightFlag
-          ? `${doc.copyrightFlag} — accept responsibility for this document before activating it, or delete it.`
+          ? `${doc.copyrightFlag}. Accept responsibility for this document before activating it, or delete it.`
           : 'This document is held by the copyright guardrail. Accept responsibility before activating it, or delete it.',
       );
     }
@@ -1445,7 +1445,7 @@ export class DocumentService {
   }
 
   /**
-   * Internal: evaluation-service report/export — structured extraction + product folder merge profile.
+   * Internal: evaluation-service report/export: structured extraction + product folder merge profile.
    * Used for both ISO standard documents and product files (`fetchStructuredDoc`).
    */
   async getIsoStructuredForEvalExport(documentId: string, companyId: string) {

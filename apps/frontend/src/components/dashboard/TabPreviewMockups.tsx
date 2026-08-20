@@ -6,7 +6,7 @@ import React from 'react';
  * Compact wireframe "preview images" for the dashboard TV banner.
  *
  * Each mockup is a tiny SVG illustration that *visually evokes* what the
- * corresponding tab contains — like a screenshot in miniature, without
+ * corresponding tab contains: like a screenshot in miniature, without
  * needing real screenshots.
  *
  * They use `currentColor` so the parent can tint them to match the tab's
@@ -19,7 +19,7 @@ type MockupProps = {
   className?: string;
 };
 
-/* Common SVG wrapper — 320×200 viewBox with a soft window frame */
+/* Common SVG wrapper: 320×200 viewBox with a soft window frame */
 const MockFrame = ({ children, className }: MockupProps & { children: React.ReactNode }) => (
   <svg
     viewBox="0 0 320 200"

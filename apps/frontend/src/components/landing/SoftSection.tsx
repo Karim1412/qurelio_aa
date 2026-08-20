@@ -19,9 +19,9 @@ type SoftSectionProps = {
   rise?: number;
   /** Subtle parallax drift in px across the full scroll range. */
   parallax?: number;
-  /** Enter animation duration in seconds. (Unused with shutter — kept for compat.) */
+  /** Enter animation duration in seconds. (Unused with shutter: kept for compat.) */
   duration?: number;
-  /** Optional delay applied to the enter animation. (Unused with shutter — kept for compat.) */
+  /** Optional delay applied to the enter animation. (Unused with shutter: kept for compat.) */
   delay?: number;
   /** Render as a different element (default 'section'). */
   as?: 'section' | 'div';
@@ -30,7 +30,7 @@ type SoftSectionProps = {
 };
 
 /**
- * SoftSection — scroll-driven "shutter / curtain" reveal.
+ * SoftSection: scroll-driven "shutter / curtain" reveal.
  *
  * Same family of motion as the footer:
  *  - The section rises from below as it enters the viewport.
@@ -78,7 +78,7 @@ export function SoftSection({
   const scaleReveal = useTransform(enter, [0, 1], [0.965, 1]);
   const opacityReveal = useTransform(enter, [0, 0.45, 1], [0, 0.6, 1]);
 
-  // Parallax drift (kicks in after entrance) — composed with reveal via inner wrapper
+  // Parallax drift (kicks in after entrance): composed with reveal via inner wrapper
   const yDrift = useTransform(range, [0, 1], [parallax, -parallax]);
   const scaleDrift = useTransform(range, [0, 0.5, 1], [0.995, 1, 0.995]);
 

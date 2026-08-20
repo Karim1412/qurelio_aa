@@ -206,7 +206,7 @@ export function Footer() {
               />
               <div className="flex flex-col gap-3">
                 <p className="max-w-md text-[15px] leading-relaxed text-[var(--text-primary)]/85">
-                  Regulatory compliance, audits and quality operations — calm, clear,
+                  Regulatory compliance, audits and quality operations: calm, clear,
                   AI-assisted, and always under your control.
                 </p>
                 
@@ -352,7 +352,7 @@ export function Footer() {
         </div>
       </div>
 
-      {/* ─── Giant wordmark — letter-by-letter reveal ─── */}
+      {/* ─── Giant wordmark: letter-by-letter reveal ─── */}
       <div
         aria-hidden
         className="pointer-events-none relative select-none overflow-hidden"

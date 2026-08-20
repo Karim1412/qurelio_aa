@@ -58,7 +58,7 @@ const panelItem: Variants = {
 };
 
 // ──────────────────────────────────────────────────────────────────────────────
-// ILLUSTRATIONS — miniature product UI scenes.
+// ILLUSTRATIONS: miniature product UI scenes.
 // Linear / Stripe / Notion vibe: layered soft cards, gauges, chips, signatures.
 // `currentColor` adapts to .feature-card state (muted → card-accent on active).
 // ──────────────────────────────────────────────────────────────────────────────
@@ -81,7 +81,7 @@ const SoftDefs = ({ id }: { id: string }) => (
   </defs>
 );
 
-/* ─────────── 1. Compliance — KPI scorecard with gauge + compliance chips ─────────── */
+/* ─────────── 1. Compliance: KPI scorecard with gauge + compliance chips ─────────── */
 const ComplianceCharacter = () => (
   <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
     <SoftDefs id="cmp" />
@@ -147,7 +147,7 @@ const ComplianceCharacter = () => (
   </svg>
 );
 
-/* ─────────── 2. Audit — calendar + workflow with assigned auditors ─────────── */
+/* ─────────── 2. Audit: calendar + workflow with assigned auditors ─────────── */
 const AuditCharacter = () => (
   <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
     <SoftDefs id="aud" />
@@ -213,7 +213,7 @@ const AuditCharacter = () => (
   </svg>
 );
 
-/* ─── 3. CAPA — fishbone-inspired root cause with 5 Whys + verified badge ─── */
+/* ─── 3. CAPA: fishbone-inspired root cause with 5 Whys + verified badge ─── */
 const NonConformityCharacter = () => (
   <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
     <SoftDefs id="nc" />
@@ -257,7 +257,7 @@ const NonConformityCharacter = () => (
   </svg>
 );
 
-/* ─────── 4. Documents — versioned doc stack with signature + approval ─────── */
+/* ─────── 4. Documents: versioned doc stack with signature + approval ─────── */
 const DocumentsCharacter = () => (
   <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
     <SoftDefs id="doc" />
@@ -314,7 +314,7 @@ const DocumentsCharacter = () => (
   </svg>
 );
 
-/* ───────────── 5. AI Assistant — chat conversation with citations ───────────── */
+/* ───────────── 5. AI Assistant: chat conversation with citations ───────────── */
 const AIAssistantCharacter = () => (
   <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
     <SoftDefs id="ai" />
@@ -364,7 +364,7 @@ const AIAssistantCharacter = () => (
   </svg>
 );
 
-/* ──────── 6. Dashboards — KPI card with sparkline + mini-tiles row ──────── */
+/* ──────── 6. Dashboards: KPI card with sparkline + mini-tiles row ──────── */
 const DashboardCharacter = () => (
   <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
     <SoftDefs id="dsh" />
@@ -451,7 +451,7 @@ const features: Feature[] = [
       {
         title: 'Cut compliance prep by 70%',
         description:
-          'Continuous AI assessment of your products against the public laws, decrees and regulations of your target markets — turning a 3-month exercise into a same-day, repeatable check.',
+          'Continuous AI assessment of your products against the public laws, decrees and regulations of your target markets, turning a 3-month exercise into a same-day, repeatable check.',
       },
       {
         title: 'Actionable, not abstract',
@@ -461,7 +461,7 @@ const features: Feature[] = [
       {
         title: 'You stay in control',
         description:
-          'Every AI-generated result — reports, action plans, detected gaps — lands in a review queue first. Nothing becomes an official record or an executable action until your Quality Manager approves it.',
+          'Every AI-generated result (reports, action plans, detected gaps) lands in a review queue first. Nothing becomes an official record or an executable action until your Quality Manager approves it.',
       },
     ],
   },
@@ -482,7 +482,7 @@ const features: Feature[] = [
       {
         title: 'Finds what you did not know to look for',
         description:
-          'When a relevant regulation you never mentioned appears, Qurelio surfaces it and tells you precisely which products are affected — pending your review.',
+          'When a relevant regulation you never mentioned appears, Qurelio surfaces it and tells you precisely which products are affected, pending your review.',
       },
     ],
   },
@@ -503,7 +503,7 @@ const features: Feature[] = [
       {
         title: 'From audit to action in one click',
         description:
-          'Findings flow straight into your action plans — with full traceability from observation to closure.',
+          'Findings flow straight into your action plans, with full traceability from observation to closure.',
       },
     ],
   },
@@ -519,7 +519,7 @@ const features: Feature[] = [
       {
         title: 'Built-in 5 Whys, Ishikawa & 8D',
         description:
-          'Capture non-conformities from any source — audits, QC, customer complaints — and run structured root cause analysis without leaving the platform.',
+          'Capture non-conformities from any source (audits, QC, customer complaints) and run structured root cause analysis without leaving the platform.',
       },
       {
         title: 'Verified effectiveness',
@@ -534,13 +534,13 @@ const features: Feature[] = [
     label: 'Controlled Documents & File Library',
     Illustration: DocumentsCharacter,
     accent: '#D97706',
-    headline: 'One source of truth — versioned, signed, distributed',
+    headline: 'One source of truth: versioned, signed, distributed',
     cta: 'Explore Documents',
     blocks: [
       {
         title: 'Approval workflows that actually work',
         description:
-          'Multi-stage review, e-signatures, and automatic distribution to the right people — with a complete, audit-ready trail. Private by default.',
+          'Multi-stage review, e-signatures, and automatic distribution to the right people, with a complete, audit-ready trail. Private by default.',
       },
       {
         title: 'No more rogue versions',
@@ -561,12 +561,12 @@ const features: Feature[] = [
       {
         title: 'Real-time, role-based views',
         description:
-          'Compliance scores, open actions, audit status and quality KPIs for every site, team and regulation — live, not end-of-month.',
+          'Compliance scores, open actions, audit status and quality KPIs for every site, team and regulation, live, not end-of-month.',
       },
       {
         title: 'Drill from KPI to evidence',
         description:
-          'Click any number to trace it back to the source — audit, finding, document, or signature. Total transparency.',
+          'Click any number to trace it back to the source: audit, finding, document, or signature. Total transparency.',
       },
     ],
   },
@@ -771,7 +771,7 @@ export function WhyQurelio() {
           .qurelio-section { padding: 72px 20px 96px; }
         }
 
-        /* iOS-natural cubic — smooth deceleration without bounce overshoot */
+        /* iOS-natural cubic: smooth deceleration without bounce overshoot */
         .feature-card {
           position: relative;
           aspect-ratio: 4 / 5;
@@ -929,7 +929,7 @@ export function WhyQurelio() {
         }
         .info-block p { font-size: 14px; color: var(--muted); line-height: 1.6; margin: 0; }
 
-        /* ─── SVG motion — only on active card ─── */
+        /* ─── SVG motion: only on active card ─── */
         .card-illu g, .card-illu rect, .card-illu circle, .card-illu path, .card-illu ellipse {
           transform-box: fill-box;
           transform-origin: center;
@@ -954,7 +954,7 @@ export function WhyQurelio() {
           100% { opacity: 1; transform: translateY(0); }
         }
 
-        /* Soft draw — signature, curve */
+        /* Soft draw: signature, curve */
         .feature-card.active .illu-soft-draw {
           animation: illu-draw 1.4s 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
@@ -970,7 +970,7 @@ export function WhyQurelio() {
           100% { transform: scaleX(0.62); }
         }
 
-        /* Gauge arc — sweeps to 94% */
+        /* Gauge arc: sweeps to 94% */
         .feature-card.active .illu-arc {
           animation: illu-arc 1.6s 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
@@ -985,7 +985,7 @@ export function WhyQurelio() {
           50%      { transform: scale(1.25); opacity: 1; }
         }
 
-        /* CAPA — branches grow from spine outward */
+        /* CAPA: branches grow from spine outward */
         .feature-card.active .illu-branch {
           animation: illu-grow-line 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
           transform-origin: left center;
@@ -1011,7 +1011,7 @@ export function WhyQurelio() {
           100% { opacity: 1; transform: scale(1) rotate(0); }
         }
 
-        /* Documents — papers float in stack */
+        /* Documents: papers float in stack */
         .feature-card.active .illu-paper {
           animation: illu-float 5.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
         }
@@ -1091,7 +1091,7 @@ export function WhyQurelio() {
             What makes Qurelio the <em>intelligent</em> compliance platform
           </h2>
           <p className="qurelio-sub">
-            Built from the ground up for quality teams who need more than spreadsheets — Qurelio combines
+            Built from the ground up for quality teams who need more than spreadsheets. Qurelio combines
             AI, automation, and deep regulatory intelligence into one unified platform. And because compliance
             is too important to leave to a machine, every AI result waits for your approval before it becomes real.
           </p>
@@ -1100,7 +1100,7 @@ export function WhyQurelio() {
             <span className="qurelio-trust-dot" aria-hidden />
             <span>
               <strong>100% legal by design.</strong> Qurelio works exclusively with public, legally free
-              regulatory texts — laws, decrees and official regulations. Licensed standards such as ISO/IEC
+              regulatory texts: laws, decrees and official regulations. Licensed standards such as ISO/IEC
               are automatically detected and are never stored or analyzed.
             </span>
           </p>

@@ -10,7 +10,7 @@ import { getPageMeta } from '@/lib/page-meta';
 import { AuthUserSync } from '@/components/auth/auth-user-sync';
 import { RouteTransitionLoader } from '@/components/loading/RouteTransitionLoader';
 import { SwipeTabNavigator } from '@/components/layout/SwipeTabNavigator';
-// TrashFabGlobal (drag-to-delete floating button) intentionally not rendered —
+// TrashFabGlobal (drag-to-delete floating button) intentionally not rendered,
 // removed from the UI. The module is kept for `attachDocDragGlobal`, which the
 // dashboard and file library still import.
 

@@ -49,8 +49,8 @@ Evidence notes (may be empty): {notes}
 Auditor evidence checklist (tick marks show what was verified on site / desk): {evidence_checklist}
 
 Task:
-1) If **Current auditor evaluation** is already one of CONFORMANT, NON_CONFORMANT, OBSERVATION, STRENGTH — keep that **exact** same value for "answer" and only propose a coherent 0–100 score.
-2) If it is empty or "—", infer both "answer" and "score" from the criterion text, notes, AND the evidence checklist. Treat "[x] Gap, deviation, or nonconformity observed" as strong signal for NON_CONFORMANT unless notes clearly resolve it. Several "[x]" positive verification lines without a gap support CONFORMANT or STRENGTH if notes are exemplary.
+1) If **Current auditor evaluation** is already one of CONFORMANT, NON_CONFORMANT, OBSERVATION, STRENGTH, keep that **exact** same value for "answer" and only propose a coherent 0–100 score.
+2) If it is empty or "-", infer both "answer" and "score" from the criterion text, notes, AND the evidence checklist. Treat "[x] Gap, deviation, or nonconformity observed" as strong signal for NON_CONFORMANT unless notes clearly resolve it. Several "[x]" positive verification lines without a gap support CONFORMANT or STRENGTH if notes are exemplary.
 3) This is a **draft simulation**: prefer CONFORMANT when nothing contradicts; use OBSERVATION for minor gaps; NON_CONFORMANT only if checklist or notes clearly indicate missing process or major gap; STRENGTH only if notes clearly show exemplary practice.
 
 Score bands (align with answer):
@@ -83,7 +83,7 @@ def _fallback_audit_row(
         return {
             "answer": "NON_CONFORMANT",
             "score": 28,
-            "rationale": f"Evidence checklist marks a gap or deviation — draft non-conformant.{base_note}",
+            "rationale": f"Evidence checklist marks a gap or deviation. Draft non-conformant.{base_note}",
             "model": "heuristic",
         }
 
@@ -91,23 +91,23 @@ def _fallback_audit_row(
         a = existing
         if a == "CONFORMANT":
             score = 88
-            rationale = f"Conformant — score in the high conformant band.{base_note}"
+            rationale = f"Conformant: score in the high conformant band.{base_note}"
         elif a == "NON_CONFORMANT":
             score = 22
-            rationale = f"Non-conformant — low band until correction.{base_note}"
+            rationale = f"Non-conformant: low band until correction.{base_note}"
         elif a == "OBSERVATION":
             score = 62
-            rationale = f"Observation — mid band.{base_note}"
+            rationale = f"Observation: mid band.{base_note}"
         else:
             score = 94
-            rationale = f"Strong point — high band.{base_note}"
+            rationale = f"Strong point: high band.{base_note}"
         return {"answer": a, "score": score, "rationale": rationale, "model": "heuristic"}
 
     if any(w in notes_l for w in ("non-conform", "nonconform", "major nc", "not implemented", "missing")):
         return {
             "answer": "NON_CONFORMANT",
             "score": 24,
-            "rationale": f"Notes suggest a significant gap — marked non-conformant (draft).{base_note}",
+            "rationale": f"Notes suggest a significant gap. Marked non-conformant (draft).{base_note}",
             "model": "heuristic",
         }
     if any(w in notes_l for w in ("observation", "could improve", "minor", "opportunity", "suggest")):
@@ -130,21 +130,21 @@ def _fallback_audit_row(
         return {
             "answer": "CONFORMANT",
             "score": 86 if has_notes else 84,
-            "rationale": "Multiple checklist items verified without a gap flag — draft conformant.",
+            "rationale": "Multiple checklist items verified without a gap flag. Draft conformant.",
             "model": "heuristic",
         }
     if pos_ticks >= 1:
         return {
             "answer": "OBSERVATION",
             "score": 62,
-            "rationale": "Partial checklist verification — observation until more evidence is recorded.",
+            "rationale": "Partial checklist verification: observation until more evidence is recorded.",
             "model": "heuristic",
         }
 
     return {
         "answer": "CONFORMANT",
         "score": 82 if not has_notes else 79,
-        "rationale": "No evaluation or decisive notes — provisional conformant desk review; validate on site and adjust.",
+        "rationale": "No evaluation or decisive notes: provisional conformant desk review; validate on site and adjust.",
         "model": "heuristic",
     }
 
@@ -185,10 +185,10 @@ class AuditChecklistScoreAiService:
         try:
             result = await chain.ainvoke(
                 {
-                    "iso_clause": (iso_clause or "—")[:80],
-                    "iso_standard": (iso_standard or "—")[:120],
+                    "iso_clause": (iso_clause or "-")[:80],
+                    "iso_standard": (iso_standard or "-")[:120],
                     "question": q[:6000],
-                    "answer": (answer or "—")[:80],
+                    "answer": (answer or "-")[:80],
                     "notes": (notes or "(none)")[:4000],
                     "evidence_checklist": ev_text[:4000],
                 }

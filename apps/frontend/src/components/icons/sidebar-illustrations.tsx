@@ -1,7 +1,7 @@
 import React from 'react';
 
 /**
- * Sidebar tab illustrations — ultra-calm edition.
+ * Sidebar tab illustrations: ultra-calm edition.
  *
  * Design intent (relaxing, uncluttered):
  *   - ONE clear silhouette per icon, nothing else
@@ -11,7 +11,7 @@ import React from 'react';
  *   - thin uniform stroke, soft single-level tint fill
  *   - everything in `currentColor`
  *
- * API: { size, strokeWidth?, className } — parity with the icon wrapper.
+ * API: { size, strokeWidth?, className }: parity with the icon wrapper.
  */
 
 export type SidebarIllustrationProps = {
@@ -44,7 +44,7 @@ const Svg = ({
 const S = 1.4;        // single uniform stroke
 const TINT = 0.12;    // soft background tint
 
-/* ───── My Dashboard — 4 calm tiles ───── */
+/* ───── My Dashboard: 4 calm tiles ───── */
 export const DashboardIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <rect x="3.5" y="3.5" width="7.5" height="7.5" rx="3" fill="currentColor" fillOpacity={TINT} stroke="currentColor" strokeWidth={S} />
@@ -54,19 +54,19 @@ export const DashboardIllustration = (p: SidebarIllustrationProps) => (
   </Svg>
 );
 
-/* ───── My File Library — folder ───── */
+/* ───── My File Library: folder ───── */
 export const FileLibraryIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <path d="M3 8 A2.5 2.5 0 0 1 5.5 5.5 H9.5 L11.5 7.5 H18.5 A2.5 2.5 0 0 1 21 10 V17.5 A2.5 2.5 0 0 1 18.5 20 H5.5 A2.5 2.5 0 0 1 3 17.5 Z" fill="currentColor" fillOpacity={TINT} stroke="currentColor" strokeWidth={S} />
   </Svg>
 );
 
-/* ───── File Manager — folder with a real cog centered on its body ───── */
+/* ───── File Manager: folder with a real cog centered on its body ───── */
 export const FileManagerIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     {/* Folder body */}
     <path d="M3 8 A2.5 2.5 0 0 1 5.5 5.5 H9.5 L11.5 7.5 H18.5 A2.5 2.5 0 0 1 21 10 V17.5 A2.5 2.5 0 0 1 18.5 20 H5.5 A2.5 2.5 0 0 1 3 17.5 Z" fill="currentColor" fillOpacity={TINT} stroke="currentColor" strokeWidth={S} />
-    {/* Real cog at the center of the folder body — 8 rounded teeth, ring, hub */}
+    {/* Real cog at the center of the folder body: 8 rounded teeth, ring, hub */}
     <g transform="translate(12 14)">
       <rect x="-0.62" y="-3.85" width="1.24" height="1.35" rx="0.4" fill="currentColor" />
       <rect x="-0.62" y="-3.85" width="1.24" height="1.35" rx="0.4" fill="currentColor" transform="rotate(45)" />
@@ -82,14 +82,14 @@ export const FileManagerIllustration = (p: SidebarIllustrationProps) => (
   </Svg>
 );
 
-/* ───── My Company — office building (HQ) ───── */
+/* ───── My Company: office building (HQ) ───── */
 export const CompanyIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     {/* Main office tower */}
     <path d="M5 21 V6.5 A1.5 1.5 0 0 1 6.5 5 H13.5 A1.5 1.5 0 0 1 15 6.5 V21 Z" fill="currentColor" fillOpacity={TINT} stroke="currentColor" strokeWidth={S} />
     {/* Lower side wing */}
     <path d="M15 21 V11 H18.5 A1.5 1.5 0 0 1 20 12.5 V21 Z" stroke="currentColor" strokeWidth={S} />
-    {/* Window rows — soft, evenly spaced */}
+    {/* Window rows: soft, evenly spaced */}
     <line x1="7.5" y1="8.5" x2="9" y2="8.5" stroke="currentColor" strokeWidth={S} />
     <line x1="11" y1="8.5" x2="12.5" y2="8.5" stroke="currentColor" strokeWidth={S} />
     <line x1="7.5" y1="12" x2="9" y2="12" stroke="currentColor" strokeWidth={S} />
@@ -100,7 +100,7 @@ export const CompanyIllustration = (p: SidebarIllustrationProps) => (
   </Svg>
 );
 
-/* ───── Kanban — 3 calm columns ───── */
+/* ───── Kanban: 3 calm columns ───── */
 export const KanbanIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <rect x="3" y="4" width="5" height="16" rx="2" stroke="currentColor" strokeWidth={S} />
@@ -109,7 +109,7 @@ export const KanbanIllustration = (p: SidebarIllustrationProps) => (
   </Svg>
 );
 
-/* ───── Calendar — soft frame ───── */
+/* ───── Calendar: soft frame ───── */
 export const CalendarIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <rect x="3" y="5" width="18" height="16" rx="3.5" fill="currentColor" fillOpacity={TINT} stroke="currentColor" strokeWidth={S} />
@@ -119,7 +119,7 @@ export const CalendarIllustration = (p: SidebarIllustrationProps) => (
   </Svg>
 );
 
-/* ───── Training — graduation cap ───── */
+/* ───── Training: graduation cap ───── */
 export const TrainingIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <path d="M2 8.5 L12 3 L22 8.5 L12 14 Z" fill="currentColor" fillOpacity={TINT} stroke="currentColor" strokeWidth={S} />
@@ -127,7 +127,7 @@ export const TrainingIllustration = (p: SidebarIllustrationProps) => (
   </Svg>
 );
 
-/* ───── Analytics — single soft trend line ───── */
+/* ───── Analytics: single soft trend line ───── */
 export const AnalyticsIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <path d="M4.5 4 V19.5 H20" stroke="currentColor" strokeWidth={S} />
@@ -135,7 +135,7 @@ export const AnalyticsIllustration = (p: SidebarIllustrationProps) => (
   </Svg>
 );
 
-/* ───── Products Management — box ───── */
+/* ───── Products Management: box ───── */
 export const ProductsIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <path d="M12 3.5 L19.5 7.5 V16.5 L12 20.5 L4.5 16.5 V7.5 Z" fill="currentColor" fillOpacity={TINT} stroke="currentColor" strokeWidth={S} />
@@ -143,7 +143,7 @@ export const ProductsIllustration = (p: SidebarIllustrationProps) => (
   </Svg>
 );
 
-/* ───── Standards & Regulations — book ───── */
+/* ───── Standards & Regulations: book ───── */
 export const StandardsIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <path d="M4 5.5 H10 A2 2 0 0 1 12 7.5 V19.5 A2 2 0 0 0 10 17.5 H4 Z" fill="currentColor" fillOpacity={TINT} stroke="currentColor" strokeWidth={S} />
@@ -151,7 +151,7 @@ export const StandardsIllustration = (p: SidebarIllustrationProps) => (
   </Svg>
 );
 
-/* ───── Compliance Engine — shield with check ───── */
+/* ───── Compliance Engine: shield with check ───── */
 export const ComplianceIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <path d="M12 3.5 L19.5 6.5 V12 C19.5 16 16.3 19 12 20.5 C7.7 19 4.5 16 4.5 12 V6.5 Z" fill="currentColor" fillOpacity={TINT} stroke="currentColor" strokeWidth={S} />
@@ -159,7 +159,7 @@ export const ComplianceIllustration = (p: SidebarIllustrationProps) => (
   </Svg>
 );
 
-/* ───── Audits — clipboard ───── */
+/* ───── Audits: clipboard ───── */
 export const AuditsIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <rect x="5" y="5" width="14" height="16" rx="3" fill="currentColor" fillOpacity={TINT} stroke="currentColor" strokeWidth={S} />
@@ -167,7 +167,7 @@ export const AuditsIllustration = (p: SidebarIllustrationProps) => (
   </Svg>
 );
 
-/* ───── Non-Conformities — soft triangle with ! ───── */
+/* ───── Non-Conformities: soft triangle with ! ───── */
 export const NonConformitiesIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <path d="M10.4 4.2 A1.8 1.8 0 0 1 13.6 4.2 L20.7 17.8 A1.8 1.8 0 0 1 19.1 20.5 H4.9 A1.8 1.8 0 0 1 3.3 17.8 Z" fill="currentColor" fillOpacity={TINT} stroke="currentColor" strokeWidth={S} />
@@ -176,7 +176,7 @@ export const NonConformitiesIllustration = (p: SidebarIllustrationProps) => (
   </Svg>
 );
 
-/* ───── Reports — document ───── */
+/* ───── Reports: document ───── */
 export const ReportsIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <path d="M6.5 3.5 H14 L19 8.5 V19 A2 2 0 0 1 17 21 H6.5 A2 2 0 0 1 4.5 19 V5.5 A2 2 0 0 1 6.5 3.5 Z" fill="currentColor" fillOpacity={TINT} stroke="currentColor" strokeWidth={S} />
@@ -184,7 +184,7 @@ export const ReportsIllustration = (p: SidebarIllustrationProps) => (
   </Svg>
 );
 
-/* ───── Company Management — 3 calm buildings ───── */
+/* ───── Company Management: 3 calm buildings ───── */
 export const CompanyManagementIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <rect x="3" y="10" width="6" height="11" rx="2" stroke="currentColor" strokeWidth={S} />
@@ -193,7 +193,7 @@ export const CompanyManagementIllustration = (p: SidebarIllustrationProps) => (
   </Svg>
 );
 
-/* ───── User Management — 2 people ───── */
+/* ───── User Management: 2 people ───── */
 export const UserManagementIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <circle cx="9" cy="9" r="3" fill="currentColor" fillOpacity={TINT} stroke="currentColor" strokeWidth={S} />
@@ -205,7 +205,7 @@ export const UserManagementIllustration = (p: SidebarIllustrationProps) => (
 
 /* ───── Sub-tabs ───── */
 
-/* My Training — single avatar with cap */
+/* My Training: single avatar with cap */
 export const MyTrainingIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <path d="M5 8.5 L12 5.5 L19 8.5 L12 11.5 Z" fill="currentColor" fillOpacity={TINT} stroke="currentColor" strokeWidth={S} />
@@ -214,7 +214,7 @@ export const MyTrainingIllustration = (p: SidebarIllustrationProps) => (
   </Svg>
 );
 
-/* Organization Training — 3 avatars */
+/* Organization Training: 3 avatars */
 export const OrganizationTrainingIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <circle cx="6" cy="10" r="2" stroke="currentColor" strokeWidth={S} />
@@ -224,7 +224,7 @@ export const OrganizationTrainingIllustration = (p: SidebarIllustrationProps) =>
   </Svg>
 );
 
-/* Training Rules — shield with one line */
+/* Training Rules: shield with one line */
 export const TrainingRulesIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <path d="M12 3.5 L19 6 V12 C19 16 16 19 12 20.5 C8 19 5 16 5 12 V6 Z" fill="currentColor" fillOpacity={TINT} stroke="currentColor" strokeWidth={S} />
@@ -234,7 +234,7 @@ export const TrainingRulesIllustration = (p: SidebarIllustrationProps) => (
 
 /* ───── Profile / drawer extras ───── */
 
-/* Profile — head + shoulders */
+/* Profile: head + shoulders */
 export const ProfileIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <circle cx="12" cy="9" r="3.5" fill="currentColor" fillOpacity={TINT} stroke="currentColor" strokeWidth={S} />
@@ -242,7 +242,7 @@ export const ProfileIllustration = (p: SidebarIllustrationProps) => (
   </Svg>
 );
 
-/* Subscription — card */
+/* Subscription: card */
 export const SubscriptionIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <rect x="3" y="5" width="18" height="14" rx="3.5" fill="currentColor" fillOpacity={TINT} stroke="currentColor" strokeWidth={S} />
@@ -250,7 +250,7 @@ export const SubscriptionIllustration = (p: SidebarIllustrationProps) => (
   </Svg>
 );
 
-/* Settings — gear (clean ring, no teeth clutter) */
+/* Settings: gear (clean ring, no teeth clutter) */
 export const SettingsIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <circle cx="12" cy="12" r="7" fill="currentColor" fillOpacity={TINT} stroke="currentColor" strokeWidth={S} />
@@ -258,7 +258,7 @@ export const SettingsIllustration = (p: SidebarIllustrationProps) => (
   </Svg>
 );
 
-/* Bell — notification */
+/* Bell: notification */
 export const BellIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <path d="M12 3.5 C8.9 3.5 6.5 6 6.5 9 V13 L5 16 H19 L17.5 13 V9 C17.5 6 15.1 3.5 12 3.5 Z" fill="currentColor" fillOpacity={TINT} stroke="currentColor" strokeWidth={S} />
@@ -266,7 +266,7 @@ export const BellIllustration = (p: SidebarIllustrationProps) => (
   </Svg>
 );
 
-/* Logout — door + arrow */
+/* Logout: door + arrow */
 export const LogoutIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <path d="M4.5 4.5 H11 V19.5 H4.5 Z" fill="currentColor" fillOpacity={TINT} stroke="currentColor" strokeWidth={S} />
@@ -275,7 +275,7 @@ export const LogoutIllustration = (p: SidebarIllustrationProps) => (
   </Svg>
 );
 
-/* Home — house */
+/* Home: house */
 export const HomeIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <path d="M3.5 11 L12 4 L20.5 11 V19.5 H3.5 Z" fill="currentColor" fillOpacity={TINT} stroke="currentColor" strokeWidth={S} />
@@ -284,7 +284,7 @@ export const HomeIllustration = (p: SidebarIllustrationProps) => (
 
 /* ───── Topbar ───── */
 
-/* AI Assistant — friendly robot face: antenna, head with rounded corners,
+/* AI Assistant: friendly robot face: antenna, head with rounded corners,
    two eyes and a chat-style mouth slot. Reads clearly as a chatbot. */
 export const AiAssistantIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
@@ -306,7 +306,7 @@ export const AiAssistantIllustration = (p: SidebarIllustrationProps) => (
     {/* Eyes */}
     <circle cx="9" cy="11.5" r="1.3" fill="currentColor" />
     <circle cx="15" cy="11.5" r="1.3" fill="currentColor" />
-    {/* Mouth — chat slot */}
+    {/* Mouth: chat slot */}
     <rect x="8.5" y="14.5" width="7" height="1.6" rx="0.8" fill="currentColor" />
     {/* Side ears */}
     <line x1="2.5" y1="10.5" x2="2.5" y2="13.5" stroke="currentColor" strokeWidth={S} strokeLinecap="round" />
@@ -316,7 +316,7 @@ export const AiAssistantIllustration = (p: SidebarIllustrationProps) => (
   </Svg>
 );
 
-/* Admin shield — simple shield */
+/* Admin shield: simple shield */
 export const AdminShieldIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <path d="M12 3.5 L19 6 V12 C19 16 16 19 12 20.5 C8 19 5 16 5 12 V6 Z" fill="currentColor" fillOpacity={TINT} stroke="currentColor" strokeWidth={S} />
@@ -324,7 +324,7 @@ export const AdminShieldIllustration = (p: SidebarIllustrationProps) => (
   </Svg>
 );
 
-/* Menu — hamburger */
+/* Menu: hamburger */
 export const MenuIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <line x1="4.5" y1="7" x2="19.5" y2="7" stroke="currentColor" strokeWidth="1.7" />
@@ -333,7 +333,7 @@ export const MenuIllustration = (p: SidebarIllustrationProps) => (
   </Svg>
 );
 
-/* ───── Activity log — soft clock ───── */
+/* ───── Activity log: soft clock ───── */
 export const ActivityLogIllustration = (p: SidebarIllustrationProps) => (
   <Svg {...p}>
     <circle cx="12" cy="12" r="8" fill="currentColor" fillOpacity={TINT} stroke="currentColor" strokeWidth={S} />

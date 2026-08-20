@@ -66,7 +66,7 @@ import { cn } from '@/utils/cn';
 import { NcFishboneDialog } from '@/components/nc/NcFishboneDialog';
 
 /* ------------------------------------------------------------------ */
-/* Design tokens — refined semantic palette                            */
+/* Design tokens: refined semantic palette                            */
 /* ------------------------------------------------------------------ */
 
 const CLASS_CONFIG: Record<
@@ -161,7 +161,7 @@ function groupNcsBySource(ncs: any[], documents: DocPick[]): NcGroup[] {
     groups.push({
       key: evalId,
       type: 'evaluation',
-      label: iso ? `AI Evaluation — ${iso}` : 'AI Evaluation',
+      label: iso ? `AI Evaluation: ${iso}` : 'AI Evaluation',
       productName,
       date,
       evaluationId: evalId,
@@ -183,8 +183,8 @@ function displayNcTitle(nc: { title?: string | null; isoClause?: string | null }
   const raw = (nc.title ?? '').trim();
   if (raw && !/^undefined$/i.test(raw) && !/\bundefined\b/i.test(raw)) return raw;
   const clause = (nc.isoClause ?? '').toString().trim();
-  if (clause) return `Non-conformance — Clause ${clause}`;
-  return 'Non-conformance — add a title and upload supporting evidence';
+  if (clause) return `Non-conformance: Clause ${clause}`;
+  return 'Non-conformance: add a title and upload supporting evidence';
 }
 
 function resolveAssigneeLabel(assignedTo: string, members: CompanyMember[]) {
@@ -306,7 +306,7 @@ function SkeletonCard() {
 }
 
 /* ------------------------------------------------------------------ */
-/* NC Guide — always-visible definitions + workflow steps              */
+/* NC Guide: always-visible definitions + workflow steps              */
 /* ------------------------------------------------------------------ */
 
 const NC_CONCEPTS = [
@@ -330,7 +330,7 @@ const NC_CONCEPTS = [
     ring: 'rgba(123,31,162,0.20)',
     Icon: Network,
     def: 'Finding out WHY the non-conformity happened.',
-    detail: 'Go beyond the symptom — ask "Why?" 5 times (5-Why method) or use an Ishikawa (fishbone) diagram. Without knowing the real cause, fixes are only temporary.',
+    detail: 'Go beyond the symptom: ask "Why?" 5 times (5-Why method) or use an Ishikawa (fishbone) diagram. Without knowing the real cause, fixes are only temporary.',
   },
   {
     abbr: 'CAPA',
@@ -364,7 +364,7 @@ function NcFlowBanner() {
       transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
       className="mb-6 overflow-hidden rounded-2xl border border-[var(--border)] bg-gradient-to-br from-[var(--surface)] to-[var(--surface-elevated)]"
     >
-      {/* ── Concept definitions — always visible ── */}
+      {/* ── Concept definitions: always visible ── */}
       <div className="grid grid-cols-1 divide-y divide-[var(--border)] sm:grid-cols-3 sm:divide-x sm:divide-y-0">
         {NC_CONCEPTS.map((c, idx) => (
           <motion.div
@@ -374,7 +374,7 @@ function NcFlowBanner() {
             transition={{ delay: 0.1 + idx * 0.07, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
             className="group relative flex flex-col gap-2 overflow-hidden px-5 py-4 transition-colors duration-300"
           >
-            {/* Left accent rail — colored by concept */}
+            {/* Left accent rail: colored by concept */}
             <span
               aria-hidden
               className="pointer-events-none absolute inset-y-3 left-0 w-[2px] rounded-r-full opacity-50 transition-all duration-300 group-hover:opacity-100"
@@ -541,7 +541,7 @@ function NcFlowBanner() {
 }
 
 /* ------------------------------------------------------------------ */
-/* NC Group Section — collapsible group with header                    */
+/* NC Group Section: collapsible group with header                    */
 /* ------------------------------------------------------------------ */
 
 const GROUP_ICONS: Record<NcGroup['type'], React.ComponentType<{ className?: string; strokeWidth?: number }>> = {
@@ -840,7 +840,7 @@ function NCCard({
     const std = (nc.isoStandard ?? '').trim();
     const heading = trimClauseHeading(clauseSection?.heading ?? '');
     return heading
-      ? `${std ? `${std} · ` : ''}Clause ${clauseRefDisplay} — ${heading}`
+      ? `${std ? `${std} · ` : ''}Clause ${clauseRefDisplay}: ${heading}`
       : std
         ? `${std} · Clause ${clauseRefDisplay}`
         : `Clause ${clauseRefDisplay}`;
@@ -866,13 +866,13 @@ function NCCard({
       why5: whyData.why5 ?? '',
       rootCause: whyData.rootCauseSuggestion ?? '',
     });
-    toast.success('Applied AI suggestions — review and save');
+    toast.success('Applied AI suggestions, review and save');
   };
 
   const handleSaveRca = async () => {
     try {
       await ncApi.saveRca(nc.id, rca);
-      toast.success('RCA saved — this NC is now in the RCA tab');
+      toast.success('RCA saved. This NC is now in the RCA tab');
       onRefresh();
     } catch (e: unknown) {
       const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
@@ -883,7 +883,7 @@ function NCCard({
   const handleStartRca = async () => {
     try {
       await ncApi.startRca(nc.id);
-      toast.success('NC moved to RCA phase — open the RCA tab to find it');
+      toast.success('NC moved to RCA phase. Open the RCA tab to find it');
       onRefresh();
     } catch (e: unknown) {
       const msg = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
@@ -1016,7 +1016,7 @@ function NCCard({
         expanded && 'ring-1 ring-[var(--brand-primary)]/15',
       )}
     >
-      {/* Severity edge glow — soft, replaces the chunky left border */}
+      {/* Severity edge glow: soft, replaces the chunky left border */}
       <span
         aria-hidden
         className="pointer-events-none absolute inset-y-0 left-0 w-[3px] opacity-60"
@@ -1045,7 +1045,7 @@ function NCCard({
           {/* Action toolbar */}
           <div className="flex shrink-0 items-center gap-0.5 self-start rounded-xl border border-transparent bg-transparent p-0.5 transition-colors group-hover:border-[var(--border)] group-hover:bg-[var(--page-bg)]/50">
             {nc.status === 'OPEN' && (
-              <IconAction icon={Play} label="Start RCA — move to RCA phase" tone="brand" onClick={handleStartRca} />
+              <IconAction icon={Play} label="Start RCA: move to RCA phase" tone="brand" onClick={handleStartRca} />
             )}
             <IconAction icon={Brain} label="AI 5-Why prompts" tone="brand" onClick={handleWhyAnalysis} />
             <IconAction
@@ -1114,10 +1114,10 @@ function NCCard({
                     {nc.isoClause
                       ? manual
                         ? 'Each “Why” should trace back to the selected clause requirement. Use the brain icon for clause-specific AI prompts, then refine and save.'
-                        : 'Optional — tailor each why to the clause gap. Use AI prompts (brain icon) for clause-specific suggestions.'
+                        : 'Optional: tailor each why to the clause gap. Use AI prompts (brain icon) for clause-specific suggestions.'
                       : manual
                         ? 'Save this analysis to unlock CAPA actions. Use the brain icon for AI prompts, then refine and save.'
-                        : 'Optional — run RCA first to move the NC to "CAPA Defined" before execution. You can also add a CAPA directly to jump straight to In Progress.'}
+                        : 'Optional: run RCA first to move the NC to "CAPA Defined" before execution. You can also add a CAPA directly to jump straight to In Progress.'}
                   </p>
                   {clauseSection?.summary && (
                     <p className="mb-3 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-[11px] leading-relaxed text-[var(--muted)]">
@@ -1182,7 +1182,7 @@ function NCCard({
                   <div className="mb-3 flex flex-wrap gap-x-5 gap-y-2">
                     <label className="flex cursor-pointer items-center gap-2 text-xs">
                       <Checkbox checked={verifyEffective} onCheckedChange={(v) => setVerifyEffective(v === true)} />
-                      <span>CAPA effective — close NC</span>
+                      <span>CAPA effective: close NC</span>
                     </label>
                     <label className="flex cursor-pointer items-center gap-2 text-xs">
                       <Checkbox
@@ -1394,7 +1394,7 @@ function NCCard({
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-[var(--muted)]">No files in the library list yet — upload one above.</p>
+                <p className="text-xs text-[var(--muted)]">No files in the library list yet. Upload one above.</p>
               )}
             </div>
           </div>
@@ -1540,11 +1540,11 @@ function NCCard({
                             setDismissedCauseIds((s) => new Set(s).add(c.id));
                             try {
                               await ncApi.saveRca(nc.id, nextRca);
-                              toast.success('RCA saved — NC is now in the RCA tab');
+                              toast.success('RCA saved. NC is now in the RCA tab');
                               setAiRootOpen(false);
                               onRefresh();
                             } catch {
-                              toast.error('Merged into form — click Save RCA in the card to persist');
+                              toast.error('Merged into form. Click Save RCA in the card to persist');
                             }
                           }}
                         >
@@ -1676,7 +1676,7 @@ export default function NCPage() {
         setNcClauseOptions(extracted);
         setNcClauseSections(buildClauseSectionMap(res.data));
         if (!extracted.length) {
-          toast.error('No clauses found — run extraction on this standard in the file library first.');
+          toast.error('No clauses found. Run extraction on this standard in the file library first.');
         }
       } catch {
         setNcClauseOptions([]);
@@ -1756,7 +1756,7 @@ export default function NCPage() {
       if (typeof m === 'string' && m.trim()) return m.trim();
       if (Array.isArray(m) && m.length) return String(m[0]);
       if (r?.response?.status === 401 || r?.response?.status === 403)
-        return r.response.status === 401 ? 'Session expired — sign in again' : 'Access denied for this action';
+        return r.response.status === 401 ? 'Session expired, sign in again' : 'Access denied for this action';
       if (r?.message) return r.message;
       return 'Request failed';
     };
@@ -1804,7 +1804,7 @@ export default function NCPage() {
       }
       toast.success('Evidence uploaded');
     } catch {
-      toast.error('Upload failed — use PDF, Office, or image under 50 MB');
+      toast.error('Upload failed. Use PDF, Office, or image under 50 MB');
     } finally {
       setNcCreateEvidenceUploading(false);
     }
@@ -1922,7 +1922,7 @@ export default function NCPage() {
         />
       </header>
 
-      {/* KPIs — unified soft panel */}
+      {/* KPIs: unified soft panel */}
       {kpis && (
         <motion.section
           initial={{ opacity: 0, y: 10 }}
@@ -1965,7 +1965,7 @@ export default function NCPage() {
                   }}
                   className={cn(
                     'group relative flex items-center gap-4 px-5 py-5 text-left transition-colors duration-300 sm:px-6 sm:py-6',
-                    // Soft dividers — 2×2 on mobile, 1×4 on desktop
+                    // Soft dividers: 2×2 on mobile, 1×4 on desktop
                     i === 1 && 'border-l border-[var(--border)]/60',
                     i === 2 && 'border-t border-[var(--border)]/60 sm:border-l sm:border-t-0',
                     i === 3 && 'border-l border-t border-[var(--border)]/60 sm:border-t-0',
@@ -2018,7 +2018,7 @@ export default function NCPage() {
                     >
                       {kpi.value ?? 0}
                     </motion.p>
-                    {/* Soft progress sliver — grows gently on hover */}
+                    {/* Soft progress sliver: grows gently on hover */}
                     <span
                       aria-hidden
                       className="mt-2.5 block h-[3px] w-10 origin-left rounded-full transition-all duration-500 ease-out group-hover:w-20"
@@ -2047,7 +2047,7 @@ export default function NCPage() {
       {/* NC lifecycle explainer */}
       <NcFlowBanner />
 
-      {/* Tabs — soft segmented pill */}
+      {/* Tabs: soft segmented pill */}
       <motion.div
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
@@ -2290,12 +2290,12 @@ export default function NCPage() {
                     <span className="text-xs text-[var(--muted)]">Loading clauses from document…</span>
                   ) : ncClauseOptions.length === 0 ? (
                     <span className="text-xs text-amber-700">
-                      No clauses in this document — run extraction and activate the standard in the file library.
+                      No clauses in this document. Run extraction and activate the standard in the file library.
                     </span>
                   ) : (
                     ncClauseOptions.map((c) => {
                       const heading = ncClauseSections[c]?.heading?.trim();
-                      const title = heading ? `${c} — ${heading}` : c;
+                      const title = heading ? `${c}: ${heading}` : c;
                       return (
                         <label
                           key={c}

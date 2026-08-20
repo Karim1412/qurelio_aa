@@ -8,11 +8,11 @@ import type { PrefillSuggestion } from '@/components/products/product-prefill';
 import { cn } from '@/utils/cn';
 
 /**
- * `pending`   — chosen, not sent yet
- * `uploading` — multipart upload in flight
- * `analyzing` — stored; OCR + AI structuring running on the RAG service
- * `done`      — extraction finished, contents available for the pre-fill
- * `error`     — upload rejected or extraction failed; the wizard continues without it
+ * `pending`  : chosen, not sent yet
+ * `uploading`: multipart upload in flight
+ * `analyzing`: stored; OCR + AI structuring running on the RAG service
+ * `done`     : extraction finished, contents available for the pre-fill
+ * `error`    : upload rejected or extraction failed; the wizard continues without it
  */
 export type UploadedFileStatus = 'pending' | 'uploading' | 'analyzing' | 'done' | 'error';
 
@@ -48,7 +48,7 @@ interface Props {
   onChange: (d: Partial<ProductDocumentsData>) => void;
   /** True while the wizard is uploading + waiting on extraction; the list is read-only then. */
   isAnalyzing?: boolean;
-  /** Number of fields the last analysis pre-filled — shown as the result of this step. */
+  /** Number of fields the last analysis pre-filled: shown as the result of this step. */
   prefilledCount?: number;
   progress?: AnalysisProgress | null;
   /** Fields the document disagrees with; the user accepts or ignores each one. */
@@ -56,7 +56,7 @@ interface Props {
   onApplySuggestion?: (s: PrefillSuggestion) => void;
   onIgnoreSuggestion?: (s: PrefillSuggestion) => void;
   onApplyAllSuggestions?: () => void;
-  /** True once an analysis has run but changed nothing — reported instead of staying silent. */
+  /** True once an analysis has run but changed nothing, reported instead of staying silent. */
   analysisMadeNoChange?: boolean;
 }
 
@@ -143,14 +143,14 @@ export function ProductStepDocuments({
           <strong>Analyse &amp; continue</strong>. Qurelio extracts the product identity, technical
           data, markets and certifications, then walks you through every field so you can{' '}
           <strong>verify or correct</strong> it. Prefer to type everything yourself? Continue with no
-          file — the next steps stay empty.
+          file, and the next steps stay empty.
         </p>
       </div>
 
       <div className="callout-info flex items-start gap-3 rounded-xl border border-[var(--callout-info-border)] bg-[var(--callout-info-bg)] p-4">
         <Info className="mt-0.5 h-5 w-5 shrink-0 text-[var(--brand-primary)]" />
         <p className="text-[13px] leading-relaxed text-[var(--callout-info-text)]">
-          These documents also build this product&apos;s <strong>private Compliance Memory</strong> — the AI reads them to evaluate compliance. Upload the technical file, test reports, safety data sheets, SOPs, and any other evidence relevant to this product. <strong>All files pass the Legal Guardrail before ingestion.</strong>
+          These documents also build this product&apos;s <strong>private Compliance Memory</strong>: the AI reads them to evaluate compliance. Upload the technical file, test reports, safety data sheets, SOPs, and any other evidence relevant to this product. <strong>All files pass the Legal Guardrail before ingestion.</strong>
         </p>
       </div>
 
@@ -304,7 +304,7 @@ export function ProductStepDocuments({
         </div>
       )}
 
-      {/* Read successfully but nothing to change — say so rather than looking like a failure. */}
+      {/* Read successfully but nothing to change: say so rather than looking like a failure. */}
       {!isAnalyzing && analysisMadeNoChange && suggestions.length === 0 && prefilledCount === 0 && (
         <p className="flex items-start gap-2 text-[13px] text-[var(--muted)]">
           <CircleCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />

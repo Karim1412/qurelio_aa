@@ -50,7 +50,7 @@ export function ProductStepCertifications({ data, onChange, aiFields }: Props) {
       <div className="callout-info flex items-start gap-3 rounded-xl border border-[var(--callout-info-border)] bg-[var(--callout-info-bg)] p-4">
         <Info className="mt-0.5 h-5 w-5 shrink-0 text-[var(--brand-primary)]" />
         <p className="text-[13px] leading-relaxed text-[var(--callout-info-text)]">
-          These are certifications obtained for <strong>this specific product</strong> — distinct from company-level certifications in your Company Profile. Expiry alerts are sent 90 days before the expiry date.
+          These are certifications obtained for <strong>this specific product</strong>, distinct from company-level certifications in your Company Profile. Expiry alerts are sent 90 days before the expiry date.
         </p>
       </div>
 
@@ -81,7 +81,7 @@ export function ProductStepCertifications({ data, onChange, aiFields }: Props) {
               </div>
               <div className="space-y-1.5">
                 <Label>Market scope</Label>
-                <Input value={cert.marketScope} onChange={(e) => update(i, 'marketScope', e.target.value)} placeholder="e.g. EU — adult denim range" />
+                <Input value={cert.marketScope} onChange={(e) => update(i, 'marketScope', e.target.value)} placeholder="e.g. EU, adult denim range" />
               </div>
             </div>
             <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">

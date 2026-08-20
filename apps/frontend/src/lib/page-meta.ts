@@ -74,7 +74,7 @@ const META: Record<string, PageMeta> = {
   '/kanban': {
     trail: ['Dashboard', 'Kanban'],
     title: 'Kanban board',
-    tagline: 'Plan, track, and ship work — drag tasks across columns to update their status.',
+    tagline: 'Plan, track, and ship work. Drag tasks across columns to update their status.',
   },
   '/calendar': {
     trail: ['Dashboard', 'Calendar'],

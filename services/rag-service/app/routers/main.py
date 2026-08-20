@@ -33,7 +33,7 @@ import logging
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api")
 
-# Service singletons — initialised at startup
+# Service singletons: initialised at startup
 _ingestion: IngestionService = None
 _evaluator: EvaluationEngine = None
 _chat:      ChatService      = None
@@ -85,7 +85,7 @@ async def index_standard(req: IndexStandardRequest):
             # "no indexed text". Fail here so activation reverts to PROCESSING.
             raise HTTPException(
                 502,
-                "No vectors were written for this standard — embedding or Pinecone "
+                "No vectors were written for this standard. Embedding or Pinecone "
                 "upsert failed. Check the rag-service log for the embedding endpoint "
                 "and index dimension.",
             )

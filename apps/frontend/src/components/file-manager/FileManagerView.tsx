@@ -96,7 +96,7 @@ function notifyTrashChanged() {
 }
 
 function formatBytes(b?: number): string {
-  if (!b || b < 0) return '—';
+  if (!b || b < 0) return '-';
   if (b < 1024) return `${b} B`;
   if (b < 1024 * 1024) return `${(b / 1024).toFixed(1)} KB`;
   if (b < 1024 * 1024 * 1024) return `${(b / (1024 * 1024)).toFixed(1)} MB`;
@@ -104,9 +104,9 @@ function formatBytes(b?: number): string {
 }
 
 function formatRelative(iso?: string): string {
-  if (!iso) return '—';
+  if (!iso) return '-';
   const d = new Date(iso);
-  if (!Number.isFinite(d.getTime())) return '—';
+  if (!Number.isFinite(d.getTime())) return '-';
   const sameDay = (() => {
     const now = new Date();
     return (
@@ -330,7 +330,7 @@ export function FileManagerView() {
   const [dragOverFolderId, setDragOverFolderId] = useState<string | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
 
-  // Marquee (rubber-band) selection — like Windows Explorer.
+  // Marquee (rubber-band) selection: like Windows Explorer.
   const contentScrollRef = useRef<HTMLDivElement>(null);
   const [marquee, setMarquee] = useState<{ x: number; y: number; w: number; h: number } | null>(
     null,
@@ -541,7 +541,7 @@ export function FileManagerView() {
     if (folderClickTimer.current) {
       clearTimeout(folderClickTimer.current);
       folderClickTimer.current = null;
-      return; // second click of a double-click — let onDoubleClick handle it
+      return; // second click of a double-click: let onDoubleClick handle it
     }
     folderClickTimer.current = setTimeout(() => {
       folderClickTimer.current = null;
@@ -596,7 +596,7 @@ export function FileManagerView() {
   // ── Marquee (rubber-band) selection ─────────────────────────────────────
   const handleMarqueeMouseDown = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
-      // Only start on a primary click on the container background itself —
+      // Only start on a primary click on the container background itself,
       // ignore clicks on items, buttons, inputs, or anything draggable.
       if (e.button !== 0) return;
       const target = e.target as HTMLElement;
@@ -753,7 +753,7 @@ export function FileManagerView() {
       try {
         await folderApi.delete(id);
         // Folders themselves aren't archived, but any docs that were inside may now be
-        // unfiled — refresh the FAB count just in case.
+        // unfiled: refresh the FAB count just in case.
         notifyTrashChanged();
         if (currentId === id) setCurrentId(foldersById.get(id)?.parentId ?? null);
         await refresh(currentId === id ? foldersById.get(id)?.parentId ?? null : currentId);
@@ -922,7 +922,7 @@ export function FileManagerView() {
       const folderIds = [...selected].filter((k) => k.startsWith('f:')).map((k) => k.slice(2));
       const docIds = [...selected].filter((k) => k.startsWith('d:')).map((k) => k.slice(2));
       if (!folderIds.length && !docIds.length) return;
-      // A folder cannot be moved into itself or one of its descendants — block obvious cases.
+      // A folder cannot be moved into itself or one of its descendants, block obvious cases.
       if (destFolderId && folderIds.includes(destFolderId)) {
         setError("A folder can't be moved into itself.");
         return;
@@ -1018,7 +1018,7 @@ export function FileManagerView() {
         }
       } else {
         // Copy files: re-upload the same bytes into the current folder.
-        // Folder copy isn't supported — backend has no recursive duplicate endpoint.
+        // Folder copy isn't supported: backend has no recursive duplicate endpoint.
         for (const id of docIds) {
           try {
             const meta = await documentApi.get(id);
@@ -1102,7 +1102,7 @@ export function FileManagerView() {
           // Show products at root level (when not inside a regular folder)
           if (currentId === null) {
             visProducts = products;
-            visDocs = []; // Hide individual files at root — only folders + products
+            visDocs = []; // Hide individual files at root, only folders + products
           } else {
             visDocs = docs;
           }
@@ -1618,7 +1618,7 @@ export function FileManagerView() {
             </span>
           )}
         </div>
-        <span className="hidden text-[12px] text-[var(--muted)] sm:block">—</span>
+        <span className="hidden text-[12px] text-[var(--muted)] sm:block">-</span>
         <span className="text-[12px] text-[var(--muted)]">{f.fileCount} item(s)</span>
         <span className="text-[12px] text-[var(--muted)]">{formatRelative(f.updatedAt || f.createdAt)}</span>
         <div className="flex justify-end gap-0.5 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
@@ -1720,7 +1720,7 @@ export function FileManagerView() {
             {statusLabel}
           </span>
         </div>
-        <span className="hidden text-[12px] text-[var(--muted)] sm:block">{me?.company?.name || '—'}</span>
+        <span className="hidden text-[12px] text-[var(--muted)] sm:block">{me?.company?.name || '-'}</span>
         <span className="text-[12px] text-[var(--muted)]">{docCount} file{docCount === 1 ? '' : 's'}</span>
         <span className="text-[12px] text-[var(--muted)]">{formatRelative(p.updatedAt || p.createdAt)}</span>
         <div className="flex justify-end gap-0.5 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
@@ -1854,7 +1854,7 @@ export function FileManagerView() {
           })()}
         </div>
         <span className="hidden truncate text-[12px] text-[var(--muted)] sm:block" title={userDisplayName(uploader)}>
-          {uploader ? userDisplayName(uploader) : '—'}
+          {uploader ? userDisplayName(uploader) : '-'}
         </span>
         <span className="text-[12px] text-[var(--muted)]">{formatBytes(d.sizeBytes)}</span>
         <span className="text-[12px] text-[var(--muted)]" title={d.updatedAt || d.createdAt}>
@@ -2608,7 +2608,7 @@ export function FileManagerView() {
                 </button>
                 {sortedFolders.length === 0 ? (
                   <p className="px-3 py-4 text-center text-xs text-[var(--muted)]">
-                    No folders yet — create one first.
+                    No folders yet. Create one first.
                   </p>
                 ) : (
                   sortedFolders.map((f) => {

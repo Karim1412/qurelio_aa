@@ -123,7 +123,7 @@ export function ProductStepIdentity({ data, onChange, aiFields }: Props) {
       <div className="space-y-5">
         <div className="space-y-1.5">
           <AiLabel required field="identity.name" aiFields={aiFields}>Product name</AiLabel>
-          <Input value={data.name} onChange={(e) => onChange({ name: e.target.value })} placeholder="e.g. Classic Denim Jeans — Adult Range" />
+          <Input value={data.name} onChange={(e) => onChange({ name: e.target.value })} placeholder="e.g. Classic Denim Jeans, Adult Range" />
         </div>
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -184,7 +184,7 @@ export function ProductStepIdentity({ data, onChange, aiFields }: Props) {
         <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">Description &amp; Status</p>
         <div className="space-y-1.5">
           <AiLabel field="identity.description" aiFields={aiFields}>Description</AiLabel>
-          <Textarea value={data.description} onChange={(e) => onChange({ description: e.target.value })} placeholder="Optional — brief product description for internal reference..." rows={4} />
+          <Textarea value={data.description} onChange={(e) => onChange({ description: e.target.value })} placeholder="Optional: brief product description for internal reference..." rows={4} />
         </div>
         <div className="space-y-1.5">
           <Label>Product status <span className="text-red-500">*</span></Label>

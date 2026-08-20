@@ -111,12 +111,12 @@ export function TemplatePresets({ onSelectTemplate }: TemplatePresetsProps) {
                       {field.required && <span className="text-red-500">*</span>}
                       {(previewField.type === 'select' || previewField.type === 'radio') && previewField.options?.length ? (
                         <span className="text-gray-500">
-                          — {previewField.options.map((o) => o.label).join(', ')}
+                          {previewField.options.map((o) => o.label).join(', ')}
                         </span>
                       ) : null}
                       {previewField.type === 'checklist' && previewField.checklistItems?.length ? (
                         <span className="text-gray-500 w-full">
-                          — {previewField.checklistItems.map((i) => i.label).join('; ')}
+                          {previewField.checklistItems.map((i) => i.label).join('; ')}
                         </span>
                       ) : null}
                     </li>

@@ -2,20 +2,20 @@
 
 /**
  * Compliance Mission Control widgets.
- * Soft, premium, semantic — all components share the same shell language so
+ * Soft, premium, semantic: all components share the same shell language so
  * the dashboard reads as one continuous surface, not a scrapbook of cards.
  *
  * Public exports:
- *  - AIBadge                 — subtle "AI analyzed / assisted / recommendation" chip
- *  - EmptyMetricState        — intelligent empty state inside a metric card
- *  - AICompliancePulse       — simple inline label inside the hero
- *  - ComplianceHealthScore   — radial gauge + sub-metrics (CAPAs, risks, readiness)
- *  - AIInsightsCard          — gap detection / SOP expiry / missing evidence
- *  - PendingApprovalsCard    — documents, CAPAs, audit validations
- *  - UpcomingAuditsCard      — audits with date + status
- *  - RecentActivityFeed      — uploads, evaluations, audit assignments, overdue CAPAs
- *  - SystemHealthCard        — AI engine, OCR, notifications, audit trail
- *  - TrustIndicatorsFooter   — ISO 27001, audit trail, RBAC
+ *  - AIBadge                : subtle "AI analyzed / assisted / recommendation" chip
+ *  - EmptyMetricState       : intelligent empty state inside a metric card
+ *  - AICompliancePulse      : simple inline label inside the hero
+ *  - ComplianceHealthScore  : radial gauge + sub-metrics (CAPAs, risks, readiness)
+ *  - AIInsightsCard         : gap detection / SOP expiry / missing evidence
+ *  - PendingApprovalsCard   : documents, CAPAs, audit validations
+ *  - UpcomingAuditsCard     : audits with date + status
+ *  - RecentActivityFeed     : uploads, evaluations, audit assignments, overdue CAPAs
+ *  - SystemHealthCard       : AI engine, OCR, notifications, audit trail
+ *  - TrustIndicatorsFooter  : ISO 27001, audit trail, RBAC
  */
 
 import React from 'react';
@@ -133,7 +133,7 @@ export function AIBadge({
 }
 
 /* ------------------------------------------------------------------ */
-/* Empty metric state — used inside KPI cards when value === 0         */
+/* Empty metric state: used inside KPI cards when value === 0         */
 /* ------------------------------------------------------------------ */
 
 export function EmptyMetricState({
@@ -194,7 +194,7 @@ export function EmptyMetricState({
 }
 
 /* ------------------------------------------------------------------ */
-/* AI Compliance Pulse — simple inline label inside the hero           */
+/* AI Compliance Pulse: simple inline label inside the hero           */
 /* ------------------------------------------------------------------ */
 
 export interface CompliancePulseData {
@@ -232,7 +232,7 @@ export function AICompliancePulse({ data }: { data?: CompliancePulseData }) {
         </div>
       </div>
 
-      {/* Inline soft metrics — no card, just typography + thin dividers */}
+      {/* Inline soft metrics: no card, just typography + thin dividers */}
       {metrics.length > 0 && (
         <ul className="flex flex-wrap items-center gap-x-5 gap-y-2">
           {metrics.map((m, i) => (
@@ -270,7 +270,7 @@ export function AICompliancePulse({ data }: { data?: CompliancePulseData }) {
 }
 
 /* ------------------------------------------------------------------ */
-/* Compliance Health Score — radial gauge + sub-metrics                */
+/* Compliance Health Score: radial gauge + sub-metrics                */
 /* ------------------------------------------------------------------ */
 
 export interface ComplianceHealthData {
@@ -688,7 +688,7 @@ export interface ActivityItem {
   href?: string;
 }
 
-/** Small round avatar — photo when available, otherwise coloured initials. */
+/** Small round avatar: photo when available, otherwise coloured initials. */
 function FeedAvatar({ name, src }: { name: string; src?: string }) {
   const initials =
     name

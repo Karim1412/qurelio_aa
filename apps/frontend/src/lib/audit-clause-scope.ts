@@ -58,7 +58,7 @@ export function trimClauseHeading(heading: string): string {
 /** Build stored audit scope text from the selected standard and clause refs. */
 export function buildAuditScopeFromClauses(isoStandard: string, clauseRefs: string[]): string {
   const iso = isoStandard.trim() || 'ISO standard';
-  return `${iso} — clauses: ${clauseRefs.join(', ')}`;
+  return `${iso} clauses: ${clauseRefs.join(', ')}`;
 }
 
 export type ClauseSectionSummary = {
@@ -124,5 +124,5 @@ export function formatClauseRefLabel(
   const ref = clauseRef.trim();
   if (!ref) return '';
   const heading = section?.heading?.trim();
-  return heading ? `${ref} — ${heading}` : ref;
+  return heading ? `${ref}: ${heading}` : ref;
 }

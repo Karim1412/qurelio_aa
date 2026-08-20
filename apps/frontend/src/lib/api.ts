@@ -26,7 +26,7 @@ function apiBaseURL(): string {
  * Without it we fall back to the same origin, i.e. the ordinary /api/* rewrite
  * every other call already uses. The previous fallback guessed `<host>:3100`,
  * which silently broke every upload on any deployment whose gateway is not
- * published on 3100 — the request never reached a listener at all.
+ * published on 3100: the request never reached a listener at all.
  */
 function gatewayUploadURL(): string {
   if (typeof window !== 'undefined') {
@@ -252,7 +252,7 @@ function resolveAuthToken(): string | null {
 
 export const documentApi = {
   list:        (params?: any) => api.get('/api/documents', { params }),
-  /** Soft-deleted ("trashed") documents for the company — restorable. */
+  /** Soft-deleted ("trashed") documents for the company, restorable. */
   listTrash:   ()             => api.get('/api/documents/trash'),
   /** Company document audit events for activity log */
   listActivity: (params: { from: number; to: number }) =>
@@ -355,7 +355,7 @@ export interface DemoBookingAdmin {
 
 
 export const demoApi = {
-  /** Public — no auth. Open, future slots only. */
+  /** Public: no auth. Open, future slots only. */
   listSlots: () => api.get<DemoSlotPublic[]>('/api/demo/slots'),
   /** Books the slot and records the questionnaire in one request. */
   book: (data: Record<string, unknown>) => api.post('/api/demo/bookings', data),
@@ -369,7 +369,7 @@ export const demoApi = {
     api.get<DemoBookingAdmin[]>('/api/admin/demo/bookings', { params: status ? { status } : {} }),
   respond: (id: string, data: { status: string; adminNote?: string; meetingLink?: string }) =>
     api.patch(`/api/admin/demo/bookings/${id}`, data),
-  /** Permanent — releases the slot it was holding if that time is still ahead. */
+  /** Permanent: releases the slot it was holding if that time is still ahead. */
   deleteBooking: (id: string) => api.delete(`/api/admin/demo/bookings/${id}`),
 
   adminSlots: (from?: string, to?: string) =>

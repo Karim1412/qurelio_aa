@@ -27,7 +27,7 @@ SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
 
 const sheetVariants = cva(
   // The duration/easing classes in tailwindcss-animate map to CSS variables
-  // (--tw-enter-*, --tw-exit-*) — using arbitrary `animation-*` props bypasses
+  // (--tw-enter-*, --tw-exit-*): using arbitrary `animation-*` props bypasses
   // those vars and applies the timing directly to the keyframe animation, which
   // produces a genuinely smooth slide.
   'fixed z-50 gap-4 bg-[var(--sidebar-bg)] p-6 text-[var(--text-primary)] shadow-2xl will-change-transform data-[state=open]:animate-in data-[state=closed]:animate-out [animation-duration:620ms] [animation-timing-function:cubic-bezier(0.32,0.72,0,1)] [animation-fill-mode:both]',

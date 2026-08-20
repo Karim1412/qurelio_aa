@@ -7,7 +7,7 @@ import type { Readable }                    from 'stream';
  * Two MinIO clients (same pattern as auth avatar storage):
  * - Internal: Docker hostname `minio` for put/get/delete inside the network.
  * - Presign: Browser-reachable host (MINIO_PUBLIC_URL) for presignedGetObject only.
- * Do not rewrite hosts on URLs — SigV4 includes the host.
+ * Do not rewrite hosts on URLs: SigV4 includes the host.
  */
 @Injectable()
 export class StorageService implements OnModuleInit {
@@ -119,7 +119,7 @@ export class StorageService implements OnModuleInit {
     return this.presign.presignedGetObject(this.bucket, key, expiry);
   }
 
-  /** Stream object bytes via internal endpoint (gateway / app download — no browser MinIO URL). */
+  /** Stream object bytes via internal endpoint (gateway / app download, no browser MinIO URL). */
   async getObjectStream(key: string): Promise<Readable> {
     return this.internal.getObject(this.bucket, key);
   }

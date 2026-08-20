@@ -252,7 +252,7 @@ export function brandedDrawHtmlContentBox(
 ): void {
   const blocks = parseHtmlToBlocks(html);
   if (!blocks.length) {
-    brandedDrawPlainContentBox(w, '—', padding);
+    brandedDrawPlainContentBox(w, '-', padding);
     return;
   }
 
@@ -319,7 +319,7 @@ export function brandedDrawPlainContentBox(
   const fontSize = 10;
   const lineGap = 3;
   const innerW = w.maxTextW - 2 * padding;
-  const wrapped = wrapPdfLines(text || '—', w.font, fontSize, innerW);
+  const wrapped = wrapPdfLines(text || '-', w.font, fontSize, innerW);
   const lineH = fontSize + lineGap;
   const boxH = wrapped.length * lineH + 2 * padding + 4;
 
@@ -382,7 +382,7 @@ export function formatFieldForPdf(
   field: { type?: string; options?: Array<{ value: string; label: string }> },
   value: unknown,
 ): string {
-  if (value === null || value === undefined || value === '') return '—';
+  if (value === null || value === undefined || value === '') return '-';
 
   const t = field.type || 'text';
 
@@ -411,7 +411,7 @@ export function formatFieldForPdf(
       .map((row) => {
         const r = row as { label?: string; checked?: boolean; fileName?: string | null };
         const mark = r.checked ? '☑' : '☐';
-        const file = r.fileName ? ` — ${r.fileName}` : '';
+        const file = r.fileName ? `, ${r.fileName}` : '';
         return `${mark} ${r.label || 'Item'}${file}`;
       })
       .join('\n');
@@ -425,6 +425,6 @@ export function formatFieldForPdf(
   }
 
   if (typeof value === 'string') return value;
-  if (typeof value === 'object') return '—';
+  if (typeof value === 'object') return '-';
   return String(value);
 }

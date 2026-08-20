@@ -143,7 +143,7 @@ export class EvaluationService {
   }
 
   /**
-   * Human-facing product label — never a UUID (snapshots sometimes misused `product` for id).
+   * Human-facing product label: never a UUID (snapshots sometimes misused `product` for id).
    */
   private resolveHumanProductName(
     snap: Record<string, unknown>,
@@ -161,7 +161,7 @@ export class EvaluationService {
     ];
     for (const c of cands) {
       const s = typeof c === 'string' ? c.trim() : '';
-      if (!s || s === '—' || this.looksLikeUuid(s)) continue;
+      if (!s || s === '-' || this.looksLikeUuid(s)) continue;
       return s;
     }
     return 'Product';
@@ -175,7 +175,7 @@ export class EvaluationService {
     enrich: { standardTitleMeta: string; docFileName: string; isoFromDoc: string },
     reportPack?: ReportPack | null,
   ): string {
-    const fromPack = reportPack?.standard?.title && reportPack.standard.title !== '—'
+    const fromPack = reportPack?.standard?.title && reportPack.standard.title !== '-'
       ? reportPack.standard.title
       : '';
     const chain = [
@@ -205,7 +205,7 @@ export class EvaluationService {
     reportPack: ReportPack,
   ): string {
     const std = this.resolveStandardDisplayName(ev, snap, meta, enrich, reportPack);
-    const prod = this.resolveHumanProductName(snap, meta, reportPack, reportPack.product.name !== '—' ? reportPack.product.name : undefined, undefined);
+    const prod = this.resolveHumanProductName(snap, meta, reportPack, reportPack.product.name !== '-' ? reportPack.product.name : undefined, undefined);
     const dSrc = ev.completedAt ?? ev.createdAt;
     const ds = dSrc ? new Date(dSrc).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
     return `${std} · ${prod} · ${ds}`;
@@ -226,7 +226,7 @@ export class EvaluationService {
       snap,
       meta,
       reportPack,
-      reportPack.product.name !== '—' ? reportPack.product.name : undefined,
+      reportPack.product.name !== '-' ? reportPack.product.name : undefined,
       undefined,
     );
     const stdSlug = this.slugExportSegment(std, 88) || 'standard';
@@ -274,7 +274,7 @@ export class EvaluationService {
         /* ignore bad regex */
       }
     }
-    return h || cn || '—';
+    return h || cn || '-';
   }
 
   /** Map one ISO section row to one or more lookup keys (numeric clauses, Annex A, A.1, …). */
@@ -356,7 +356,7 @@ export class EvaluationService {
 
   private reportPackPlaceholder(s: string): boolean {
     const t = (s || '').trim();
-    return !t || t === '—';
+    return !t || t === '-';
   }
 
   /** Prefer snapshot initiator; fall back to evaluation row (email / user id). */
@@ -372,20 +372,20 @@ export class EvaluationService {
     if (ie) return ie;
     const uid = (ev.initiatedBy || '').trim();
     if (uid) return `User ID: ${uid}`;
-    return '—';
+    return '-';
   }
 
   /** Product folder / file registration date from report pack (`created` ISO day or datetime). */
   private formatProductFileAddedDisplay(reportPack: ReportPack): string {
     const raw = this.str(reportPack.product.created);
-    if (!raw || raw === '—') return '—';
+    if (!raw || raw === '-') return '-';
     const d = new Date(raw.includes('T') ? raw : `${raw}T12:00:00Z`);
     if (Number.isNaN(d.getTime())) return raw;
     return d.toLocaleString('en-US', { dateStyle: 'short', timeStyle: 'medium' });
   }
 
   private emptyReportPack(): ReportPack {
-    const dash = '—';
+    const dash = '-';
     return {
       standard: { reference: dash, title: dash, version: dash, effectiveDate: dash },
       product: {
@@ -461,12 +461,12 @@ export class EvaluationService {
     snap: Record<string, unknown>,
   ): Promise<ReportPack> {
     const cur = this.str(reportPack.company.companyName);
-    if (cur && cur !== '—') return reportPack;
+    if (cur && cur !== '-') return reportPack;
     const meta = (snap.evaluationMetadata as Record<string, unknown> | undefined) ?? {};
     const rc = (snap.reportContext as Record<string, unknown> | undefined) ?? {};
     const co = (rc.company as Record<string, unknown> | undefined) ?? {};
     const fromSnap = this.str(meta.companyName) || this.str(co.companyName);
-    if (fromSnap && fromSnap !== '—') {
+    if (fromSnap && fromSnap !== '-') {
       return { ...reportPack, company: { ...reportPack.company, companyName: fromSnap } };
     }
     const fromAuth = await this.fetchAuthCompanyDisplayName(companyId);
@@ -557,15 +557,15 @@ export class EvaluationService {
       this.str(isoRaw?.isoStandard) ||
       isoStandardCol ||
       this.str(stdMeta.reference) ||
-      '—';
+      '-';
     const title =
       this.str(meta.standardTitle) ||
       this.str(meta.standardName) ||
       this.str(stdMeta.title) ||
       this.str(extIso.title) ||
       this.str(isoRaw?.name) ||
-      '—';
-    const eff = this.str(stdMeta.effectiveDate) || '—';
+      '-';
+    const eff = this.str(stdMeta.effectiveDate) || '-';
     const version =
       this.str(meta.standardVersion) ||
       this.str(meta.normVersion) ||
@@ -591,38 +591,38 @@ export class EvaluationService {
       this.str(pp.technicalCharacteristics) ||
       this.str(mergedRoot.qualitySpecificationNarrative) ||
       this.str(mergedRoot.generalDescription) ||
-      '—';
+      '-';
 
-    e.standard = { reference: isoRef, title, version: version || '—', effectiveDate: eff };
+    e.standard = { reference: isoRef, title, version: version || '-', effectiveDate: eff };
     e.product = {
       name: prodName,
-      reference: this.str(basic.reference) || this.str(folder.reference) || '—',
-      revision: this.str(basic.revision) || this.str(folder.revision) || '—',
-      category: this.str(basic.category) || catTags || '—',
-      subCategory: this.str(basic.subCategory) || '—',
-      tradeMark: this.str(basic.tradeMark) || '—',
+      reference: this.str(basic.reference) || this.str(folder.reference) || '-',
+      revision: this.str(basic.revision) || this.str(folder.revision) || '-',
+      category: this.str(basic.category) || catTags || '-',
+      subCategory: this.str(basic.subCategory) || '-',
+      tradeMark: this.str(basic.tradeMark) || '-',
       created: folder.createdAt
         ? new Date(String(folder.createdAt)).toISOString().slice(0, 10)
         : createdAt.toISOString().slice(0, 10),
-      environment: this.str(usage.environment) || '—',
-      users: this.str(usage.users) || '—',
-      tempHumidity: this.str(usage.tempHumidity) || '—',
-      ipRating: this.str(usage.ipRating) || '—',
+      environment: this.str(usage.environment) || '-',
+      users: this.str(usage.users) || '-',
+      tempHumidity: this.str(usage.tempHumidity) || '-',
+      ipRating: this.str(usage.ipRating) || '-',
       description: desc,
     };
 
     const co = (rc.company as Record<string, unknown> | undefined) ?? {};
     const ini = (rc.initiator as Record<string, unknown> | undefined) ?? {};
     e.company = {
-      companyName: this.str(co.companyName) || this.str(meta.companyName) || '—',
-      address: this.str(co.address) || this.str(co.field) || '—',
-      email: this.str(co.email) || '—',
-      phone: this.str(co.phone) || '—',
+      companyName: this.str(co.companyName) || this.str(meta.companyName) || '-',
+      address: this.str(co.address) || this.str(co.field) || '-',
+      email: this.str(co.email) || '-',
+      phone: this.str(co.phone) || '-',
     };
     e.initiator = {
-      firstName: this.str(ini.firstName) || '—',
-      lastName: this.str(ini.lastName) || '—',
-      email: this.str(ini.email) || '—',
+      firstName: this.str(ini.firstName) || '-',
+      lastName: this.str(ini.lastName) || '-',
+      email: this.str(ini.email) || '-',
     };
     return e;
   }
@@ -634,7 +634,7 @@ export class EvaluationService {
     const std = o.standard;
     if (!std || typeof std !== 'object') return null;
     const ref = this.str((std as Record<string, unknown>).reference);
-    if (!ref || ref === '—') return null;
+    if (!ref || ref === '-') return null;
     return rp as unknown as ReportPack;
   }
 
@@ -643,7 +643,7 @@ export class EvaluationService {
     if (u === 'SATISFIED') return 'PASS';
     if (u === 'PARTIALLY_SATISFIED') return 'PART';
     if (u === 'NOT_SATISFIED') return 'FAIL';
-    return '—';
+    return '-';
   }
 
   private verdictShort(eff: string): string {
@@ -651,19 +651,19 @@ export class EvaluationService {
     if (u === 'SATISFIED') return 'P';
     if (u === 'PARTIALLY_SATISFIED') return 'M';
     if (u === 'NOT_SATISFIED') return 'F';
-    return '—';
+    return '-';
   }
 
   private extractApplicableIf(text: string): string {
     const t = (text || '').replace(/\s+/g, ' ').trim();
     const m = t.match(/\bIF:?\s+(.+)/i);
-    return m ? m[1].trim().slice(0, 800) : '—';
+    return m ? m[1].trim().slice(0, 800) : '-';
   }
 
   private extractNormRefs(text: string): string {
     const t = (text || '').replace(/\s+/g, ' ').trim();
     const hits = t.match(/\b(?:IEC|ISO|EN|NF|ANSI|IEEE)\s*[\d-]+(?::\d{4})?(?:\+A\d+:\d{4})?/gi);
-    return hits?.length ? [...new Set(hits)].join('; ').slice(0, 800) : '—';
+    return hits?.length ? [...new Set(hits)].join('; ').slice(0, 800) : '-';
   }
 
   private isStructuralClauseRow(r: ClauseRow, enh: ClauseLookupEntry): boolean {
@@ -749,7 +749,7 @@ export class EvaluationService {
     if (evLines.length) parts.push(evLines.join(' | '));
     if ((r.gaps || []).length) parts.push(`Gaps: ${(r.gaps || []).join('; ')}`);
     if ((r.suggestions || []).length) parts.push(`Suggestions: ${(r.suggestions || []).join('; ')}`);
-    if (r.override) parts.push(`Override: ${r.override.verdict} — ${r.override.reason}`);
+    if (r.override) parts.push(`Override: ${r.override.verdict}, ${r.override.reason}`);
     const body = parts.join('\n') || this.str(r.clauseTextExcerpt).slice(0, 600);
     return `${statusLabel}: ${body}`.slice(0, 8000);
   }
@@ -773,7 +773,7 @@ export class EvaluationService {
       );
     } else {
       const pc = this.str(reportPack.product.created);
-      if (!pc || pc === '—') {
+      if (!pc || pc === '-') {
         const merged = this.buildReportPackFromSnapshots(
           isoRaw,
           prodRaw,
@@ -874,7 +874,7 @@ export class EvaluationService {
    *
    * Excluded from numerator and denominator: `N/A` (the requirement does not apply
    * to this product) and `INCONCLUSIVE` (the engine failed). MISSING_INFO is scored
-   * as 0 — the requirement applies and the file does not demonstrate conformity.
+   * as 0: the requirement applies and the file does not demonstrate conformity.
    *
    * Falls back to the legacy verdict vocabulary for evaluations stored before the
    * conformity-matrix statuses existed.
@@ -953,7 +953,7 @@ export class EvaluationService {
 
   /**
    * NC drafts come from FAIL rows only. MISSING_INFO is a documentation gap to
-   * chase, not a demonstrated non-conformity, and N/A rows are out of scope —
+   * chase, not a demonstrated non-conformity, and N/A rows are out of scope,
    * raising NCs for either would flood the register with false findings.
    */
   private buildNcDrafts(rows: ClauseRow[], ev: Evaluation): Record<string, unknown>[] {
@@ -961,7 +961,7 @@ export class EvaluationService {
       .filter((r) => this.effectiveStatus(r) === 'FAIL')
       .map((r) => ({
         clauseReference: r.clauseReference,
-        title: `NC draft — ${r.clauseReference}`,
+        title: `NC draft: ${r.clauseReference}`,
         description: (r.gaps && r.gaps.length
           ? r.gaps
           : [r.justification || 'Gap vs standard requirement']
@@ -1026,7 +1026,7 @@ export class EvaluationService {
         new Date(),
       );
       requestSnapshot.reportPack = reportPack;
-      if (!requestSnapshot.productName && reportPack.product?.name && reportPack.product.name !== '—') {
+      if (!requestSnapshot.productName && reportPack.product?.name && reportPack.product.name !== '-') {
         requestSnapshot.productName = reportPack.product.name;
       }
     } catch (e: any) {
@@ -1109,7 +1109,7 @@ export class EvaluationService {
 
       await this.notifyComplete(ev, Number.isFinite(storedScore) ? storedScore : conformity_score);
 
-      this.logger.log(`Eval ${evaluationId} done — ${storedScore}%`);
+      this.logger.log(`Eval ${evaluationId} done: ${storedScore}%`);
     } catch (e: any) {
       const msg = e?.response?.data?.detail || e?.message || 'Evaluation failed';
       await this.evalRepo.update(evaluationId, {
@@ -1289,7 +1289,7 @@ export class EvaluationService {
       companyId,
       userId,
       'info',
-      `Evaluation · Clause verdict overridden — ${ev.isoStandard} (${label}) — ${clauseRef} → ${v.replace(/_/g, ' ')}`,
+      `Evaluation · Clause verdict overridden: ${ev.isoStandard} (${label}), ${clauseRef} → ${v.replace(/_/g, ' ')}`,
       { evaluationId: id, clauseRef, verdict: v },
     );
 
@@ -1326,7 +1326,7 @@ export class EvaluationService {
       companyId,
       userId,
       'success',
-      `Evaluation · Confirmed NC drafts from AI — ${ev.isoStandard} (${n} non-conformit${n === 1 ? 'y' : 'ies'})`,
+      `Evaluation · Confirmed NC drafts from AI: ${ev.isoStandard} (${n} non-conformit${n === 1 ? 'y' : 'ies'})`,
       { evaluationId: id, count: n },
     );
 
@@ -1360,7 +1360,7 @@ export class EvaluationService {
       companyId,
       userId,
       'info',
-      `Evaluation · Re-queued after failure — ${ev.isoStandard}`,
+      `Evaluation · Re-queued after failure: ${ev.isoStandard}`,
       { evaluationId: id },
     );
 
@@ -1411,13 +1411,13 @@ export class EvaluationService {
   /** Excel "Report Ref" line: `Standard ref -- Product -- YYYY-MM-DD` (template row 5). */
   private buildExcelReportRefDashLine(ev: Evaluation, reportPack: ReportPack): string {
     const ref =
-      reportPack.standard.reference && reportPack.standard.reference !== '—'
+      reportPack.standard.reference && reportPack.standard.reference !== '-'
         ? reportPack.standard.reference
         : ev.isoStandard;
     const prod =
-      reportPack.product.name && reportPack.product.name !== '—'
+      reportPack.product.name && reportPack.product.name !== '-'
         ? reportPack.product.name
-        : '—';
+        : '-';
     const dSrc = ev.completedAt ?? ev.createdAt;
     const ds = dSrc ? new Date(dSrc).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
     return `${ref} -- ${prod} -- ${ds}`;
@@ -1451,7 +1451,7 @@ export class EvaluationService {
     };
 
     // ═══════════════════════════════════════════════════════════════
-    // SHEET 1 — Clause-by-Clause Analysis (matches frontend UI)
+    // SHEET 1: Clause-by-Clause Analysis (matches frontend UI)
     // ═══════════════════════════════════════════════════════════════
     const ws = wb.addWorksheet('Clause-by-Clause Analysis', {
       properties: { tabColor: { argb: BRAND_PRIMARY } },
@@ -1471,11 +1471,11 @@ export class EvaluationService {
     ws.getColumn(11).width = 30;   // Override
 
     // ── Title row ────────────────────────────────────────────────
-    const stdRef = reportPack.standard.reference && reportPack.standard.reference !== '—'
+    const stdRef = reportPack.standard.reference && reportPack.standard.reference !== '-'
       ? reportPack.standard.reference : ev.isoStandard;
     ws.mergeCells(1, 1, 1, COL_COUNT);
     const titleCell = ws.getCell(1, 1);
-    titleCell.value = `CLAUSE-BY-CLAUSE ANALYSIS — ${stdRef}`;
+    titleCell.value = `CLAUSE-BY-CLAUSE ANALYSIS: ${stdRef}`;
     titleCell.font = { bold: true, size: 14, color: { argb: WHITE } };
     titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: BRAND_DARK } };
     titleCell.alignment = { vertical: 'middle', horizontal: 'center', indent: 1 };
@@ -1541,7 +1541,7 @@ export class EvaluationService {
       // Justification (from raw data or gaps, same as frontend)
       const justification =
         ((row as any).justification ??
-          (Array.isArray(row.gaps) && row.gaps.length ? row.gaps.join('; ') : '')) || '—';
+          (Array.isArray(row.gaps) && row.gaps.length ? row.gaps.join('; ') : '')) || '-';
 
       // Clean text: collapse whitespace, replace newlines with "; "
       const cleanText = (t: string) =>
@@ -1578,21 +1578,21 @@ export class EvaluationService {
 
       // Override
       const overrideText = row.override
-        ? `${row.override.verdict ? row.override.verdict.replace(/_/g, ' ') : ''}${row.override.reason ? ` — ${row.override.reason}` : ''}`
+        ? `${row.override.verdict ? row.override.verdict.replace(/_/g, ' ') : ''}${row.override.reason ? `, ${row.override.reason}` : ''}`
         : '';
 
       const excelRow = ws.getRow(dr);
-      excelRow.getCell(1).value = row.clauseReference || '—';
-      excelRow.getCell(2).value = row.clauseTitle || `Clause ${row.clauseReference || '—'}`;
+      excelRow.getCell(1).value = row.clauseReference || '-';
+      excelRow.getCell(2).value = row.clauseTitle || `Clause ${row.clauseReference || '-'}`;
       excelRow.getCell(3).value = cleanText(row.clauseSummary || row.clauseTextExcerpt || '');
       excelRow.getCell(4).value = applicable ? 'YES' : 'NO';
       excelRow.getCell(5).value = statusLabel;
-      excelRow.getCell(6).value = statusKey !== 'N/A' ? `${(conf * 100).toFixed(0)}%` : '—';
+      excelRow.getCell(6).value = statusKey !== 'N/A' ? `${(conf * 100).toFixed(0)}%` : '-';
       excelRow.getCell(7).value = justification;
-      excelRow.getCell(8).value = evidenceText || '—';
-      excelRow.getCell(9).value = gapsText || '—';
-      excelRow.getCell(10).value = suggestionsText || '—';
-      excelRow.getCell(11).value = overrideText || '—';
+      excelRow.getCell(8).value = evidenceText || '-';
+      excelRow.getCell(9).value = gapsText || '-';
+      excelRow.getCell(10).value = suggestionsText || '-';
+      excelRow.getCell(11).value = overrideText || '-';
 
       // Row background colour by status
       let bg = WHITE;
@@ -1643,7 +1643,7 @@ export class EvaluationService {
   private async exportPdfWith(bundle: EvaluationExportBundle): Promise<Buffer> {
     const { ev, lookup, reportRef, reportPack } = bundle;
     const companyNamePdf =
-      reportPack.company.companyName && reportPack.company.companyName !== '—'
+      reportPack.company.companyName && reportPack.company.companyName !== '-'
         ? reportPack.company.companyName
         : 'Company';
     const w = await createBrandedPdfWriter({
@@ -1670,7 +1670,7 @@ export class EvaluationService {
     drawBlock(`Prepared by: ${preparedByPdf}`, 10, false);
     drawBlock(`Status: ${ev.status}`, 10, false);
     drawBlock(
-      `Date of issue: ${(ev.completedAt ?? ev.createdAt) ? new Date(ev.completedAt ?? ev.createdAt).toLocaleDateString() : '—'}`,
+      `Date of issue: ${(ev.completedAt ?? ev.createdAt) ? new Date(ev.completedAt ?? ev.createdAt).toLocaleDateString() : '-'}`,
       10,
       false,
     );
@@ -1691,10 +1691,10 @@ export class EvaluationService {
     ySpacer(8);
 
     drawBlock('Executive summary', 13, true, 4);
-    drawBlock(ev.summary || '—', 10, false);
+    drawBlock(ev.summary || '-', 10, false);
     ySpacer(10);
 
-    const stdLine = `${reportPack.standard.reference} — ${reportPack.standard.title}`;
+    const stdLine = `${reportPack.standard.reference}: ${reportPack.standard.title}`;
     bar('Clauses / Requirements');
     drawBlock(stdLine, 10, true, 3);
 
@@ -1706,8 +1706,8 @@ export class EvaluationService {
       const reqText = [enh.title, enh.summary, r.clauseTextExcerpt].filter((x) => this.str(x)).join('\n\n');
       ySpacer(4);
       drawBlock(`Clause ${r.clauseReference} · Verdict ${structural ? 'N/A' : this.verdictShort(eff)}`, 11, true, 3);
-      drawBlock(`Requirement — Test:\n${reqText || '—'}`, 10, false, 2);
-      drawBlock(`Result — Remark:\n${this.buildJustification(r, eff, structural)}`, 10, false, 2);
+      drawBlock(`Requirement / Test:\n${reqText || '-'}`, 10, false, 2);
+      drawBlock(`Result / Remark:\n${this.buildJustification(r, eff, structural)}`, 10, false, 2);
     }
 
     return finalizeBrandedPdf(w);
@@ -1733,10 +1733,10 @@ export class EvaluationService {
       return t;
     };
 
-    const stdRef = reportPack.standard.reference && reportPack.standard.reference !== '—'
+    const stdRef = reportPack.standard.reference && reportPack.standard.reference !== '-'
       ? reportPack.standard.reference : ev.isoStandard;
-    const prodName = reportPack.product.name && reportPack.product.name !== '—'
-      ? reportPack.product.name : '—';
+    const prodName = reportPack.product.name && reportPack.product.name !== '-'
+      ? reportPack.product.name : '-';
     const dateStr = (ev.completedAt ?? ev.createdAt)
       ? new Date(ev.completedAt ?? ev.createdAt).toISOString().slice(0, 10)
       : new Date().toISOString().slice(0, 10);
@@ -1756,10 +1756,10 @@ export class EvaluationService {
       csvEscape(`${stdRef} -- ${prodName} -- ${dateStr}`),
       csvEscape(stdRef),
       csvEscape(prodName),
-      csvEscape(reportPack.company.companyName || '—'),
+      csvEscape(reportPack.company.companyName || '-'),
       csvEscape(dateStr),
-      csvEscape(String(ev.conformityScore != null ? ev.conformityScore.toFixed(1) : '—')),
-      csvEscape(ev.summary || '—'),
+      csvEscape(String(ev.conformityScore != null ? ev.conformityScore.toFixed(1) : '-')),
+      csvEscape(ev.summary || '-'),
     ];
 
     const detailHeaders = [
@@ -1837,7 +1837,7 @@ export class EvaluationService {
         : '';
       const justification =
         ((r as any).justification ??
-          (Array.isArray(r.gaps) && r.gaps.length ? r.gaps.join('; ') : '')) || '—';
+          (Array.isArray(r.gaps) && r.gaps.length ? r.gaps.join('; ') : '')) || '-';
 
       const reqElements = (r as any).requirementElements || (r as any).requirement_elements;
       const reqElementsText = Array.isArray(reqElements) && reqElements.length
@@ -1860,14 +1860,14 @@ export class EvaluationService {
         csvEscape(applicable ? 'YES' : 'NO'),
         csvEscape(statusKey),
         csvEscape(statusLabel),
-        csvEscape(statusKey !== 'N/A' ? `${conf.toFixed(0)}` : '—'),
+        csvEscape(statusKey !== 'N/A' ? `${conf.toFixed(0)}` : '-'),
         csvEscape(justification),
         csvEscape(evidenceFound),
         csvEscape(gapsText),
         csvEscape(suggestionsText),
-        csvEscape(overrideVerdict || '—'),
-        csvEscape(overrideReason || '—'),
-        csvEscape(overrideDate || '—'),
+        csvEscape(overrideVerdict || '-'),
+        csvEscape(overrideReason || '-'),
+        csvEscape(overrideDate || '-'),
         csvEscape(reasoning),
         csvEscape(reqElementsText),
         csvEscape(evidenceAssessText),
@@ -1915,7 +1915,7 @@ export class EvaluationService {
       companyId,
       userId,
       'warning',
-      `Evaluation · Permanently deleted — ${ev.isoStandard}`,
+      `Evaluation · Permanently deleted: ${ev.isoStandard}`,
       { evaluationId: id },
     );
     await this.ncRepo

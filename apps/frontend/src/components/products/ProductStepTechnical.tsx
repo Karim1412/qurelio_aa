@@ -44,16 +44,16 @@ export function ProductStepTechnical({ data, onChange, aiFields }: Props) {
       <div className="callout-info flex items-start gap-3 rounded-xl border border-[var(--callout-info-border)] bg-[var(--callout-info-bg)] p-4">
         <Info className="mt-0.5 h-5 w-5 shrink-0 text-[var(--brand-primary)]" />
         <p className="text-[13px] leading-relaxed text-[var(--callout-info-text)]">
-          <strong>Most important field for AI accuracy.</strong> The intended use is injected directly into compliance evaluation prompts. A specific description — including what the product does, who uses it, in what context, and any known hazards — produces more accurate obligation matching than a vague one.
+          <strong>Most important field for AI accuracy.</strong> The intended use is injected directly into compliance evaluation prompts. A specific description (including what the product does, who uses it, in what context, and any known hazards) produces more accurate obligation matching than a vague one.
         </p>
       </div>
 
       <div className="space-y-1.5">
         <AiLabel required field="technical.intendedUse" aiFields={aiFields}>Intended use / Application</AiLabel>
         <Textarea value={data.intendedUse} onChange={(e) => onChange({ intendedUse: e.target.value })}
-          placeholder="e.g. Denim jeans for adults — casual daily wear, retail-sold. 98% cotton, 2% elastane. Reactive dyes used for coloring. Stone-washed finish. Intended for EU and North African markets."
+          placeholder="e.g. Denim jeans for adults: casual daily wear, retail-sold. 98% cotton, 2% elastane. Reactive dyes used for coloring. Stone-washed finish. Intended for EU and North African markets."
           rows={5} />
-        <p className="text-right text-[11px] text-[var(--muted)]">{data.intendedUse.length} characters — aim for 80+ for best AI results</p>
+        <p className="text-right text-[11px] text-[var(--muted)]">{data.intendedUse.length} characters, aim for 80+ for best AI results</p>
         <p className="text-[11px] text-[var(--muted)]">Mention: what it is, who uses it, how it is used, what it is made of, and any known hazards or special conditions.</p>
       </div>
 

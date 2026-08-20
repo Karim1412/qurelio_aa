@@ -262,7 +262,7 @@ export function PricingSection() {
         }
         .pricing-card:hover { transform: translateY(-4px); }
 
-        /* ─── Featured card — brand-tinted, with a slow aurora breathing bg ─── */
+        /* ─── Featured card: brand-tinted, with a slow aurora breathing bg ─── */
         .pricing-card.featured {
           background:
             radial-gradient(ellipse 100% 55% at 50% 0%, rgba(77, 146, 196, 0.10), transparent 75%),
@@ -298,7 +298,7 @@ export function PricingSection() {
           transform: translateY(-6px);
         }
 
-        /* "Most Popular" tab — brand blue (cohesive with rest of design) */
+        /* "Most Popular" tab: brand blue (cohesive with rest of design) */
         .pricing-popular-tab {
           position: absolute;
           top: -14px;
@@ -387,7 +387,7 @@ export function PricingSection() {
           text-transform: uppercase;
         }
 
-        /* User range — chip-style instead of horizontal lines */
+        /* User range: chip-style instead of horizontal lines */
         .pricing-userrange {
           display: inline-flex;
           align-items: center;
@@ -565,7 +565,7 @@ export function PricingSection() {
             Simple, <em>transparent</em> pricing
           </h2>
           <p className="pricing-sub">
-            Choose a plan that works best for you and your team. No hidden fees, no surprises — just clear value at every tier.
+            Choose a plan that works best for you and your team. No hidden fees, no surprises, just clear value at every tier.
           </p>
 
           <div className="pricing-frame">

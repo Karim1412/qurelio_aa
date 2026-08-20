@@ -10,7 +10,7 @@ function toQueryString(searchParams: Record<string, string | string[] | undefine
   return q.toString();
 }
 
-/** @deprecated use `/docs` — kept for bookmarks and old links. */
+/** @deprecated use `/docs`: kept for bookmarks and old links. */
 export default async function DocumentsRedirectPage({
   searchParams,
 }: {

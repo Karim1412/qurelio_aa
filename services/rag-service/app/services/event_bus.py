@@ -48,7 +48,7 @@ class EventBus:
             try:
                 q.put_nowait(ev)
             except asyncio.QueueFull:
-                logger.warning("event_bus: dropping event for %s — subscriber slow", evaluation_id)
+                logger.warning("event_bus: dropping event for %s, subscriber slow", evaluation_id)
 
     async def close(self, evaluation_id: str) -> None:
         async with self._lock:

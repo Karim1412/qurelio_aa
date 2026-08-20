@@ -192,7 +192,7 @@ export function ReportsList({
                         ? 'NC'
                         : report.type
                           ? report.type.charAt(0) + report.type.slice(1).toLowerCase()
-                          : '—'}
+                          : '-'}
                     </TableCell>
                     <TableCell className="text-sm truncate text-[var(--text-primary)]">{report.title}</TableCell>
                     <TableCell>

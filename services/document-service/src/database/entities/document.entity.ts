@@ -4,7 +4,7 @@ import {
 import type { ExtractedStructure } from '../../ocr/extracted-structure';
 
 /**
- * Product — Container for related documents (e.g., "Product X" has multiple specs, manuals, images)
+ * Product: Container for related documents (e.g., "Product X" has multiple specs, manuals, images)
  */
 @Entity('products')
 @Index(['companyId'])
@@ -132,7 +132,7 @@ export class Product {
 }
 
 /**
- * FileFolder — user-managed, nestable folder tree for the File Manager.
+ * FileFolder: user-managed, nestable folder tree for the File Manager.
  * Independent from Product (which is a flat product container). A folder may
  * have a parent (self-reference) to form a Windows-Explorer-like hierarchy.
  */
@@ -160,14 +160,14 @@ export class FileFolder {
 }
 
 /**
- * Document — now belongs to a Product (optional for ISO norms / procedures which are company-wide)
+ * Document: now belongs to a Product (optional for ISO norms / procedures which are company-wide)
  */
 export enum DocumentType {
   ISO_NORM = 'ISO_NORM',
   PRODUCT_DOC = 'PRODUCT_DOC',
   PROCEDURE = 'PROCEDURE',
   EVIDENCE = 'EVIDENCE',
-  /** Stored file only — no OCR/RAG pipeline (e.g. open in Google Docs/Sheets locally). */
+  /** Stored file only: no OCR/RAG pipeline (e.g. open in Google Docs/Sheets locally). */
   WORKSPACE_FILE = 'WORKSPACE_FILE',
 }
 /** UPLOADED = stored; PROCESSING = OCR/extraction; READY = processed (indexed for search); FAILED = error */
@@ -187,7 +187,7 @@ export enum DocumentApprovalStatus {
   REJECTED = 'REJECTED',
 }
 
-/** Standards library lifecycle (STD-004, STD-005) — applies mainly to ISO_NORM */
+/** Standards library lifecycle (STD-004, STD-005), applies mainly to ISO_NORM */
 export enum StandardLibraryStatus {
   PROCESSING = 'PROCESSING',
   ACTIVE = 'ACTIVE',
@@ -292,7 +292,7 @@ export class Document {
   @Column({ name: 'copyright_ack', default: false })
   copyrightAcknowledged!: boolean;
 
-  /** What the guardrail matched, e.g. "ISO 13485" — kept as evidence of the warning. */
+  /** What the guardrail matched, e.g. "ISO 13485": kept as evidence of the warning. */
   @Column({ name: 'copyright_flag', type: 'text', nullable: true })
   copyrightFlag?: string | null;
 

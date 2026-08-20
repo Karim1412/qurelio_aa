@@ -48,7 +48,7 @@ interface CompanyProfileViewProps {
 }
 
 function ChipList({ items }: { items: string[] }) {
-  if (items.length === 0) return <span className="text-[var(--muted)]">—</span>;
+  if (items.length === 0) return <span className="text-[var(--muted)]">-</span>;
   return (
     <div className="flex flex-wrap gap-1.5">
       {items.map((item) => (
@@ -92,7 +92,7 @@ export function CompanyProfileView({
   const user = useAuthStore((s) => s.user);
   const companyName = identity.legalName || user?.company?.name || 'Company';
   const companyEmail = user?.email || '';
-  const companyCode = user?.company?.companyCode || '—';
+  const companyCode = user?.company?.companyCode || '-';
   const roleLabel = user?.role?.replace('_', ' ') || 'Member';
   const logoInputRef = useRef<HTMLInputElement>(null);
 
@@ -292,7 +292,7 @@ export function CompanyProfileView({
                   />
                 ) : (
                   <p className="rounded-xl border border-[var(--border)] bg-[var(--nav-hover)]/30 px-4 py-2.5 text-sm text-[var(--text-primary)]">
-                    {identity.legalName || '—'}
+                    {identity.legalName || '-'}
                   </p>
                 )}
               </div>
@@ -309,7 +309,7 @@ export function CompanyProfileView({
                   />
                 ) : (
                   <p className="rounded-xl border border-[var(--border)] bg-[var(--nav-hover)]/30 px-4 py-2.5 text-sm text-[var(--text-primary)]">
-                    {identity.tradeName || '—'}
+                    {identity.tradeName || '-'}
                   </p>
                 )}
               </div>
@@ -337,7 +337,7 @@ export function CompanyProfileView({
                     />
                   ) : (
                     <p className="rounded-xl border border-[var(--border)] bg-[var(--nav-hover)]/30 px-4 py-2.5 text-sm text-[var(--text-primary)]">
-                      {user?.phone || '—'}
+                      {user?.phone || '-'}
                     </p>
                   )}
                 </div>
@@ -356,7 +356,7 @@ export function CompanyProfileView({
                     />
                   ) : (
                     <p className="rounded-xl border border-[var(--border)] bg-[var(--nav-hover)]/30 px-4 py-2.5 text-sm text-[var(--text-primary)]">
-                      {identity.country || '—'}
+                      {identity.country || '-'}
                     </p>
                   )}
                 </div>
@@ -384,7 +384,7 @@ export function CompanyProfileView({
                           {identity.website}
                         </a>
                       ) : (
-                        '—'
+                        '-'
                       )}
                     </p>
                   )}
@@ -455,7 +455,7 @@ export function CompanyProfileView({
                   {isEditingQuality ? (
                     <Input value={editActivity.primarySector} onChange={(e) => setEditActivity((p) => ({ ...p, primarySector: e.target.value }))} placeholder="Primary sector" />
                   ) : (
-                    <span>{activity.primarySector || '—'}</span>
+                    <span>{activity.primarySector || '-'}</span>
                   )}
                 </EditRow>
                 <EditRow label="Sub-sectors" editing={isEditingQuality}>
@@ -575,7 +575,7 @@ export function CompanyProfileView({
                         {MATURITY_LABELS[quality.maturityLevel] || quality.maturityLevel}
                       </span>
                     ) : (
-                      <span>—</span>
+                      <span>-</span>
                     )
                   )}
                 </EditRow>
@@ -583,21 +583,21 @@ export function CompanyProfileView({
                   {isEditingQuality ? (
                     <Input value={editQuality.employeeRange} onChange={(e) => setEditQuality((p) => ({ ...p, employeeRange: e.target.value }))} placeholder="e.g. 51–250" />
                   ) : (
-                    <span>{quality.employeeRange || '—'}</span>
+                    <span>{quality.employeeRange || '-'}</span>
                   )}
                 </EditRow>
                 <EditRow label="Annual revenue" editing={isEditingQuality}>
                   {isEditingQuality ? (
                     <Input value={editQuality.revenueRange} onChange={(e) => setEditQuality((p) => ({ ...p, revenueRange: e.target.value }))} placeholder="e.g. €1M – €5M" />
                   ) : (
-                    <span>{quality.revenueRange || '—'}</span>
+                    <span>{quality.revenueRange || '-'}</span>
                   )}
                 </EditRow>
                 <EditRow label="Team size" editing={isEditingQuality}>
                   {isEditingQuality ? (
                     <Input type="number" min={0} value={editQuality.qualityTeamSize} onChange={(e) => setEditQuality((p) => ({ ...p, qualityTeamSize: e.target.value }))} placeholder="e.g. 4" />
                   ) : (
-                    <span>{quality.qualityTeamSize ? `${quality.qualityTeamSize} people` : '—'}</span>
+                    <span>{quality.qualityTeamSize ? `${quality.qualityTeamSize} people` : '-'}</span>
                   )}
                 </EditRow>
                 <EditRow label="Quality manager" editing={isEditingQuality}>
@@ -609,7 +609,7 @@ export function CompanyProfileView({
                   ) : (
                     <span className="flex items-center gap-2">
                       <Users className="h-3.5 w-3.5 text-[var(--muted)]" />
-                      {quality.qualityManagerName || '—'}
+                      {quality.qualityManagerName || '-'}
                       {quality.qualityManagerEmail && (
                         <a href={`mailto:${quality.qualityManagerEmail}`} className="inline-flex items-center gap-1 text-[var(--brand-primary)] hover:underline">
                           <Mail className="h-3 w-3" />

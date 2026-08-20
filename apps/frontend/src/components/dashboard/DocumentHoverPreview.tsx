@@ -107,13 +107,13 @@ export function DocumentHoverPreview({
     }
     setStatus('loading');
 
-    // 1) Detail (metadata + extracted content) — always JSON, always available
+    // 1) Detail (metadata + extracted content): always JSON, always available
     const detailPromise = documentApi
       .get(documentId)
       .then((r) => r.data as Detail)
       .catch(() => null);
 
-    // 2) Real binary file — may fail or return JSON if no file is attached
+    // 2) Real binary file: may fail or return JSON if no file is attached
     const filePromise = documentApi
       .getDownload(documentId)
       .then(async (r) => {
@@ -322,7 +322,7 @@ export function DocumentHoverPreview({
 
                   {!file && (hasStructured || rawText) && (
                     <p className="border-t border-[var(--border)]/50 pt-2 text-[10px] italic text-[var(--muted)]">
-                      The original file is not available — showing extracted content only.
+                      The original file is not available. Showing extracted content only.
                     </p>
                   )}
                 </div>

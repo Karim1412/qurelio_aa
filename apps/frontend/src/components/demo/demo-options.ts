@@ -3,7 +3,7 @@
  *
  * These mirror the company registration form so a demo request and the account
  * it later becomes describe the business the same way. The values are validated
- * server-side in auth-service `demo.dto.ts` — keep the two in step.
+ * server-side in auth-service `demo.dto.ts`: keep the two in step.
  */
 
 export const DEMO_FIELDS = [

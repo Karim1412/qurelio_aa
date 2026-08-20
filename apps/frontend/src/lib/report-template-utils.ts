@@ -152,7 +152,7 @@ export function stripHtml(html: string): string {
 }
 
 export function formatReportFieldValue(value: unknown): string {
-  if (value === null || value === undefined || value === '') return '—';
+  if (value === null || value === undefined || value === '') return '-';
   if (typeof value === 'boolean') return value ? 'Yes' : 'No';
   if (Array.isArray(value)) {
     const done = value.filter((v) => v && typeof v === 'object' && (v as { checked?: boolean }).checked).length;
@@ -169,6 +169,6 @@ export function formatReportFieldValue(value: unknown): string {
     return 'No file attached';
   }
   if (typeof value === 'string' && value.includes('<')) return stripHtml(value);
-  if (typeof value === 'object') return '—';
+  if (typeof value === 'object') return '-';
   return String(value);
 }

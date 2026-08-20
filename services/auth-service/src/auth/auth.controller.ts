@@ -54,7 +54,7 @@ export class AuthController {
   @Get('me') @UseGuards(JwtAuthGuard)
   getMe(@CurrentUser() principal: JwtRequestUser) { return this.auth.getMe(principal); }
 
-  /** Binary image; requires Authorization (img src cannot send JWT — UI uses fetch + blob URL). */
+  /** Binary image; requires Authorization (img src cannot send JWT. UI uses fetch + blob URL). */
   @Get('profile/avatar/image') @UseGuards(JwtAuthGuard)
   profileAvatarImage(@CurrentUser() principal: JwtRequestUser, @Res({ passthrough: false }) res: Response) {
     return this.auth.sendProfileAvatarImage(principal, res);

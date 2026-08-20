@@ -227,7 +227,7 @@ export class DocumentController {
     return this.svc.getIsoNorms(req.user.companyId);
   }
 
-  /** Trash bin — every soft-deleted document for the company in one list. */
+  /** Trash bin: every soft-deleted document for the company in one list. */
   @Get('trash')
   async trash(@Req() req: any): Promise<any> {
     return this.svc.list(
@@ -403,7 +403,7 @@ export class DocumentController {
     return this.svc.shareWithCompany(id, req.user.companyId, req.user.id);
   }
 
-  /** Release a copyright quarantine — the QM accepts responsibility for the document. */
+  /** Release a copyright quarantine: the QM accepts responsibility for the document. */
   @Patch(':id/copyright-ack')
   @Roles('DIRECTOR', 'QUALITY_MANAGER')
   async copyrightAck(@Param('id') id: string, @Req() req: any): Promise<any> {

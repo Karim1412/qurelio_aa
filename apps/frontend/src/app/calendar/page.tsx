@@ -312,7 +312,7 @@ export default function CalendarPage() {
                 Calendar
               </h1>
               <p className="mt-0.5 max-w-3xl text-[12px] leading-relaxed text-[var(--muted)] sm:text-[13px]">
-                Plan events across month, week, day, or agenda — gently and clearly.
+                Plan events across month, week, day, or agenda, gently and clearly.
               </p>
             </div>
             <div className="flex items-center gap-2">

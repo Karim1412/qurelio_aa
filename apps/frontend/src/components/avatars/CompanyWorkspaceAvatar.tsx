@@ -10,7 +10,7 @@ import {
   getCachedCompanyAvatarObjectUrl,
 } from '@/lib/company-workspace-avatar-cache';
 
-/** Tenant company logo — uses a session cache so route changes do not refetch bytes. */
+/** Tenant company logo: uses a session cache so route changes do not refetch bytes. */
 export const CompanyWorkspaceAvatar = memo(function CompanyWorkspaceAvatar({
   avatarKey,
   className,
@@ -43,7 +43,7 @@ export const CompanyWorkspaceAvatar = memo(function CompanyWorkspaceAvatar({
         if (!cancelled && resolved) setUrl(resolved);
         else if (!cancelled) setUrl(null);
       } catch (err) {
-        // Aborting the fetch on unmount is expected — silence it.
+        // Aborting the fetch on unmount is expected: silence it.
         const name = (err as { name?: string } | null)?.name;
         if (name === 'AbortError' || name === 'CanceledError') return;
         if (!cancelled) setUrl(null);
