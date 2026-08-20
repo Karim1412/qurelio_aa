@@ -284,6 +284,25 @@ export class Document {
   @Column({ name: 'processing_error', nullable: true })
   processingError?: string;
 
+  /**
+   * Copyright guardrail (Standards & Regulations): set when the uploader was
+   * warned the document looks like a licensed standard and accepted
+   * responsibility for their right to use it.
+   */
+  @Column({ name: 'copyright_ack', default: false })
+  copyrightAcknowledged!: boolean;
+
+  /** What the guardrail matched, e.g. "ISO 13485" — kept as evidence of the warning. */
+  @Column({ name: 'copyright_flag', type: 'text', nullable: true })
+  copyrightFlag?: string | null;
+
+  /**
+   * Held back by the content scan: stored but never indexed and not activatable
+   * until a Quality Manager accepts responsibility for it.
+   */
+  @Column({ name: 'copyright_quarantined', default: false })
+  copyrightQuarantined!: boolean;
+
   /** Manual fallback when OCR fails after retries (DOC edge case) */
   @Column({ name: 'manual_text_override', type: 'text', nullable: true })
   manualTextOverride?: string | null;

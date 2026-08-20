@@ -44,6 +44,8 @@ const ALLOWED_EXTS = new Set([
   'zip',
   'jpg', 'jpeg', 'png', 'tif', 'tiff', 'gif', 'webp', 'svg',
 ]);
+import { detectLicensedStandard, licensedStandardWarning } from './licensed-standards';
+
 const MAX_BYTES = 50 * 1024 * 1024;
 
 /**
@@ -456,11 +458,32 @@ export class DocumentService {
     const computedProductRef =
       productReferenceRaw || (dto.productName?.trim() ? this.autoReference(dto.productName.trim(), 'PRD') : '');
 
+    /**
+     * Copyright guardrail: Qurelio only accepts freely usable, publicly published
+     * documents. A title that names a licensed standards body is refused unless
+     * the uploader explicitly accepts responsibility — the acknowledgement is then
+     * stored on the row as evidence that the warning was shown.
+     */
+    const copyrightAck =
+      dto.copyrightAck === true || String(dto.copyrightAck ?? '').toLowerCase() === 'true';
+    let copyrightFlag: string | null = null;
+
     if (t === DocumentType.ISO_NORM) {
       if (!titleRaw) throw new BadRequestException('Standard title is required');
       if (!standardCategoryRaw) throw new BadRequestException('Standard category is required');
       if (!['ISO_NORM', 'EN'].includes(standardCategoryRaw)) {
         throw new BadRequestException('Standard category must be ISO_NORM or EN');
+      }
+
+      const finding = detectLicensedStandard(titleRaw, file.originalname, referenceRaw);
+      if (finding) {
+        if (!copyrightAck) {
+          throw new BadRequestException(licensedStandardWarning(finding));
+        }
+        copyrightFlag = `${finding.body}: ${finding.evidence}`;
+        this.logger.warn(
+          `Licensed-standard upload accepted under user responsibility (${copyrightFlag}) by ${userId}`,
+        );
       }
     }
     /** Onboarding wizard uploads into an already-created folder by id; name lookup stays for every other caller. */
@@ -586,6 +609,8 @@ export class DocumentService {
               ? [wsCat]
               : dto.tags || [],
       effectiveDate: uploadEffectiveDate,
+      copyrightAcknowledged: !!copyrightFlag,
+      copyrightFlag,
       ...(t === DocumentType.WORKSPACE_FILE
         ? {
             workspaceActive: false,
@@ -596,6 +621,13 @@ export class DocumentService {
     await this.docRepo.save(doc);
     this.logger.log(`Document uploaded: ${doc.id} (${file.originalname})`);
     await this.audit.log(companyId, doc.id, userId, 'UPLOAD', { name: doc.name, type: doc.type });
+    if (copyrightFlag) {
+      // Separate entry so the acknowledgement is auditable on its own.
+      await this.audit.log(companyId, doc.id, userId, 'COPYRIGHT_ACK', {
+        matched: copyrightFlag,
+        name: doc.name,
+      });
+    }
     if (!skipExtraction) void this.queueRagExtraction(doc.id);
     return { id: doc.id, name: doc.name, type: doc.type, status: doc.status, productId, createdAt: doc.createdAt };
   }
@@ -686,6 +718,8 @@ export class DocumentService {
       extracted_text?: string | null;
       extracted_structured?: Record<string, unknown> | null;
       processing_error?: string | null;
+      /** Set by the RAG copyright scan when the text looks like a licensed standard. */
+      copyright_finding?: string | null;
     },
   ) {
     const doc = await this.docRepo.findOne({ where: { id: documentId } });
@@ -699,12 +733,26 @@ export class DocumentService {
     const ok = body.status === 'READY';
     const structured = (body.extracted_structured ?? null) as unknown as ExtractedStructure | null;
 
+    const quarantine = (body.copyright_finding ?? '').trim();
+
     const patch: Partial<Document> = {
       status: ok ? DocumentStatus.READY : DocumentStatus.FAILED,
       extractedText: body.extracted_text ?? null,
       extractedStructured: structured as any,
       processingError: body.processing_error ?? null,
     };
+
+    /**
+     * Copyright guardrail: the content scan found publisher boilerplate. The
+     * document stays stored but is held back — no vectors were written, and
+     * activation is refused — until a Quality Manager accepts responsibility.
+     * An acknowledgement already given at upload is not overridden.
+     */
+    if (quarantine && !doc.copyrightAcknowledged) {
+      patch.copyrightFlag = quarantine.slice(0, 500);
+      patch.copyrightQuarantined = true;
+      this.logger.warn(`Document ${documentId} quarantined by copyright scan: ${quarantine.slice(0, 160)}`);
+    }
 
     if (ok && doc.type === DocumentType.ISO_NORM) {
       /** STD-002 / STD-004: extraction complete → Processing until QM activates (vectors indexed on activation). */
@@ -734,10 +782,53 @@ export class DocumentService {
       await this.audit.log(doc.companyId, documentId, doc.uploadedBy, 'PROCESSING_COMPLETE', {
         status: body.status,
       });
+      if (quarantine && !doc.copyrightAcknowledged) {
+        await this.audit.log(doc.companyId, documentId, doc.uploadedBy, 'COPYRIGHT_QUARANTINE', {
+          reason: quarantine.slice(0, 500),
+        });
+      }
     } catch (e: any) {
       this.logger.warn(`Audit log after extraction failed: ${e?.message ?? e}`);
     }
 
+    return { ok: true };
+  }
+
+  /**
+   * Quality Manager accepts responsibility for a quarantined document.
+   *
+   * This lifts the hold so the standard can be activated and indexed. The
+   * decision is recorded — who, when, and what the scan matched — because it is
+   * the evidence that the warning was shown and accepted.
+   */
+  async acknowledgeCopyright(
+    id: string,
+    companyId: string,
+    actorId: string,
+    actorRole: string,
+  ) {
+    if (!['DIRECTOR', 'QUALITY_MANAGER'].includes(actorRole)) {
+      throw new ForbiddenException(
+        'Only Company Admin or Quality Manager can accept responsibility for a licensed document',
+      );
+    }
+    const doc = await this.docRepo.findOne({ where: { id, companyId } });
+    if (!doc) throw new NotFoundException('Document not found');
+    if (!doc.copyrightQuarantined && doc.copyrightAcknowledged) {
+      return { ok: true, alreadyAcknowledged: true };
+    }
+
+    await this.docRepo.update(id, {
+      copyrightAcknowledged: true,
+      copyrightQuarantined: false,
+    });
+    await this.audit.log(companyId, id, actorId, 'COPYRIGHT_ACK', {
+      matched: doc.copyrightFlag ?? null,
+      via: 'quarantine-release',
+    });
+    this.logger.warn(
+      `Copyright quarantine released for ${id} by ${actorId} (${doc.copyrightFlag ?? 'no flag'})`,
+    );
     return { ok: true };
   }
 
@@ -1266,6 +1357,15 @@ export class DocumentService {
     }
     const doc = await this.docRepo.findOne({ where: { id, companyId } });
     if (!doc) throw new NotFoundException('Document not found');
+    // Activation is what triggers clause indexing into the vector store, so a
+    // quarantined document must not get past this point.
+    if (doc.copyrightQuarantined) {
+      throw new ForbiddenException(
+        doc.copyrightFlag
+          ? `${doc.copyrightFlag} — accept responsibility for this document before activating it, or delete it.`
+          : 'This document is held by the copyright guardrail. Accept responsibility before activating it, or delete it.',
+      );
+    }
     if (doc.type !== DocumentType.ISO_NORM) throw new BadRequestException('Only standard documents can be activated');
     if (doc.archivedAt) throw new BadRequestException('Document is archived');
     if (doc.status !== DocumentStatus.READY) {

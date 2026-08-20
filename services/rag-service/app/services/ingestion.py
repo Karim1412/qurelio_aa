@@ -13,6 +13,7 @@ from app.config import get_settings
 from app.models.schemas import IngestRequest
 from app.services.storage import StorageService
 from app.services.structure_openai import extract_onboarding, flatten_for_search, structure_content
+from app.services.copyright_scan import scan_for_licensed_content, describe as describe_copyright
 from app.services.segment_patterns import merge_iso_sections, segment_by_numbered_headings
 
 logger = logging.getLogger(__name__)
@@ -306,6 +307,7 @@ class IngestionService:
         extracted_text: str | None = None,
         extracted_structured: dict | None = None,
         processing_error: str | None = None,
+        copyright_finding: str | None = None,
     ) -> None:
         base = settings.DOCUMENT_SERVICE_URL.rstrip("/")
         url = f"{base}/api/documents/internal/extraction/{document_id}"
@@ -318,6 +320,8 @@ class IngestionService:
             "extracted_text": extracted_text,
             "extracted_structured": extracted_structured,
             "processing_error": processing_error,
+            # Set when the OCR'd text looks like a reproduced licensed standard.
+            "copyright_finding": copyright_finding,
         }
         async with httpx.AsyncClient() as client:
             r = await client.patch(
@@ -619,6 +623,18 @@ class IngestionService:
                 _MAX_EXTRACTED_TEXT,
             )
 
+        # ── Copyright guardrail ───────────────────────────────────────────────
+        # Runs before any vector write: a reproduced licensed standard must not
+        # reach Pinecone. The title check at upload cannot see inside a
+        # mislabelled scan, so this reads the extracted text instead.
+        finding = scan_for_licensed_content(raw_text)
+        copyright_note = describe_copyright(finding) if finding else None
+        if finding:
+            logger.warning(
+                "Copyright guardrail: quarantining %s — rule=%s evidence=%r",
+                doc_id, finding.rule, finding.evidence[:120],
+            )
+
         try:
             await self._patch_document_extraction(
                 doc_id,
@@ -626,9 +642,16 @@ class IngestionService:
                 "READY",
                 extracted_text=extracted_text,
                 extracted_structured=structured,
+                copyright_finding=copyright_note,
             )
         except Exception as e:
             logger.exception("Callback to document-service failed for %s: %s", doc_id, e)
+            return
+
+        if copyright_note:
+            # Quarantined: no vectors. A Quality Manager must accept responsibility
+            # (or delete it) before it can be indexed or activated.
+            logger.warning("Skipping vector indexing for quarantined document %s", doc_id)
             return
 
         # STD-006: ISO norms are indexed only after QM activates (see /api/index-standard).

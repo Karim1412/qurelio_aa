@@ -2,10 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
-import { Upload, FileText, X, Check, Loader2 } from '@/components/icons';
+import { Upload, FileText, X, Check, Loader2, CircleAlert, Info } from '@/components/icons';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -20,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { detectLicensedStandard, licensedStandardWarning, type LicensedStandardFinding } from '@/lib/licensed-standards';
 import { documentApi } from '@/lib/api';
 import { usePermissions } from '@/hooks/usePermissions';
 import {
@@ -149,6 +151,8 @@ export function UploadDocumentDialog({
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [dragOver, setDragOver] = useState(false);
   const [uploading, setUploading] = useState(false);
+  /** Copyright guardrail — the acknowledgement the server requires for licensed standards. */
+  const [copyrightAccepted, setCopyrightAccepted] = useState(false);
   const [phase, setPhase] = useState<UploadPhase>('configure');
   const [docStatuses, setDocStatuses] = useState<DocStatusItem[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -174,6 +178,7 @@ export function UploadDocumentDialog({
     setUploadCategory(preset === 'standard' ? 'standard' : 'product');
     setProductName('');
     setStandardTitle('');
+    setCopyrightAccepted(false);
     setSelectedFiles([]);
     setDragOver(false);
     setWorkspaceCatPreset('Report');
@@ -296,6 +301,15 @@ export function UploadDocumentDialog({
     };
   }, [phase]);
 
+  /**
+   * Copyright guardrail, evaluated live so the notice appears while the user is
+   * still typing the standard ID rather than only when they press Upload.
+   */
+  const copyrightFinding: LicensedStandardFinding | null = useMemo(() => {
+    if (uploadCategory !== 'standard') return null;
+    return detectLicensedStandard(standardTitle, selectedFiles[0]?.name);
+  }, [uploadCategory, standardTitle, selectedFiles]);
+
   const onSubmit = async () => {
     if (!selectedFiles.length) return toast.error('Pick a file first');
     const primaryFile = selectedFiles[0];
@@ -313,6 +327,12 @@ export function UploadDocumentDialog({
       if (!canUploadStandard) return toast.error('Only Company Admin or Quality Manager can upload standards');
       if (!standardTitle.trim()) return toast.error('Title is required for a standard document');
       if (!isPdfFile(primaryFile)) return toast.error('Standard documents must be PDF');
+
+      // The server refuses this upload without an acknowledgement; the notice and
+      // its checkbox are already visible in the form, so just point at them.
+      if (copyrightFinding && !copyrightAccepted) {
+        return toast.error('Confirm you have the right to use this standard before uploading');
+      }
     }
 
     if (uploadCategory === 'other') {
@@ -368,6 +388,7 @@ export function UploadDocumentDialog({
         const standardCategory = /^EN\b/i.test(title) ? 'EN' : 'ISO_NORM';
         fd.append('title', title);
         fd.append('standardCategory', standardCategory);
+        if (copyrightAccepted) fd.append('copyrightAck', 'true');
       }
       if (uploadCategory === 'other') {
         const cat = workspaceCatPreset === 'Other' ? workspaceCatCustom.trim() : workspaceCatPreset;
@@ -460,6 +481,7 @@ export function UploadDocumentDialog({
                       setSelectedFiles([]);
                       if (next !== 'product') setProductName('');
                       if (next !== 'standard') setStandardTitle('');
+                      setCopyrightAccepted(false);
                       if (next !== 'other') {
                         setWorkspaceCatPreset('Report');
                         setWorkspaceCatCustom('');
@@ -503,16 +525,58 @@ export function UploadDocumentDialog({
               )}
 
               {(preset === 'standard' || uploadCategory === 'standard') && (
-                <div className="grid gap-2">
-                  <Label htmlFor="upload-standard-title">ISO Standard ID *</Label>
-                  <Input
-                    id="upload-standard-title"
-                    value={standardTitle}
-                    onChange={(e) => setStandardTitle(e.target.value)}
-                    placeholder="e.g. ISO 9001:2015, EN 60204-1:2018"
-                    disabled={uploading || standardUploadLocked}
-                    autoComplete="off"
-                  />
+                <div className="grid gap-3">
+                  <div className="grid gap-2">
+                    <Label htmlFor="upload-standard-title">ISO Standard ID *</Label>
+                    <Input
+                      id="upload-standard-title"
+                      value={standardTitle}
+                      onChange={(e) => { setStandardTitle(e.target.value); setCopyrightAccepted(false); }}
+                      placeholder="e.g. ISO 9001:2015, EN 60204-1:2018"
+                      disabled={uploading || standardUploadLocked}
+                      autoComplete="off"
+                    />
+                  </div>
+
+                  {/* Standing policy notice — shown for every standard upload. */}
+                  <div className="flex items-start gap-2.5 rounded-xl border border-[var(--callout-info-border)] bg-[var(--callout-info-bg)] p-3">
+                    <Info className="mt-0.5 h-4 w-4 shrink-0 text-[var(--brand-primary)]" />
+                    <p className="text-[12px] leading-relaxed text-[var(--callout-info-text)]">
+                      Qurelio accepts only documents that are{' '}
+                      <strong>free to use and published to the public</strong> — for example EU
+                      Regulations and Directives, EudraLex, MDCG guidance, 21 CFR, WHO, EMA and ICH
+                      texts. Standards sold under licence (ISO, IEC, EN, ASTM, DIN, BSI…) may not be
+                      redistributed, and uploading a purchased or reproduced copy may infringe the
+                      publisher&apos;s copyright.
+                    </p>
+                  </div>
+
+                  {/* Live alert — appears as soon as the ID names a licensed body. */}
+                  {copyrightFinding && (
+                    <div className="rounded-xl border border-amber-300 bg-amber-50 p-3.5">
+                      <p className="flex items-center gap-2 text-[13px] font-semibold text-amber-900">
+                        <CircleAlert className="h-4 w-4 shrink-0" />
+                        &ldquo;{copyrightFinding.evidence}&rdquo; looks like a licensed standard
+                      </p>
+                      <p className="mt-1.5 text-[12px] leading-relaxed text-amber-900">
+                        {licensedStandardWarning(copyrightFinding)}
+                      </p>
+                      <label className="mt-3 flex cursor-pointer items-start gap-2.5 rounded-lg border border-amber-300 bg-white/70 px-3 py-2.5 text-[12px] leading-relaxed text-amber-900">
+                        <input
+                          type="checkbox"
+                          checked={copyrightAccepted}
+                          onChange={(e) => setCopyrightAccepted(e.target.checked)}
+                          disabled={uploading}
+                          className="mt-0.5 shrink-0 accent-[var(--brand-primary)]"
+                        />
+                        <span>
+                          I confirm this document is free to use and publicly published, or that I
+                          hold a valid right to use this copy. I accept sole responsibility for its
+                          use in Qurelio.
+                        </span>
+                      </label>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -698,6 +762,7 @@ export function UploadDocumentDialog({
           )}
         </DialogFooter>
       </DialogContent>
+
     </Dialog>
   );
 }

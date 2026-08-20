@@ -185,6 +185,8 @@ export class DocumentController {
       extracted_text?: string | null;
       extracted_structured?: Record<string, unknown> | null;
       processing_error?: string | null;
+      /** Copyright content scan result from the RAG pipeline. */
+      copyright_finding?: string | null;
     },
   ): Promise<any> {
     return this.svc.applyExtractionFromRag(documentId, body);
@@ -399,6 +401,13 @@ export class DocumentController {
   @Roles('DIRECTOR', 'QUALITY_MANAGER')
   async shareWithCompany(@Param('id') id: string, @Req() req: any): Promise<any> {
     return this.svc.shareWithCompany(id, req.user.companyId, req.user.id);
+  }
+
+  /** Release a copyright quarantine — the QM accepts responsibility for the document. */
+  @Patch(':id/copyright-ack')
+  @Roles('DIRECTOR', 'QUALITY_MANAGER')
+  async copyrightAck(@Param('id') id: string, @Req() req: any): Promise<any> {
+    return this.svc.acknowledgeCopyright(id, req.user.companyId, req.user.id, req.user.role);
   }
 
   @Patch(':id/activate')
