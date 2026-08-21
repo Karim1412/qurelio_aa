@@ -9,24 +9,24 @@ type Row = { label: string; cells: [Cell, Cell, Cell, Cell] };
 type Group = { title: string; rows: Row[] };
 
 const columns = [
+  { name: 'Early Access', price: '€6,000 / yr' },
   { name: 'Starter', price: '€9,600 / yr' },
   { name: 'Professional', price: '€24,000 / yr' },
   { name: 'Enterprise', price: 'On request' },
-  { name: 'Early Access', price: '€6,000 / yr' },
 ];
 
 /** index of the highlighted column (Professional) */
-const HL = 1;
+const HL = 2;
 
 const groups: Group[] = [
   {
     title: 'Scope',
     rows: [
-      { label: 'Users', cells: ['3', '10', 'Unlimited', '5 · worldwide'] },
-      { label: 'Products in registry', cells: ['3', '25', 'Unlimited', '25'] },
-      { label: 'Active regulations', cells: ['2', 'Unlimited', 'Unlimited', 'Unlimited'] },
-      { label: 'AI evaluation runs / year', cells: ['4', 'Fair use', 'Unlimited', 'Fair use'] },
-      { label: 'Sites / legal entities', cells: ['1', '3', 'Unlimited', '3'] },
+      { label: 'Users', cells: ['5 · worldwide', '3', '10', 'Unlimited'] },
+      { label: 'Products in registry', cells: ['25', '3', '25', 'Unlimited'] },
+      { label: 'Active regulations', cells: ['Unlimited', '2', 'Unlimited', 'Unlimited'] },
+      { label: 'AI evaluation runs / year', cells: ['Fair use', '4', 'Fair use', 'Unlimited'] },
+      { label: 'Sites / legal entities', cells: ['3', '1', '3', 'Unlimited'] },
     ],
   },
   {
@@ -45,12 +45,12 @@ const groups: Group[] = [
       { label: 'Obligation extraction, cited to the source passage', cells: [true, true, true, true] },
       { label: 'Obligations Register + liability acceptance', cells: [true, true, true, true] },
       { label: 'Gap list & evidence mapping', cells: [true, true, true, true] },
-      { label: 'Compliance score (criticality-weighted)', cells: [true, true, 'Configurable', true] },
-      { label: '5-level maturity model', cells: [true, true, 'Configurable', true] },
+      { label: 'Compliance score (criticality-weighted)', cells: [true, true, true, 'Configurable'] },
+      { label: '5-level maturity model', cells: [true, true, true, 'Configurable'] },
       { label: 'Confidence indicators on every AI output', cells: [true, true, true, true] },
       {
         label: 'Re-evaluation & score history',
-        cells: ['On demand', '+ automatic', '+ automatic', '+ automatic'],
+        cells: ['+ automatic', 'On demand', '+ automatic', '+ automatic'],
       },
       { label: 'AI-suggested NCs & CAPAs from gaps', cells: [true, true, true, true] },
     ],
@@ -58,11 +58,11 @@ const groups: Group[] = [
   {
     title: 'Pillar 3 — Regulatory Monitoring',
     rows: [
-      { label: 'Monitored source registry', cells: [false, true, true, true] },
-      { label: 'Scheduled change detection (cosmetic changes filtered)', cells: [false, true, true, true] },
-      { label: 'Impact analysis on your obligations & scores', cells: [false, true, true, true] },
-      { label: 'Missing-regulation detection', cells: [false, true, true, true] },
-      { label: 'Severity-based alerts', cells: [false, true, true, true] },
+      { label: 'Monitored source registry', cells: [true, false, true, true] },
+      { label: 'Scheduled change detection (cosmetic changes filtered)', cells: [true, false, true, true] },
+      { label: 'Impact analysis on your obligations & scores', cells: [true, false, true, true] },
+      { label: 'Missing-regulation detection', cells: [true, false, true, true] },
+      { label: 'Severity-based alerts', cells: [true, false, true, true] },
     ],
   },
   {
@@ -73,14 +73,14 @@ const groups: Group[] = [
       { label: 'CAPA lifecycle & effectiveness verification', cells: [true, true, true, true] },
       { label: 'Internal audits, checklists, findings → NC', cells: [true, true, true, true] },
       { label: 'Root-cause: 5-Whys · Ishikawa', cells: [true, true, true, true] },
-      { label: 'Root-cause: 8D', cells: [false, true, true, true] },
+      { label: 'Root-cause: 8D', cells: [true, false, true, true] },
       { label: 'Action Plan Center · Kanban · calendar', cells: [true, true, true, true] },
       { label: 'Training portal & competency matrix', cells: [true, true, true, true] },
-      { label: 'Supplier Quality — AVL, scorecards, SCAR', cells: [false, false, true, false] },
-      { label: 'External Supplier Portal', cells: [false, false, true, false] },
+      { label: 'Supplier Quality — AVL, scorecards, SCAR', cells: [false, false, false, true] },
+      { label: 'External Supplier Portal', cells: [false, false, false, true] },
       {
         label: 'Management Review · Change Control · Calibration · CSAT · HSE',
-        cells: [false, false, true, false],
+        cells: [false, false, false, true],
       },
     ],
   },
@@ -92,33 +92,33 @@ const groups: Group[] = [
       { label: 'HITL Quarantine on every AI output', cells: [true, true, true, true] },
       { label: 'AI disclosure label on every AI output', cells: [true, true, true, true] },
       { label: 'Quarantine inbox & transition history', cells: [true, true, true, true] },
-      { label: 'Qurelio AI Assistant (cited, tenant-scoped)', cells: [false, true, true, true] },
+      { label: 'Qurelio AI Assistant (cited, tenant-scoped)', cells: [true, false, true, true] },
       {
         label: 'Dashboard & KPIs',
-        cells: ['Standard', 'Full + heatmap', 'Full + consolidated', 'Full + heatmap'],
+        cells: ['Full + heatmap', 'Standard', 'Full + heatmap', 'Full + consolidated'],
       },
-      { label: 'Audit-readiness score', cells: [false, true, true, true] },
-      { label: 'Drill-down & date filtering', cells: [false, true, true, true] },
+      { label: 'Audit-readiness score', cells: [true, false, true, true] },
+      { label: 'Drill-down & date filtering', cells: [true, false, true, true] },
     ],
   },
   {
     title: 'Reporting & export',
     rows: [
-      { label: 'PDF scorecard', cells: [false, true, '+ branded', true] },
-      { label: 'Excel / PowerPoint export', cells: [false, true, '+ branded', true] },
-      { label: 'Audit-Readiness Dossier', cells: [false, true, true, true] },
+      { label: 'PDF scorecard', cells: [true, false, true, '+ branded'] },
+      { label: 'Excel / PowerPoint export', cells: [true, false, true, '+ branded'] },
+      { label: 'Audit-Readiness Dossier', cells: [true, false, true, true] },
     ],
   },
   {
     title: 'Platform & security',
     rows: [
-      { label: 'Roles', cells: ['3', '5', 'Custom', '5'] },
-      { label: 'Scoped External Auditor access', cells: [false, false, true, false] },
-      { label: 'SSO — Google · Microsoft · SAML', cells: [false, false, true, false] },
+      { label: 'Roles', cells: ['5', '3', '5', 'Custom'] },
+      { label: 'Scoped External Auditor access', cells: [false, false, false, true] },
+      { label: 'SSO — Google · Microsoft · SAML', cells: [false, false, false, true] },
       { label: 'Tenant data isolation', cells: [true, true, true, true] },
       { label: 'Append-only audit trail', cells: [true, true, true, true] },
-      { label: 'Audit-log export & retention configuration', cells: [false, false, true, false] },
-      { label: 'Public API & webhooks', cells: [false, false, true, false] },
+      { label: 'Audit-log export & retention configuration', cells: [false, false, false, true] },
+      { label: 'Public API & webhooks', cells: [false, false, false, true] },
       { label: 'Interface languages', cells: ['FR · EN', 'FR · EN', 'FR · EN', 'FR · EN'] },
     ],
   },
@@ -127,10 +127,10 @@ const groups: Group[] = [
     rows: [
       {
         label: 'Onboarding',
-        cells: ['Self-service', '2 sessions', 'Full programme', 'Dedicated'],
+        cells: ['Dedicated', 'Self-service', '2 sessions', 'Full programme'],
       },
-      { label: 'Support', cells: ['Email · 48h', 'Email + chat', 'CSM + SLA', 'Priority email'] },
-      { label: 'Trial', cells: ['14 days', '14 days', '30-day POC', 'Negotiated'] },
+      { label: 'Support', cells: ['Priority email', 'Email · 48h', 'Email + chat', 'CSM + SLA'] },
+      { label: 'Trial', cells: ['Negotiated', '14 days', '14 days', '30-day POC'] },
     ],
   },
 ];
