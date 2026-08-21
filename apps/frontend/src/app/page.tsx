@@ -3,6 +3,9 @@ import { HeroSection }     from '@/components/landing/HeroSection';
 import { WhyQurelio }      from '@/components/landing/WhyQurelio';
 import { HowItWorks }      from '@/components/landing/HowItWorks';
 import { PricingSection }  from '@/components/landing/PricingSection';
+import { PricingComparison } from '@/components/landing/PricingComparison';
+import { PricingScaleBilling } from '@/components/landing/PricingScaleBilling';
+import { PricingFAQ }      from '@/components/landing/PricingFAQ';
 import { ContactSection } from '@/components/landing/AboutContact';
 import { NextLanding }    from '@/components/landing/NextLanding';
 import { Footer }          from '@/components/landing/Footer';
@@ -30,6 +33,15 @@ export default function HomePage() {
           <div>
             <SoftSection rise={26} parallax={18} duration={1.05}>
               <PricingSection />
+            </SoftSection>
+            <SoftSection rise={24} parallax={16} duration={1.05} scale={false}>
+              <PricingComparison />
+            </SoftSection>
+            <SoftSection rise={24} parallax={16} duration={1.05} scale={false}>
+              <PricingScaleBilling />
+            </SoftSection>
+            <SoftSection rise={24} parallax={16} duration={1.05} scale={false}>
+              <PricingFAQ />
             </SoftSection>
             <SoftSection rise={24} parallax={16} duration={1.05} scale={false}>
               <ContactSection />
