@@ -24,6 +24,28 @@ type Plan = {
 
 const plans: Plan[] = [
   {
+    name: 'Early Access Pilot',
+    description:
+      'Professional, in full, at pilot pricing — shape the product with us.',
+    price: 6000,
+    priceNote: '€500 / month equivalent · 75% off Professional',
+    quarterlyPrice: null,
+    quarterlyNote: 'Annual billing only for the pilot programme',
+    scope: '5 users · Professional scope otherwise · open worldwide',
+    ctaLabel: 'Request pilot access',
+    ctaNote: 'contact@qurelio.com · open worldwide',
+    badge: 'Early access',
+    badgeTone: 'brand',
+    features: [
+      { label: 'The complete Professional plan — no feature exceptions' },
+      { label: 'Dedicated onboarding session, no charge' },
+      { label: 'Priority addition of your regulatory sources to the monitored registry' },
+      { label: 'Direct feedback line to the product team + roadmap input' },
+      { label: 'Custom scope available after pilot' },
+      { label: 'Standard Professional pricing applies from client 6 onward' },
+    ],
+  },
+  {
     name: 'Starter',
     description:
       'Run quality operations properly, and get your first regulations under control.',
@@ -86,28 +108,6 @@ const plans: Plan[] = [
       { label: 'Configurable scoring, custom roles & external auditor access' },
       { label: 'SSO (Google, Microsoft, SAML 2.0) · public API & webhooks' },
       { label: 'Dedicated Customer Success Manager + contractual SLA' },
-    ],
-  },
-  {
-    name: 'Early Access Pilot',
-    description:
-      'Professional, in full, at pilot pricing — shape the product with us.',
-    price: 6000,
-    priceNote: '€500 / month equivalent · 75% off Professional',
-    quarterlyPrice: null,
-    quarterlyNote: 'Annual billing only for the pilot programme',
-    scope: '5 users · Professional scope otherwise · open worldwide',
-    ctaLabel: 'Request pilot access',
-    ctaNote: 'contact@qurelio.com · open worldwide',
-    badge: 'Early access',
-    badgeTone: 'brand',
-    features: [
-      { label: 'The complete Professional plan — no feature exceptions' },
-      { label: 'Dedicated onboarding session, no charge' },
-      { label: 'Priority addition of your regulatory sources to the monitored registry' },
-      { label: 'Direct feedback line to the product team + roadmap input' },
-      { label: 'Custom scope available after pilot' },
-      { label: 'Standard Professional pricing applies from client 6 onward' },
     ],
   },
 ];
