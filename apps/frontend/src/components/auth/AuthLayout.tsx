@@ -6,6 +6,7 @@ import { ArrowLeft } from '@/components/icons';
 import { motion, useReducedMotion } from 'framer-motion';
 import { QurelioLogo } from '@/components/brand/qurelio-logo';
 import { cn } from '@/utils/cn';
+import { useI18n } from '@/i18n';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -17,6 +18,7 @@ interface AuthLayoutProps {
 }
 
 export function AuthLayout({ children, title, subtitle, illustration, heroLeft = true }: AuthLayoutProps) {
+  const { t } = useI18n();
   const reduceMotion = useReducedMotion();
 
   const hero = (
@@ -47,14 +49,25 @@ export function AuthLayout({ children, title, subtitle, illustration, heroLeft =
           <>
             <div className="relative mb-6 h-[min(42vh,320px)] w-full max-w-sm rounded-2xl bg-[var(--surface)] p-3 shadow-md ring-1 ring-[var(--border)] dark:bg-[var(--surface-elevated)] dark:shadow-[0_8px_40px_-12px_rgba(0,0,0,0.5)] dark:ring-white/10">
               {/* eslint-disable-next-line @next/next/no-img-element -- avoids Next image optimizer / missing sharp in Docker */}
+              {/* Both variants are in the DOM (one hidden by theme), so both would be
+                  fetched eagerly. They are decorative and sit beside the form rather
+                  than gating it, so defer them off the critical path. */}
               <img
                 src="/brand/auth-illustration-light.png"
                 alt=""
+                width={1024}
+                height={769}
+                loading="lazy"
+                decoding="async"
                 className="h-full w-full object-contain object-center dark:hidden"
               />
               <img
                 src="/brand/auth-illustration.png"
                 alt=""
+                width={1024}
+                height={769}
+                loading="lazy"
+                decoding="async"
                 className="hidden h-full w-full object-contain object-center dark:block"
               />
             </div>
@@ -65,7 +78,7 @@ export function AuthLayout({ children, title, subtitle, illustration, heroLeft =
         )}
       </motion.div>
       <div className="relative z-[1] flex gap-3">
-        <span className="text-xs text-[var(--muted)]">ISO-ready quality workflows</span>
+        <span className="text-xs text-[var(--muted)]">{t('auth.layout.badge')}</span>
       </div>
     </div>
   );
@@ -78,7 +91,7 @@ export function AuthLayout({ children, title, subtitle, illustration, heroLeft =
           className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--muted)] transition-hover hover:text-[var(--brand-primary)]"
         >
           <ArrowLeft className="h-4 w-4" />
-          Return to home
+          {t('common.backToHome')}
         </Link>
       </div>
       <div className="flex flex-1 items-center justify-center px-4 pb-12 pt-4 sm:px-8">

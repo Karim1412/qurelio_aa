@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Mail } from '@/components/icons';
 import { useForm } from 'react-hook-form';
@@ -13,13 +13,19 @@ import { authApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useI18n } from '@/i18n';
 
-const schema = z.object({ email: z.string().email('Invalid email') });
-type FormData = z.infer<typeof schema>;
+function buildSchema(invalidEmail: string) {
+  return z.object({ email: z.string().email(invalidEmail) });
+}
+type FormData = z.infer<ReturnType<typeof buildSchema>>;
 
 export default function ForgotPasswordPage() {
+  const { t } = useI18n();
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+
+  const schema = useMemo(() => buildSchema(t('auth.forgotPassword.invalidEmail')), [t]);
 
   const {
     register,
@@ -35,10 +41,11 @@ export default function ForgotPasswordPage() {
     try {
       await authApi.forgotPassword(data.email);
       setSent(true);
-      toast.success('Reset link sent to your email');
+      toast.success(t('auth.forgotPassword.success'));
     } catch (err: unknown) {
       toast.error(
-        (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Failed to send reset email'
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+          t('auth.forgotPassword.error')
       );
     } finally {
       setLoading(false);
@@ -53,7 +60,7 @@ export default function ForgotPasswordPage() {
           className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--muted)] transition-hover hover:text-[var(--text-primary)]"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to sign in
+          {t('common.backToSignIn')}
         </Link>
         <div className="flex justify-end">
           <QurelioLogo height={28} />
@@ -73,45 +80,50 @@ export default function ForgotPasswordPage() {
 
           {!sent ? (
             <>
-              <h1 className="mb-2 text-2xl font-bold text-[var(--text-primary)]">Forgot your password?</h1>
+              <h1 className="mb-2 text-2xl font-bold text-[var(--text-primary)]">
+                {t('auth.forgotPassword.title')}
+              </h1>
               <p className="mb-6 text-sm leading-relaxed text-[var(--muted)]">
-                Please enter the email address associated with your account and we&apos;ll email you a link to reset your password.
+                {t('auth.forgotPassword.sub')}
               </p>
 
               <form className="space-y-4 text-left" onSubmit={handleSubmit(onSubmit)}>
                 <div>
-                  <Label htmlFor="email">Email address</Label>
+                  <Label htmlFor="email">{t('auth.forgotPassword.emailLabel')}</Label>
                   <Input
                     id="email"
                     type="email"
-                    placeholder="example@gmail.com"
+                    placeholder={t('auth.forgotPassword.emailPlaceholder')}
                     {...register('email')}
                   />
                   {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? 'Sending…' : 'Send request'}
+                  {loading ? t('auth.forgotPassword.submitting') : t('auth.forgotPassword.submit')}
                 </Button>
               </form>
 
               <p className="mt-6 text-sm text-[var(--muted)]">
-                Remembered your password?{' '}
+                {t('auth.forgotPassword.remembered')}{' '}
                 <Link href="/auth/login" className="font-semibold text-[var(--brand-primary)] hover:underline">
-                  Sign in
+                  {t('common.signIn')}
                 </Link>
               </p>
             </>
           ) : (
             <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}>
-              <h1 className="mb-2 text-2xl font-bold text-[var(--text-primary)]">Check your email</h1>
+              <h1 className="mb-2 text-2xl font-bold text-[var(--text-primary)]">
+                {t('auth.forgotPassword.sentTitle')}
+              </h1>
               <p className="mb-6 text-sm leading-relaxed text-[var(--muted)]">
-                We sent a password reset link to <strong className="text-[var(--brand-primary)]">{getValues('email')}</strong>
+                {t('auth.forgotPassword.sentBody')}{' '}
+                <strong className="text-[var(--brand-primary)]">{getValues('email')}</strong>
               </p>
               <Button className="mb-4 w-full" asChild>
-                <Link href="/auth/reset-password">Enter reset code</Link>
+                <Link href="/auth/reset-password">{t('auth.forgotPassword.enterResetCode')}</Link>
               </Button>
               <Link href="/auth/login" className="text-sm text-[var(--muted)] hover:text-[var(--text-primary)]">
-                ← Return to sign in
+                {t('auth.forgotPassword.returnToSignIn')}
               </Link>
             </motion.div>
           )}

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,15 +15,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useI18n } from '@/i18n';
 
 const REMEMBER_EMAIL_KEY = 'qurelio-remember-email';
 
-const schema = z.object({
-  email: z.string().email('Invalid email'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  remember: z.boolean(),
-});
-type FormData = z.infer<typeof schema>;
+function buildSchema(messages: { email: string; password: string }) {
+  return z.object({
+    email: z.string().email(messages.email),
+    password: z.string().min(6, messages.password),
+    remember: z.boolean(),
+  });
+}
+type FormData = z.infer<ReturnType<typeof buildSchema>>;
 
 /** Map API user to store shape (API uses isEmailVerified; store uses isVerified). */
 function mapLoginUser(raw: Record<string, unknown>): User {
@@ -54,10 +57,20 @@ function postLoginPath(role: User['role']): string {
 }
 
 export default function LoginPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const { setAuth } = useAuthStore();
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const schema = useMemo(
+    () =>
+      buildSchema({
+        email: t('auth.validation.email'),
+        password: t('auth.validation.passwordMinLogin'),
+      }),
+    [t],
+  );
 
   const {
     register,
@@ -87,7 +100,7 @@ export default function LoginPage() {
       const res = await authApi.loginUser({ email: data.email, password: data.password });
       const accessToken = res.data.accessToken ?? res.data.token;
       if (!accessToken) {
-        toast.error('Login response missing token');
+        toast.error(t('auth.login.errorMissingToken'));
         return;
       }
       const user = mapLoginUser(res.data.user as Record<string, unknown>);
@@ -103,12 +116,12 @@ export default function LoginPage() {
       } catch {
         /* ignore */
       }
-      toast.success('Welcome back!');
+      toast.success(t('auth.login.welcome'));
       router.replace(postLoginPath(user.role));
     } catch (err: unknown) {
       const noResponse = !(err as { response?: unknown }).response;
       if (noResponse) {
-        toast.error('Cannot reach the API. If you use Docker, rebuild the frontend and ensure the gateway is up.');
+        toast.error(t('auth.login.errorNetwork'));
         return;
       }
       const raw = (err as { response?: { data?: { message?: string | string[] } } })?.response?.data?.message;
@@ -117,27 +130,23 @@ export default function LoginPage() {
       const email = data.email;
 
       if (lower.includes('verif')) {
-        toast.error('Please verify your email first');
+        toast.error(t('auth.login.errorNotVerified'));
         router.push(`/auth/verify-otp?email=${encodeURIComponent(email)}`);
       } else if (
         lower.includes('locked') ||
         lower.includes('too many failed') ||
         lower.includes('failed login attempts')
       ) {
-        toast.error(
-          msg ||
-            'This account is temporarily locked for 30 minutes after too many failed login attempts.',
-          { duration: 10000 },
-        );
+        toast.error(msg || t('auth.login.errorLocked'), { duration: 10000 });
       } else if (
         (err as { response?: { status?: number } })?.response?.status === 401 ||
         lower.includes('invalid') ||
         lower.includes('incorrect') ||
         lower.includes('password')
       ) {
-        toast.error('Incorrect email or password. Please try again.');
+        toast.error(t('auth.login.errorInvalid'));
       } else {
-        toast.error(msg || 'Login failed. Please try again.');
+        toast.error(msg || t('auth.login.errorGeneric'));
       }
     } finally {
       setLoading(false);
@@ -146,34 +155,32 @@ export default function LoginPage() {
 
   return (
     <AuthLayout
-      title="Quality management, simplified"
-      subtitle="Sign in to coordinate documents, audits, evaluations, and corrective actions in one workspace."
+      title={t('auth.login.heroTitle')}
+      subtitle={t('auth.login.heroSubtitle')}
       heroLeft
     >
       <div>
-        <h1 className="mb-1 text-2xl font-bold text-[var(--text-primary)]">Sign in to your account</h1>
+        <h1 className="mb-1 text-2xl font-bold text-[var(--text-primary)]">{t('auth.login.title')}</h1>
         <p className="mb-6 text-sm text-[var(--muted)]">
-          Don&apos;t have an account?{' '}
+          {t('auth.login.noAccount')}{' '}
           <Link href="/auth/register" className="font-semibold text-[var(--brand-primary)] hover:underline">
-            Sign up
+            {t('common.signUp')}
           </Link>
         </p>
 
-        <div className="callout-info mb-6">
-          Use your organization credentials. Contact your admin if you need access.
-        </div>
+        <div className="callout-info mb-6">{t('auth.login.callout')}</div>
 
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
           <div>
-            <Label htmlFor="email">Email address</Label>
-            <Input id="email" type="email" autoComplete="email" placeholder="you@company.com" {...register('email')} />
+            <Label htmlFor="email">{t('auth.login.emailLabel')}</Label>
+            <Input id="email" type="email" autoComplete="email" placeholder={t('auth.login.emailPlaceholder')} {...register('email')} />
             {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email.message}</p>}
           </div>
           <div>
             <div className="mb-1.5 flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t('auth.login.passwordLabel')}</Label>
               <Link href="/auth/forgot-password" className="text-xs font-semibold text-[var(--brand-primary)] hover:underline">
-                Forgot password?
+                {t('auth.login.forgotPassword')}
               </Link>
             </div>
             <div className="relative">
@@ -188,7 +195,7 @@ export default function LoginPage() {
                 type="button"
                 className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-[var(--muted)] hover:bg-[var(--page-bg)]"
                 onClick={() => setShowPwd(!showPwd)}
-                aria-label={showPwd ? 'Hide password' : 'Show password'}
+                aria-label={showPwd ? t('common.hidePassword') : t('common.showPassword')}
               >
                 {showPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -212,19 +219,19 @@ export default function LoginPage() {
               )}
             />
             <label htmlFor="remember" className="cursor-pointer text-sm text-[var(--text-primary)]">
-              Remember me
+              {t('auth.login.remember')}
             </label>
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Signing in…' : 'Sign in'}
+            {loading ? t('auth.login.submitting') : t('auth.login.submit')}
           </Button>
         </form>
 
         <p className="mt-6 text-center text-sm text-[var(--muted)]">
-          New organization?{' '}
+          {t('auth.login.newOrganization')}{' '}
           <Link href="/auth/register" className="font-semibold text-[var(--brand-primary)] hover:underline">
-            Sign up
+            {t('common.signUp')}
           </Link>
         </p>
       </div>

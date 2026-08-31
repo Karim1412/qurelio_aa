@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
+import React, { useMemo, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Lock, Eye, EyeOff } from '@/components/icons';
@@ -14,21 +14,32 @@ import { authApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { zPasswordPolicy } from '@/lib/account-validation';
-import { toastFirstFieldError } from '@/lib/form-errors';
+import {
+  createPasswordPolicy,
+  type AccountValidationMessages,
+} from '@/lib/account-validation';
+import { createFieldErrorToast } from '@/lib/form-errors';
+import { useI18n } from '@/i18n';
 
-const schema = z
-  .object({
-    newPassword: zPasswordPolicy,
-    confirmPassword: z.string(),
-  })
-  .refine((d) => d.newPassword === d.confirmPassword, {
-    message: "Passwords don't match",
-    path: ['confirmPassword'],
-  });
-type FormData = z.infer<typeof schema>;
+interface SchemaMessages extends AccountValidationMessages {
+  passwordMismatch: string;
+}
+
+function buildSchema(messages: SchemaMessages) {
+  return z
+    .object({
+      newPassword: createPasswordPolicy(messages),
+      confirmPassword: z.string(),
+    })
+    .refine((d) => d.newPassword === d.confirmPassword, {
+      message: messages.passwordMismatch,
+      path: ['confirmPassword'],
+    });
+}
+type FormData = z.infer<ReturnType<typeof buildSchema>>;
 
 function SetupAccountForm() {
+  const { t } = useI18n();
   const router = useRouter();
   const params = useSearchParams();
   const email = params.get('email') || '';
@@ -36,6 +47,19 @@ function SetupAccountForm() {
 
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const schema = useMemo(
+    () =>
+      buildSchema({
+        passwordMismatch: t('auth.setupAccount.errors.passwordMismatch'),
+        passwordMin: t('auth.validation.passwordMin'),
+        passwordMax: t('auth.validation.passwordMax'),
+        passwordComplexity: t('auth.validation.passwordComplexity'),
+        phoneRequired: t('auth.validation.phoneRequired'),
+        phoneInvalid: t('auth.validation.phoneInvalid'),
+      }),
+    [t],
+  );
 
   const {
     register,
@@ -49,17 +73,17 @@ function SetupAccountForm() {
 
   const onSubmit = async (data: FormData) => {
     if (!email || !code) {
-      toast.error('Invalid setup link. Please ask your director to resend the invitation.');
+      toast.error(t('auth.setupAccount.invalidLink'));
       return;
     }
     setLoading(true);
     try {
       await authApi.setupAccount({ email, code, newPassword: data.newPassword });
-      toast.success('Password set! You can now sign in.');
+      toast.success(t('auth.setupAccount.success'));
       router.push('/auth/login');
     } catch (err: unknown) {
       const m = (err as { response?: { data?: { message?: string | string[] } } })?.response?.data?.message;
-      toast.error(Array.isArray(m) ? m.join(' ') : (m || 'Setup failed. The link may have expired.'));
+      toast.error(Array.isArray(m) ? m.join(' ') : m || t('auth.setupAccount.error'));
     } finally {
       setLoading(false);
     }
@@ -72,7 +96,7 @@ function SetupAccountForm() {
           href="/auth/login"
           className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--muted)] hover:text-[var(--text-primary)]"
         >
-          ← Back to sign in
+          ← {t('common.backToSignIn')}
         </Link>
         <div className="flex justify-end">
           <QurelioLogo height={28} />
@@ -90,13 +114,18 @@ function SetupAccountForm() {
             <Lock className="h-8 w-8 text-[var(--brand-primary)]" />
           </div>
 
-          <h1 className="mb-2 text-2xl font-bold text-[var(--text-primary)]">Set your password</h1>
-          <p className="mb-1 text-sm text-[var(--muted)]">Welcome to Qurelio! Create a password for</p>
+          <h1 className="mb-2 text-2xl font-bold text-[var(--text-primary)]">
+            {t('auth.setupAccount.title')}
+          </h1>
+          <p className="mb-1 text-sm text-[var(--muted)]">{t('auth.setupAccount.sub')}</p>
           <p className="mb-6 font-semibold text-[var(--brand-primary)]">{email}</p>
 
-          <form className="space-y-4 text-left" onSubmit={handleSubmit(onSubmit, toastFirstFieldError)}>
+          <form className="space-y-4 text-left" onSubmit={handleSubmit(
+              onSubmit,
+              createFieldErrorToast(t('auth.validation.fixHighlighted')),
+            )}>
             <div>
-              <Label htmlFor="newPassword">New password</Label>
+              <Label htmlFor="newPassword">{t('auth.setupAccount.newPasswordLabel')}</Label>
               <div className="relative">
                 <Input
                   id="newPassword"
@@ -114,26 +143,35 @@ function SetupAccountForm() {
               </div>
               {errors.newPassword && <p className="mt-1 text-xs text-red-600">{errors.newPassword.message}</p>}
               <p className="mt-1 text-xs text-[var(--muted)]">
-                8–128 characters, with uppercase, lowercase, a number, and a special character.
+                {t('auth.setupAccount.passwordHint')}
               </p>
             </div>
             <div>
-              <Label htmlFor="confirmPassword">Confirm password</Label>
+              <Label htmlFor="confirmPassword">{t('auth.setupAccount.confirmPasswordLabel')}</Label>
               <Input id="confirmPassword" type={showPwd ? 'text' : 'password'} {...register('confirmPassword')} />
               {errors.confirmPassword && (
                 <p className="mt-1 text-xs text-red-600">{errors.confirmPassword.message}</p>
               )}
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Activating…' : 'Activate my account'}
+              {loading ? t('auth.setupAccount.submitting') : t('auth.setupAccount.submit')}
             </Button>
           </form>
 
           <Link href="/auth/login" className="mt-6 inline-block text-sm text-[var(--muted)] hover:text-[var(--text-primary)]">
-            Back to sign in
+            {t('auth.setupAccount.backToSignIn')}
           </Link>
         </motion.div>
       </div>
+    </div>
+  );
+}
+
+function AuthLoadingScreen() {
+  const { t } = useI18n();
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-[var(--page-bg)] text-[var(--muted)]">
+      {t('common.loading')}
     </div>
   );
 }
@@ -142,9 +180,7 @@ export default function SetupAccountPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-screen items-center justify-center bg-[var(--page-bg)] text-[var(--muted)]">
-          Loading…
-        </div>
+        <AuthLoadingScreen />
       }
     >
       <SetupAccountForm />

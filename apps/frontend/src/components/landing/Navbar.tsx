@@ -6,16 +6,14 @@ import { Menu, X, ArrowRight, Search, ChevronDown } from '@/components/icons';
 import { motion, AnimatePresence, useScroll, useSpring, useTransform } from 'framer-motion';
 import { cn } from '@/utils/cn';
 import { LanguageToggle } from './LanguageToggle';
+import { useI18n } from '@/i18n';
 
-const NAV_LINKS = [
-  { label: 'Home',        href: '#home' },
-  { label: 'Why Qurelio', href: '#why-qurelio' },
-  { label: 'How it works', href: '#how-it-works' },
-  { label: 'Pricing',     href: '#pricing' },
-  { label: 'Contact',     href: '#contact' },
-];
+/** Anchors stay in code; the labels come from `nav.links`, index-matched. */
+const NAV_HREFS = ['#home', '#why-qurelio', '#how-it-works', '#pricing', '#contact'];
 
 export function Navbar() {
+  const { t, m } = useI18n();
+  const navLinks = NAV_HREFS.map((href, i) => ({ href, label: m.nav.links[i] }));
   const [scrolled, setScrolled]       = useState(false);
   const [scrollY, setScrollY]         = useState(0);
   const [drawerOpen, setDrawerOpen]   = useState(false);
@@ -33,7 +31,7 @@ export function Navbar() {
   });
 
   useEffect(() => {
-    const ids = NAV_LINKS.map((l) => l.href.replace('#', ''));
+    const ids = NAV_HREFS.map((href) => href.replace('#', ''));
     let raf = 0;
 
     const compute = () => {
@@ -172,7 +170,7 @@ export function Navbar() {
             <Link
               href="/"
               className="flex h-full shrink-0 items-center gap-2.5 py-1"
-              aria-label="Qurelio"
+              aria-label={t('nav.logoAlt')}
             >
               <motion.div
                 animate={{ scale: scrolled ? 0.94 : 1 }}
@@ -182,7 +180,14 @@ export function Navbar() {
                 {/* eslint-disable-next-line @next/next/no-img-element -- avoids Next image optimizer / missing sharp in Docker */}
                 <img
                   src="/brand/querlio-logo.png"
-                  alt="Qurelio"
+                  alt={t('nav.logoAlt')}
+                  /* Intrinsic 818x305, painted at 80px tall. Declaring both lets the
+                     browser reserve the box before the bytes land, so the navbar does
+                     not jump on first paint (cumulative layout shift). */
+                  width={215}
+                  height={80}
+                  fetchPriority="high"
+                  decoding="async"
                   className="block h-[80px] w-auto max-w-none select-none object-contain"
                   draggable={false}
                 />
@@ -195,7 +200,7 @@ export function Navbar() {
               onMouseLeave={() => setHovered(null)}
             >
               <div className="flex items-center gap-0.5">
-                {NAV_LINKS.map((link) => {
+                {navLinks.map((link) => {
                   const isHovered = hovered === link.href;
                   const isActive  = activeLink === link.href;
                   return (
@@ -258,7 +263,7 @@ export function Navbar() {
                 />
                 <input
                   type="text"
-                  placeholder="Search…"
+                  placeholder={t('nav.searchPlaceholder')}
                   value={searchValue}
                   onChange={(e) => setSearchValue(e.target.value)}
                   onFocus={() => setSearchFocused(true)}
@@ -277,7 +282,7 @@ export function Navbar() {
                   aria-hidden
                   className="pointer-events-none absolute inset-0 -translate-x-full skew-x-[-20deg] bg-white/15 transition-transform duration-500 group-hover:translate-x-[200%]"
                 />
-                <span className="relative">Get started</span>
+                <span className="relative">{t('nav.getStarted')}</span>
                 <motion.span
                   className="relative"
                   animate={{ x: [0, 2, 0] }}
@@ -292,7 +297,7 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setDrawerOpen((v) => !v)}
-              aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
+              aria-label={drawerOpen ? t('nav.closeMenu') : t('nav.openMenu')}
               className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)]/70 text-[var(--text-primary)] transition-colors hover:bg-[var(--surface)] md:hidden"
             >
               <AnimatePresence mode="wait" initial={false}>
@@ -333,7 +338,7 @@ export function Navbar() {
               {/* Mobile search */}
               <div className="mb-3 flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5">
                 <Search className="h-4 w-4 shrink-0 text-[var(--muted)]" />
-                <input type="text" placeholder="Search…" className="w-full bg-transparent text-sm text-[var(--text-primary)] placeholder:text-[var(--muted)] focus:outline-none" />
+                <input type="text" placeholder={t('nav.searchPlaceholder')} className="w-full bg-transparent text-sm text-[var(--text-primary)] placeholder:text-[var(--muted)] focus:outline-none" />
               </div>
 
               {/* Mobile language toggle */}
@@ -342,7 +347,7 @@ export function Navbar() {
               </div>
 
               <nav className="flex flex-col gap-0.5">
-                {NAV_LINKS.map((link, i) => (
+                {navLinks.map((link, i) => (
                   <motion.a
                     key={link.href}
                     href={link.href}
@@ -367,7 +372,7 @@ export function Navbar() {
                     aria-hidden
                     className="pointer-events-none absolute inset-0 -translate-x-full skew-x-[-20deg] bg-white/15 transition-transform duration-500 group-hover:translate-x-[200%]"
                   />
-                  Get started
+                  {t('nav.getStarted')}
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </div>

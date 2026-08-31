@@ -6,29 +6,22 @@ import { Building2, UserPlus, ArrowLeft } from '@/components/icons';
 import { motion } from 'framer-motion';
 import { AuthLayout } from '@/components/auth/AuthLayout';
 import { cn } from '@/utils/cn';
+import { useI18n } from '@/i18n';
 
-const OPTIONS = [
-  {
-    href: '/auth/register-company',
-    title: 'Register as a company',
-    description: 'Create a new organization workspace, invite your team, and manage ISO quality in one place.',
-    icon: Building2,
-    emphasis: 'For directors & organization owners',
-  },
-  {
-    href: '/auth/register-user',
-    title: 'Join as part of a company',
-    description: 'You received an invite or your admin asked you to create an account under an existing organization.',
-    icon: UserPlus,
-    emphasis: 'For employees & team members',
-  },
+/** Copy lives in `auth.registerHub.options`, index-matched. */
+const OPTION_TARGETS = [
+  { href: '/auth/register-company', icon: Building2 },
+  { href: '/auth/register-user', icon: UserPlus },
 ] as const;
 
 export default function RegisterHubPage() {
+  const { t, m } = useI18n();
+  const options = OPTION_TARGETS.map((o, i) => ({ ...o, ...m.auth.registerHub.options[i] }));
+
   return (
     <AuthLayout
-      title="Choose how you want to get started"
-      subtitle="Pick the path that matches your situation. You can always contact support if you are unsure."
+      title={t('auth.registerHub.heroTitle')}
+      subtitle={t('auth.registerHub.heroSubtitle')}
       heroLeft
     >
       <div>
@@ -37,13 +30,15 @@ export default function RegisterHubPage() {
           className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-[var(--muted)] transition-hover hover:text-[var(--brand-primary)]"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to sign in
+          {t('common.backToSignIn')}
         </Link>
-        <h1 className="mb-1 text-2xl font-bold text-[var(--text-primary)]">Create an account</h1>
-        <p className="mb-8 text-sm text-[var(--muted)]">Select one of the options below to continue.</p>
+        <h1 className="mb-1 text-2xl font-bold text-[var(--text-primary)]">
+          {t('auth.registerHub.title')}
+        </h1>
+        <p className="mb-8 text-sm text-[var(--muted)]">{t('auth.registerHub.sub')}</p>
 
         <ul className="space-y-4">
-          {OPTIONS.map((opt, idx) => {
+          {options.map((opt, idx) => {
             const Icon = opt.icon;
             return (
               <motion.li
@@ -76,9 +71,9 @@ export default function RegisterHubPage() {
         </ul>
 
         <p className="mt-8 text-center text-sm text-[var(--muted)]">
-          Already have an account?{' '}
+          {t('auth.registerHub.alreadyHaveAccount')}{' '}
           <Link href="/auth/login" className="font-semibold text-[var(--brand-primary)] hover:underline">
-            Sign in
+            {t('common.signIn')}
           </Link>
         </p>
       </div>

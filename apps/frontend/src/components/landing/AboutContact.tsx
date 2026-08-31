@@ -13,6 +13,7 @@ import {
 import { motion, useInView, useReducedMotion, type Variants } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { contactApi } from '@/lib/api';
+import { useI18n } from '@/i18n';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface ContactForm {
@@ -37,28 +38,17 @@ const CONTACT_EMAIL_PRIMARY = 'hello@qurelio.com';
 const CONTACT_PHONE = '+216 XX XXX XXX';
 const CONTACT_EMAIL_SUPPORT = 'support@qurelio.com';
 
-const STATS: Stat[] = [
-  { icon: <TrendingUp className="h-5 w-5" />, value: '70%', label: 'Less compliance prep' },
-  { icon: <Shield className="h-5 w-5" />, value: '100%', label: 'Human-approved AI' },
-  { icon: <Users className="h-5 w-5" />, value: '24/7', label: 'Regulatory monitoring' },
+/** Copy for these lives in `about.stats` / `about.benefits`, index-matched. */
+const STAT_ICONS = [
+  <TrendingUp key="stat-0" className="h-5 w-5" />,
+  <Shield key="stat-1" className="h-5 w-5" />,
+  <Users key="stat-2" className="h-5 w-5" />,
 ];
 
-const BENEFITS: Benefit[] = [
-  {
-    icon: <CheckCircle className="h-6 w-6" />,
-    title: 'Structured Workflows',
-    description: 'Streamlined processes for documents, evaluations, and CAPAs that keep your team aligned.',
-  },
-  {
-    icon: <Shield className="h-6 w-6" />,
-    title: 'Role-Based Access',
-    description: 'Granular permissions for admins, directors, and shop-floor teams, so everyone sees what matters.',
-  },
-  {
-    icon: <Sparkles className="h-6 w-6" />,
-    title: 'AI-Powered Insights',
-    description: 'Intelligent analysis over your quality data to identify trends before they become issues.',
-  },
+const BENEFIT_ICONS = [
+  <CheckCircle key="benefit-0" className="h-6 w-6" />,
+  <Shield key="benefit-1" className="h-6 w-6" />,
+  <Sparkles key="benefit-2" className="h-6 w-6" />,
 ];
 
 const INITIAL_FORM_STATE: ContactForm = { name: '', email: '', company: '', message: '' };
@@ -74,6 +64,7 @@ const stagger = {
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 function useContactForm() {
+  const { t } = useI18n();
   const [form, setForm] = useState<ContactForm>(INITIAL_FORM_STATE);
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -94,22 +85,22 @@ function useContactForm() {
         firstName,
         lastName,
         email: form.email,
-        subject: form.company ? `Inquiry from ${form.company}` : '',
+        subject: form.company ? t('contact.inquiryFrom', { company: form.company }) : '',
         message: form.message,
       });
       setSent(true);
-      toast.success('Message sent successfully', {
+      toast.success(t('contact.toastSuccess'), {
         icon: '✨',
         style: { borderRadius: '12px', background: '#1a1a1a', color: '#fff' },
       });
     } catch (err: unknown) {
       const raw = (err as { response?: { data?: { message?: string | string[] } } })?.response?.data?.message;
-      const msg = Array.isArray(raw) ? raw.join(' ') : String(raw || 'Could not send. Please try again.');
+      const msg = Array.isArray(raw) ? raw.join(' ') : String(raw || t('contact.toastError'));
       toast.error(msg, { style: { borderRadius: '12px', background: '#1a1a1a', color: '#fff' } });
     } finally {
       setLoading(false);
     }
-  }, [form]);
+  }, [form, t]);
 
   const updateField = useCallback(
     (field: keyof ContactForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -237,6 +228,7 @@ const SOFT_IN_OUT = [0.45, 0, 0.55, 1] as const; // breathing
 const SOFT_OUT    = [0.22, 1, 0.36, 1] as const; // entrances
 
 function ContactIllustration() {
+  const { t } = useI18n();
   const ref = useRef<HTMLDivElement>(null);
   const isVisible = useInView(ref, { once: true, margin: '-60px' });
   const reduceMotion = useReducedMotion();
@@ -330,7 +322,7 @@ function ContactIllustration() {
         viewBox="0 0 420 320"
         className="mx-auto block w-full max-w-md"
         role="img"
-        aria-label="Send us a message"
+        aria-label={t('contact.illustrationAlt')}
       >
         <defs>
           <linearGradient id="ci-env-flap" x1="0" y1="0" x2="0" y2="1">
@@ -523,6 +515,10 @@ function ContactIllustration() {
 
 // ─── AboutSection ─────────────────────────────────────────────────────────────
 export function AboutSection() {
+  const { t, m } = useI18n();
+  const stats: Stat[] = m.about.stats.map((s, i) => ({ ...s, icon: STAT_ICONS[i] }));
+  const benefits: Benefit[] = m.about.benefits.map((b, i) => ({ ...b, icon: BENEFIT_ICONS[i] }));
+
   return (
     <section id="about" className="relative border-t border-[var(--border)] bg-blue-200">
       <div className="absolute inset-0 bg-gradient-to-b from-[var(--brand-primary)]/[0.02] to-transparent pointer-events-none" />
@@ -537,16 +533,16 @@ export function AboutSection() {
           className="mx-auto max-w-3xl text-center"
         >
           <motion.div variants={fadeInUp}>
-            <Badge>Why Qurelio</Badge>
+            <Badge>{t('about.badge')}</Badge>
           </motion.div>
 
           <motion.h2
             variants={fadeInUp}
             className="mt-6 text-4xl font-bold tracking-tight text-[var(--text-primary)] sm:text-5xl lg:text-6xl"
           >
-            Quality management,{' '}
+            {t('about.headingLead')}{' '}
             <span className="bg-gradient-to-r from-[var(--brand-primary)] to-blue-400 bg-clip-text text-transparent">
-              simplified
+              {t('about.headingHighlight')}
             </span>
           </motion.h2>
 
@@ -554,16 +550,14 @@ export function AboutSection() {
             variants={fadeInUp}
             className="mt-6 max-w-2xl mx-auto text-base leading-relaxed text-[var(--muted)] sm:text-lg"
           >
-            Qurelio helps organizations prove their products meet the public laws and regulations
-            of every market they sell to. From document control to audits and non-conformities,
-            teams get a single workspace that stays audit-ready.
+            {t('about.sub')}
           </motion.p>
 
           <motion.div
             variants={fadeInUp}
             className="mt-12 grid grid-cols-3 gap-4 max-w-lg mx-auto"
           >
-            {STATS.map((stat, i) => (
+            {stats.map((stat, i) => (
               <StatCard key={i} stat={stat} index={i} />
             ))}
           </motion.div>
@@ -577,7 +571,7 @@ export function AboutSection() {
           variants={stagger}
           className="mt-20 grid gap-6 md:grid-cols-3"
         >
-          {BENEFITS.map((benefit, i) => (
+          {benefits.map((benefit, i) => (
             <BenefitCard key={i} benefit={benefit} index={i} />
           ))}
         </motion.div>
@@ -589,6 +583,7 @@ export function AboutSection() {
 
 // ─── ContactSection ───────────────────────────────────────────────────────────
 export function ContactSection() {
+  const { t } = useI18n();
   const { form, sent, loading, handleSubmit, updateField, resetForm } = useContactForm();
 
   return (
@@ -625,15 +620,14 @@ export function ContactSection() {
               variants={fadeInUp}
               className="mt-6 text-center text-4xl font-bold tracking-tight text-neutral-900 sm:text-5xl lg:text-6xl"
             >
-              Contact us
+              {t('contact.heading')}
             </motion.h2>
 
             <motion.p
               variants={fadeInUp}
               className="mt-4 mx-auto max-w-md text-center text-base leading-relaxed text-neutral-500 sm:text-lg"
             >
-              Tell us about your products, your markets and your compliance challenges.
-              We&apos;ll show you what Qurelio can do with them.
+              {t('contact.sub')}
             </motion.p>
 
             <motion.div
@@ -700,15 +694,15 @@ export function ContactSection() {
                   <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-green-500 to-emerald-500">
                     <CheckCircle className="h-8 w-8 text-white" />
                   </div>
-                  <h3 className="mb-2 text-2xl font-bold text-neutral-900">Message sent!</h3>
-                  <p className="mb-6 max-w-sm text-neutral-500">
-                    Thanks for reaching out. We&apos;ll get back to you within one business day.
-                  </p>
+                  <h3 className="mb-2 text-2xl font-bold text-neutral-900">
+                    {t('contact.sentTitle')}
+                  </h3>
+                  <p className="mb-6 max-w-sm text-neutral-500">{t('contact.sentBody')}</p>
                   <button
                     onClick={resetForm}
                     className="inline-flex items-center gap-2 text-sm font-medium text-neutral-900 underline-offset-4 hover:underline"
                   >
-                    Send another message
+                    {t('contact.sendAnother')}
                     <ArrowRight className="h-4 w-4" />
                   </button>
                 </motion.div>
@@ -716,16 +710,16 @@ export function ContactSection() {
                 <form onSubmit={handleSubmit} className="relative space-y-5">
                   <Field
                     id="cf-name"
-                    label="Full name"
-                    placeholder="Jane Doe"
+                    label={t('contact.nameLabel')}
+                    placeholder={t('contact.namePlaceholder')}
                     value={form.name}
                     onChange={updateField('name')}
                     required
                   />
                   <Field
                     id="cf-email"
-                    label="Email Address"
-                    placeholder="you@company.com"
+                    label={t('contact.emailLabel')}
+                    placeholder={t('contact.emailPlaceholder')}
                     type="email"
                     value={form.email}
                     onChange={updateField('email')}
@@ -733,8 +727,8 @@ export function ContactSection() {
                   />
                   <Field
                     id="cf-company"
-                    label="Company"
-                    placeholder="Your company"
+                    label={t('contact.companyLabel')}
+                    placeholder={t('contact.companyPlaceholder')}
                     value={form.company}
                     onChange={updateField('company')}
                   />
@@ -744,14 +738,14 @@ export function ContactSection() {
                       htmlFor="cf-message"
                       className="mb-1.5 block text-[12.5px] font-medium uppercase tracking-[0.1em] text-neutral-500 transition-colors duration-300 group-focus-within:text-[var(--brand-primary)]"
                     >
-                      Message
+                      {t('contact.messageLabel')}
                     </label>
                     <div className="relative isolate">
                       <textarea
                         id="cf-message"
                         required
                         rows={5}
-                        placeholder="Tell us about your needs..."
+                        placeholder={t('contact.messagePlaceholder')}
                         value={form.message}
                         onChange={updateField('message')}
                         className={`${inputBaseClass} resize-none leading-relaxed`}
@@ -763,7 +757,10 @@ export function ContactSection() {
 
                   <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
                     <p className="text-xs text-neutral-500">
-                      We typically reply within <span className="font-medium text-neutral-700">one business day.</span>
+                      {t('contact.replyNoteLead')}{' '}
+                      <span className="font-medium text-neutral-700">
+                        {t('contact.replyNoteStrong')}
+                      </span>
                     </p>
                     <button
                       type="submit"
@@ -781,11 +778,11 @@ export function ContactSection() {
                             <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-25" />
                             <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" strokeWidth="3" />
                           </svg>
-                          Sending…
+                          {t('contact.submitting')}
                         </span>
                       ) : (
                         <>
-                          <span className="relative">Send message</span>
+                          <span className="relative">{t('contact.submit')}</span>
                           <ArrowRight className="relative h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" />
                         </>
                       )}

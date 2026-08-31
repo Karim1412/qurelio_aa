@@ -1,44 +1,11 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-
-type AddOn = {
-  label: string;
-  /** null → not available on that plan */
-  starter: string | null;
-  professional: string | null;
-  enterprise: string | null;
-};
-
-const addOns: AddOn[] = [
-  { label: 'Additional user', starter: '€90 / mo', professional: '€80 / mo', enterprise: '€75 / mo' },
-  { label: 'Products — pack of 10', starter: '€1,200 / yr', professional: '€900 / yr', enterprise: 'Included' },
-  { label: 'Active regulations — pack of 5', starter: '€1,800 / yr', professional: 'Included', enterprise: 'Included' },
-  { label: 'Additional site / legal entity', starter: null, professional: '€2,400 / yr', enterprise: 'Included' },
-  { label: 'AI evaluation runs — pack of 10', starter: '€600', professional: 'Fair use', enterprise: 'Included' },
-  { label: 'Supplier Portal seats — pack of 25', starter: null, professional: null, enterprise: '€3,000 / yr' },
-];
-
-const billingTerms: { term: string; detail: React.ReactNode }[] = [
-  { term: 'Standard', detail: 'Annual, billed once per year. Lowest price.' },
-  { term: 'Quarterly', detail: 'Starter and Professional, +5% on the annual price.' },
-  { term: 'Semi-annual', detail: 'Enterprise, on request.' },
-  {
-    term: 'Implementation',
-    detail: (
-      <>
-        <strong>None.</strong> Onboarding is included in every plan at no extra charge.
-      </>
-    ),
-  },
-  {
-    term: 'Contract',
-    detail: 'Minimum 12 months. Auto-renews unless cancelled 30 days before the renewal date.',
-  },
-  { term: 'Changes', detail: 'Upgrade any time, prorated. Downgrades take effect at renewal.' },
-];
+import { useI18n, Rich } from '@/i18n';
 
 export function PricingScaleBilling() {
+  const { t, tRich, m } = useI18n();
+  const { addOns, billingTerms } = m.scaleBilling;
   const sectionRef = useRef<HTMLElement | null>(null);
   const [inView, setInView] = useState(false);
 
@@ -252,33 +219,26 @@ export function PricingScaleBilling() {
       <section
         ref={sectionRef}
         className={`sb-root${inView ? ' is-in-view' : ''}`}
-        aria-label="Scale and billing"
+        aria-label={t('scaleBilling.sectionLabel')}
         id="billing"
       >
         <div className="sb-inner">
-          <p className="sb-eyebrow">Scale &amp; billing</p>
-          <h2 className="sb-heading">
-            You only pay for <em>what you monitor</em>
-          </h2>
-          <p className="sb-sub">
-            Every plan extends along the four dimensions that actually grow with your portfolio:
-            users, products, regulations and evaluation runs.
-          </p>
+          <p className="sb-eyebrow">{t('scaleBilling.eyebrow')}</p>
+          <h2 className="sb-heading">{tRich('scaleBilling.heading')}</h2>
+          <p className="sb-sub">{t('scaleBilling.sub')}</p>
 
           <div className="sb-grid">
             <div className="sb-panel" style={{ ['--i' as string]: 0 } as React.CSSProperties}>
-              <h3>Add-ons</h3>
-              <p className="sb-panel-sub">
-                Added at any time, prorated to your current billing period.
-              </p>
+              <h3>{t('scaleBilling.addOnsTitle')}</h3>
+              <p className="sb-panel-sub">{t('scaleBilling.addOnsSub')}</p>
               <div className="sb-tbl-wrap">
                 <table className="sb-tbl">
                   <thead>
                     <tr>
-                      <th scope="col">Add-on</th>
-                      <th scope="col">Starter</th>
-                      <th scope="col">Professional</th>
-                      <th scope="col">Enterprise</th>
+                      <th scope="col">{t('scaleBilling.addOnColumn')}</th>
+                      <th scope="col">{t('scaleBilling.starterColumn')}</th>
+                      <th scope="col">{t('scaleBilling.professionalColumn')}</th>
+                      <th scope="col">{t('scaleBilling.enterpriseColumn')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -296,13 +256,15 @@ export function PricingScaleBilling() {
             </div>
 
             <div className="sb-panel" style={{ ['--i' as string]: 1 } as React.CSSProperties}>
-              <h3>Billing</h3>
-              <p className="sb-panel-sub">All prices in EUR. Invoices issued in EUR.</p>
+              <h3>{t('scaleBilling.billingTitle')}</h3>
+              <p className="sb-panel-sub">{t('scaleBilling.billingSub')}</p>
               <dl className="sb-dl">
-                {billingTerms.map((item) => (
+                {billingTerms.map((item, i) => (
                   <div className="sb-dl-row" key={item.term}>
                     <dt>{item.term}</dt>
-                    <dd>{item.detail}</dd>
+                    <dd>
+                      <Rich k={`scaleBilling.billingTerms.${i}.detail`} />
+                    </dd>
                   </div>
                 ))}
               </dl>
@@ -315,12 +277,15 @@ export function PricingScaleBilling() {
 }
 
 function AddOnCell({ value }: { value: string | null }) {
+  const { t } = useI18n();
   if (value === null) {
     return (
       <td className="na">
-        <span aria-label="not available">—</span>
+        <span aria-label={t('scaleBilling.notAvailable')}>—</span>
       </td>
     );
   }
-  return <td className={value === 'Included' ? 'inc' : undefined}>{value}</td>;
+  return (
+    <td className={value === t('scaleBilling.included') ? 'inc' : undefined}>{value}</td>
+  );
 }

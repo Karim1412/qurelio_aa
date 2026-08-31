@@ -21,45 +21,15 @@ import {
   CheckCircle,
   type LucideIcon,
 } from '@/components/icons';
+import { useI18n } from '@/i18n';
 
 /* ---------- Data ---------- */
 
-type NavColumn = {
-  heading: string;
-  links: { label: string; href: string }[];
-};
-
-const NAV_COLUMNS: NavColumn[] = [
-  {
-    heading: 'Product',
-    links: [
-      { label: 'Features', href: '#features' },
-      { label: 'How it works', href: '#how-it-works' },
-      { label: 'Why Qurelio', href: '#why-qurelio' },
-      { label: 'Pricing', href: '#pricing' },
-    ],
-  },
-  {
-    heading: 'Resources',
-    links: [
-      { label: 'Blog', href: '#' },
-      { label: 'Help Center', href: '#' },
-      { label: 'Customer Stories', href: '#' },
-      { label: 'Documentation', href: '#' },
-      { label: 'Security & Compliance', href: '#' },
-      { label: 'Newsletter', href: '#' },
-      { label: 'Partners', href: '#' },
-    ],
-  },
-  {
-    heading: 'Company',
-    links: [
-      { label: 'About', href: '#about' },
-      { label: 'Careers', href: '#' },
-      { label: 'Press', href: '#' },
-      { label: 'Contact', href: '#contact' },
-    ],
-  },
+/** Anchors stay in code; the headings and labels come from `footer.columns`. */
+const NAV_COLUMN_HREFS: string[][] = [
+  ['#features', '#how-it-works', '#why-qurelio', '#pricing'],
+  ['#', '#', '#', '#', '#', '#', '#'],
+  ['#about', '#', '#', '#contact'],
 ];
 
 const SOCIALS: { Icon: LucideIcon; label: string; href: string }[] = [
@@ -79,6 +49,11 @@ const SOFT = [0.22, 1, 0.36, 1] as const;
 /* ---------- Main Footer ---------- */
 
 export function Footer() {
+  const { t, m } = useI18n();
+  const navColumns = m.footer.columns.map((col, i) => ({
+    heading: col.heading,
+    links: col.links.map((label, j) => ({ label, href: NAV_COLUMN_HREFS[i][j] })),
+  }));
   const ref = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.12 });
@@ -198,16 +173,19 @@ export function Footer() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/brand/querlio-mini.png"
-                alt="Qurelio"
+                alt={t('nav.logoAlt')}
+                /* Square source (242x242), so width tracks height 1:1. */
+                width={88}
                 height={88}
+                loading="lazy"
+                decoding="async"
                 style={{ height: 88, width: 'auto' }}
                 className="block shrink-0 select-none drop-shadow-[0_8px_24px_rgba(27,27,245,0.10)]"
                 draggable={false}
               />
               <div className="flex flex-col gap-3">
                 <p className="max-w-md text-[15px] leading-relaxed text-[var(--text-primary)]/85">
-                  Regulatory compliance, audits and quality operations: calm, clear,
-                  AI-assisted, and always under your control.
+                  {t('footer.tagline')}
                 </p>
                 
               </div>
@@ -219,7 +197,7 @@ export function Footer() {
                 htmlFor="footer-newsletter"
                 className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brand-accent)]"
               >
-                Stay in the loop
+                {t('footer.newsletterLabel')}
               </label>
               <form
                 onSubmit={handleSubmit}
@@ -243,8 +221,8 @@ export function Footer() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  aria-label="Email address"
-                  placeholder="you@company.com"
+                  aria-label={t('footer.newsletterEmailLabel')}
+                  placeholder={t('footer.newsletterPlaceholder')}
                   className="flex-1 bg-transparent py-3.5 pl-12 pr-3 text-[13.5px] font-medium tracking-[-0.005em] text-[var(--text-primary)] placeholder:font-normal placeholder:text-[var(--muted)]/70 focus:outline-none"
                 />
                 {/* Soft hairline divider before the button */}
@@ -271,11 +249,11 @@ export function Footer() {
                     {submitted ? (
                       <>
                         <CheckCircle className="h-3.5 w-3.5" />
-                        Subscribed
+                        {t('footer.subscribed')}
                       </>
                     ) : (
                       <>
-                        Subscribe
+                        {t('footer.subscribe')}
                         <motion.span
                           aria-hidden
                           className="inline-flex"
@@ -289,9 +267,7 @@ export function Footer() {
                   </motion.span>
                 </motion.button>
               </form>
-              <p className="text-xs text-[var(--muted)]">
-                One email per month. No spam, unsubscribe in one click.
-              </p>
+              <p className="text-xs text-[var(--muted)]">{t('footer.newsletterNote')}</p>
             </div>
 
            
@@ -299,7 +275,7 @@ export function Footer() {
 
           {/* Right: Nav columns */}
           <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 sm:gap-12 lg:justify-items-end">
-            {NAV_COLUMNS.map((col, colIdx) => (
+            {navColumns.map((col, colIdx) => (
               <motion.div
                 key={col.heading}
                 variants={fadeUp}
@@ -409,20 +385,20 @@ export function Footer() {
           />
 
           <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-[var(--muted)] sm:justify-start">
-            <p>© {new Date().getFullYear()} Qurelio. Powered by Pura Solutions.</p>
+            <p>{t('footer.copyright', { year: new Date().getFullYear() })}</p>
             <span aria-hidden className="hidden h-3 w-px bg-[var(--border)]/60 sm:inline" />
             <a
               href="/terms"
               className="relative transition-colors duration-300 hover:text-[var(--brand-primary)]"
             >
-              Terms of Service
+              {t('footer.terms')}
             </a>
             <span aria-hidden className="hidden h-3 w-px bg-[var(--border)]/60 sm:inline" />
             <a
               href="/privacy"
               className="relative transition-colors duration-300 hover:text-[var(--brand-primary)]"
             >
-              Privacy Policy
+              {t('footer.privacy')}
             </a>
           </div>
 

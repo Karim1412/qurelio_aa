@@ -2,121 +2,19 @@
 
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { Check, Sparkles } from '@/components/icons';
+import { useI18n } from '@/i18n';
+import type { Messages } from '@/i18n';
+/** Copy lives in `pricing.plans`; the figures live in `@/lib/pricing`, index-matched. */
+import { planPricing, type PlanPricing } from '@/lib/pricing';
 
-type Feature = { label: string };
-
-type Plan = {
-  name: string;
-  description: string;
-  price: number | null; // null → "Tailored"
-  priceNote: string;
-  /** null → this plan has no quarterly option (price stays annual) */
-  quarterlyPrice: number | null;
-  quarterlyNote: string;
-  scope: string;
-  ctaLabel: string;
-  ctaNote: string;
-  badge?: string;
-  badgeTone?: 'brand' | 'gold';
-  highlighted?: boolean;
-  features: Feature[];
-};
-
-const plans: Plan[] = [
-  {
-    name: 'Starter',
-    description:
-      'Run quality operations properly, and get your first regulations under control.',
-    price: 9600,
-    priceNote: '€800 / month equivalent',
-    quarterlyPrice: 2520,
-    quarterlyNote: 'Billed every 3 months · +5% on the annual price',
-    scope: '3 users · 3 products · 2 active regulations',
-    ctaLabel: 'Start free trial',
-    ctaNote: '14-day trial · no credit card',
-    features: [
-      { label: 'Onboarding wizard & organizational profile' },
-      { label: 'Product folder ingestion → private Compliance Memory' },
-      { label: 'Compliance engine — obligations, gap list, weighted score, every finding cited' },
-      { label: 'Legal Guardrail & HITL Quarantine on every AI output' },
-      { label: 'File Library, Non-Conformities & CAPA lifecycle' },
-      { label: 'Internal audits, root-cause tools, action plans' },
-      { label: 'Email support, 48h · assisted onboarding included' },
-    ],
-  },
-  {
-    name: 'Professional',
-    description:
-      'Everything in Starter — plus the regulatory landscape watching itself.',
-    price: 24000,
-    priceNote: '€2,000 / month equivalent',
-    quarterlyPrice: 6300,
-    quarterlyNote: 'Billed every 3 months · +5% on the annual price',
-    scope: '10 users · 25 products · unlimited regulations · 3 sites',
-    ctaLabel: 'Start free trial',
-    ctaNote: '14-day trial · no credit card',
-    badge: 'Most popular',
-    badgeTone: 'gold',
-    highlighted: true,
-    features: [
-      { label: 'Everything in Starter, unmetered' },
-      { label: 'Regulatory Monitoring — substantive-vs-cosmetic change filtering' },
-      { label: 'Impact analysis on your obligations, products and scores' },
-      { label: 'Missing-regulation detection' },
-      { label: 'Qurelio AI Assistant — cited Q&A over your Compliance Memory' },
-      { label: 'Audit-Readiness Dossier + PDF / Excel / PowerPoint export' },
-      { label: 'Priority email + chat support · assisted onboarding included' },
-    ],
-  },
-  {
-    name: 'Enterprise',
-    description: 'Multi-site, multi-supplier, configured to your quality system.',
-    price: null,
-    priceNote: '€5,000 / month minimum · scoped to sites, products & markets',
-    quarterlyPrice: null,
-    quarterlyNote: 'Semi-annual billing available on request',
-    scope: 'Unlimited users, products & regulations · multi-site consolidation',
-    ctaLabel: 'Request a quote',
-    ctaNote: 'tailored scope · no fixed price',
-    features: [
-      { label: 'Everything in Professional' },
-      { label: 'Supplier Quality Management — AVL, scorecards, risk tiering, SCAR' },
-      { label: 'External Supplier Portal with isolated access' },
-      { label: 'Multi-site portfolio — consolidated and per-site scoring' },
-      { label: 'Configurable scoring, custom roles & external auditor access' },
-      { label: 'SSO (Google, Microsoft, SAML 2.0) · public API & webhooks' },
-      { label: 'Dedicated Customer Success Manager + contractual SLA' },
-    ],
-  },
-  {
-    name: 'Early Access Pilot',
-    description:
-      'Professional, in full, at pilot pricing — shape the product with us.',
-    price: 6000,
-    priceNote: '€500 / month equivalent · 75% off Professional',
-    quarterlyPrice: null,
-    quarterlyNote: 'Annual billing only for the pilot programme',
-    scope: '5 users · Professional scope otherwise · open worldwide',
-    ctaLabel: 'Request pilot access',
-    ctaNote: 'contact@qurelio.com · open worldwide',
-    badge: 'Early access',
-    badgeTone: 'brand',
-    features: [
-      { label: 'The complete Professional plan — no feature exceptions' },
-      { label: 'Dedicated onboarding session, no charge' },
-      { label: 'Priority addition of your regulatory sources to the monitored registry' },
-      { label: 'Direct feedback line to the product team + roadmap input' },
-      { label: 'Custom scope available after pilot' },
-      { label: 'Standard Professional pricing applies from client 6 onward' },
-    ],
-  },
-];
+type Plan = PlanPricing & Messages['pricing']['plans'][number];
 
 type BillingMode = 'annual' | 'quarterly';
 
-const numberFormatter = new Intl.NumberFormat('en-US');
-
 export function PricingSection() {
+  const { t, tRich, m, intlLocale } = useI18n();
+  const plans: Plan[] = planPricing.map((p, i) => ({ ...p, ...m.pricing.plans[i] }));
+  const numberFormatter = new Intl.NumberFormat(intlLocale);
   const sectionRef = useRef<HTMLElement | null>(null);
   const [inView, setInView] = useState(false);
   const [billing, setBilling] = useState<BillingMode>('annual');
@@ -714,30 +612,23 @@ export function PricingSection() {
       <section
         ref={sectionRef}
         className={`pricing-root${inView ? ' is-in-view' : ''}`}
-        aria-label="Pricing"
+        aria-label={t('pricing.sectionLabel')}
         id="pricing"
       >
         <div className="pricing-inner">
-          <p className="pricing-eyebrow">Pricing</p>
-          <h2 className="pricing-heading">
-            Simple, <em>transparent</em> pricing
-          </h2>
-          <p className="pricing-sub">
-            Choose the plan that fits your regulatory complexity. Annual contracts, no implementation
-            fee, no hidden costs. The legal guardrail, the human-in-the-loop quarantine and the audit
-            trail are in <strong style={{ fontWeight: 600, color: '#44403C' }}>every</strong> plan —
-            what scales is your portfolio, not your safety.
-          </p>
+          <p className="pricing-eyebrow">{t('pricing.eyebrow')}</p>
+          <h2 className="pricing-heading">{tRich('pricing.heading')}</h2>
+          <p className="pricing-sub">{tRich('pricing.sub')}</p>
 
           <div className="pricing-billing-wrap">
-            <div className="pricing-billing" role="group" aria-label="Billing period">
+            <div className="pricing-billing" role="group" aria-label={t('pricing.billingGroupLabel')}>
               <button
                 type="button"
                 className={billing === 'annual' ? 'on' : undefined}
                 aria-pressed={billing === 'annual'}
                 onClick={() => setBilling('annual')}
               >
-                Annual
+                {t('pricing.annual')}
               </button>
               <button
                 type="button"
@@ -745,7 +636,7 @@ export function PricingSection() {
                 aria-pressed={billing === 'quarterly'}
                 onClick={() => setBilling('quarterly')}
               >
-                Quarterly <span className="tag">+5%</span>
+                {t('pricing.quarterly')} <span className="tag">{t('pricing.quarterlyTag')}</span>
               </button>
             </div>
           </div>
@@ -759,20 +650,18 @@ export function PricingSection() {
               {plans.map((plan, i) => (
                 <Fragment key={plan.name}>
                   {i > 0 && <div aria-hidden className="pricing-divider-h" />}
-                  <PricingCard plan={plan} index={i} billing={billing} />
+                  <PricingCard
+                    plan={plan}
+                    index={i}
+                    billing={billing}
+                    numberFormatter={numberFormatter}
+                  />
                 </Fragment>
               ))}
             </div>
           </div>
 
-          <p className="pricing-context">
-            <b>How does Qurelio compare?</b> eQMS platforms for regulated industries range from
-            $5,000–$15,000 / year for small teams to $25,000–$100,000+ / year for mid-market
-            (SimplerQMS, Qualio, Greenlight Guru). Qurelio&rsquo;s Professional plan, at €24,000 / year
-            for 10 users, includes regulatory monitoring and AI compliance analysis — capabilities not
-            included in standard eQMS pricing. No implementation fee. No per-module add-ons for core
-            quality operations.
-          </p>
+          <p className="pricing-context">{tRich('pricing.context')}</p>
         </div>
       </section>
     </>
@@ -783,11 +672,14 @@ function PricingCard({
   plan,
   index,
   billing,
+  numberFormatter,
 }: {
   plan: Plan;
   index: number;
   billing: BillingMode;
+  numberFormatter: Intl.NumberFormat;
 }) {
+  const { t } = useI18n();
   const cardClass = plan.highlighted ? 'pricing-card featured' : 'pricing-card';
   const ctaClass = plan.highlighted ? 'pricing-cta solid' : 'pricing-cta outline';
 
@@ -796,7 +688,7 @@ function PricingCard({
   const isQuarterly = billing === 'quarterly';
   const showQuarterlyPrice = isQuarterly && plan.quarterlyPrice !== null;
   const amount = showQuarterlyPrice ? plan.quarterlyPrice : plan.price;
-  const period = showQuarterlyPrice ? 'per quarter' : 'per year';
+  const period = showQuarterlyPrice ? t('pricing.perQuarter') : t('pricing.perYear');
   const note = isQuarterly ? plan.quarterlyNote : plan.priceNote;
 
   return (
@@ -818,7 +710,7 @@ function PricingCard({
 
       <div className="pricing-price-row">
         {isCustom ? (
-          <span className="pricing-price is-text">Tailored to your industry</span>
+          <span className="pricing-price is-text">{t('pricing.tailored')}</span>
         ) : (
           <>
             <span className="pricing-price-currency">€</span>
@@ -828,7 +720,7 @@ function PricingCard({
           </>
         )}
       </div>
-      <p className="pricing-period">{isCustom ? 'On request' : period}</p>
+      <p className="pricing-period">{isCustom ? t('pricing.onRequest') : period}</p>
       <p className="pricing-price-note">{note}</p>
 
       <span className="pricing-userrange">
@@ -841,14 +733,14 @@ function PricingCard({
       <ul className="pricing-features">
         {plan.features.map((feature, fi) => (
           <li
-            key={feature.label}
+            key={feature}
             className="pricing-feature"
             style={{ ['--fi' as string]: fi } as React.CSSProperties}
           >
             <span className="pricing-feature-dot" aria-hidden>
               <Check className="h-3 w-3" strokeWidth={3} />
             </span>
-            {feature.label}
+            {feature}
           </li>
         ))}
       </ul>
