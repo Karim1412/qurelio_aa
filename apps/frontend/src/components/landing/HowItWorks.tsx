@@ -1,12 +1,15 @@
 'use client';
 
 import { Fragment, useEffect, useRef, useState } from 'react';
+import { useI18n } from '@/i18n';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ILLUSTRATIONS
 // ─────────────────────────────────────────────────────────────────────────────
 
-const UploadIllustration = () => (
+const UploadIllustration = () => {
+  const { t } = useI18n();
+  return (
   <svg viewBox="0 0 220 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
     <defs>
       <linearGradient id="up-card" x1="0" x2="0" y1="0" y2="1">
@@ -54,7 +57,7 @@ const UploadIllustration = () => (
       />
       <path d="M113 73 L113 60 M108 65 L113 60 L118 65" stroke="#4D92C4" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </g>
-    <text x="110" y="98" textAnchor="middle" fontSize="6" fill="#78716C" fontFamily="Poppins, sans-serif" fontWeight="500">Drop files here</text>
+    <text x="110" y="98" textAnchor="middle" fontSize="6" fill="#78716C" fontFamily="Poppins, sans-serif" fontWeight="500">{t('illustrations.dropFilesHere')}</text>
 
     {/* File row 1: completed (green tick + full bar) */}
     <g className="hiw-paper hiw-paper-1">
@@ -87,9 +90,12 @@ const UploadIllustration = () => (
     <circle className="hiw-particle p2" cx="113" cy="52" r="1.4" fill="#9CC4E3" />
     <circle className="hiw-particle p3" cx="126" cy="58" r="1.5" fill="#7DAFD6" opacity="0.7" />
   </svg>
-);
+  );
+};
 
-const AnalyzeIllustration = () => (
+const AnalyzeIllustration = () => {
+  const { t } = useI18n();
+  return (
   <svg viewBox="0 0 220 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
     <defs>
       <linearGradient id="scan-grad" x1="0" x2="1" y1="0" y2="0">
@@ -172,30 +178,33 @@ const AnalyzeIllustration = () => (
       <g className="hiw-chip c1">
         <rect x="154" y="98" width="46" height="11" rx="5.5" fill="#FFFFFF" stroke="#E5DDF3" strokeWidth="0.8" />
         <circle cx="160" cy="103.5" r="1.6" fill="#82C9B0" />
-        <text x="166" y="106" fontSize="5.6" fill="#57534E" fontFamily="Poppins, sans-serif" fontWeight="500">Decree</text>
+        <text x="166" y="106" fontSize="5.6" fill="#57534E" fontFamily="Poppins, sans-serif" fontWeight="500">{t('illustrations.decree')}</text>
       </g>
       <g className="hiw-chip c2">
         <rect x="154" y="114" width="46" height="11" rx="5.5" fill="#FFFFFF" stroke="#E5DDF3" strokeWidth="0.8" />
         <circle cx="160" cy="119.5" r="1.6" fill="#F0CE85" />
-        <text x="166" y="122" fontSize="5.6" fill="#57534E" fontFamily="Poppins, sans-serif" fontWeight="500">Regulation</text>
+        <text x="166" y="122" fontSize="5.6" fill="#57534E" fontFamily="Poppins, sans-serif" fontWeight="500">{t('illustrations.regulation')}</text>
       </g>
       <g className="hiw-chip c3">
         <rect x="154" y="130" width="46" height="11" rx="5.5" fill="#FFFFFF" stroke="#E5DDF3" strokeWidth="0.8" />
         <circle cx="160" cy="135.5" r="1.6" fill="#F0A4A4" />
-        <text x="166" y="138" fontSize="5.6" fill="#57534E" fontFamily="Poppins, sans-serif" fontWeight="500">Law</text>
+        <text x="166" y="138" fontSize="5.6" fill="#57534E" fontFamily="Poppins, sans-serif" fontWeight="500">{t('illustrations.law')}</text>
       </g>
 
       {/* Gap counter at bottom */}
       <rect x="154" y="148" width="46" height="14" rx="4" fill="#F4EEFC" />
-      <text x="160" y="157" fontSize="5.6" fill="#7C5DBE" fontFamily="Poppins, sans-serif" fontWeight="600">3 gaps found</text>
+      <text x="160" y="157" fontSize="5.6" fill="#7C5DBE" fontFamily="Poppins, sans-serif" fontWeight="600">{t('illustrations.gapsFound')}</text>
     </g>
 
     {/* Connection between doc highlight and side panel */}
     <path d="M104 115 Q 130 115 148 110" stroke="#B89FE5" strokeWidth="1" strokeDasharray="2 3" fill="none" opacity="0.6" />
   </svg>
-);
+  );
+};
 
-const TrackIllustration = () => (
+const TrackIllustration = () => {
+  const { t } = useI18n();
+  return (
   <svg viewBox="0 0 220 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
     <defs>
       <linearGradient id="track-area" x1="0" x2="0" y1="0" y2="1">
@@ -238,15 +247,15 @@ const TrackIllustration = () => (
       {/* KPI row */}
       <g>
         <rect x="28" y="56" width="50" height="22" rx="6" fill="#F7F5EF" />
-        <text x="33" y="65" fontSize="5.4" fill="#78716C" fontFamily="Poppins, sans-serif" fontWeight="500">SCORE</text>
+        <text x="33" y="65" fontSize="5.4" fill="#78716C" fontFamily="Poppins, sans-serif" fontWeight="500">{t('illustrations.score')}</text>
         <text x="33" y="74" fontSize="9" fill="#1C1917" fontFamily="Poppins, sans-serif" fontWeight="700">94%</text>
 
         <rect x="84" y="56" width="50" height="22" rx="6" fill="#F7F5EF" />
-        <text x="89" y="65" fontSize="5.4" fill="#78716C" fontFamily="Poppins, sans-serif" fontWeight="500">CLOSED</text>
+        <text x="89" y="65" fontSize="5.4" fill="#78716C" fontFamily="Poppins, sans-serif" fontWeight="500">{t('illustrations.closed')}</text>
         <text x="89" y="74" fontSize="9" fill="#1C1917" fontFamily="Poppins, sans-serif" fontWeight="700">128</text>
 
         <rect x="140" y="56" width="50" height="22" rx="6" fill="#F7F5EF" />
-        <text x="145" y="65" fontSize="5.4" fill="#78716C" fontFamily="Poppins, sans-serif" fontWeight="500">OPEN</text>
+        <text x="145" y="65" fontSize="5.4" fill="#78716C" fontFamily="Poppins, sans-serif" fontWeight="500">{t('illustrations.open')}</text>
         <text x="145" y="74" fontSize="9" fill="#1C1917" fontFamily="Poppins, sans-serif" fontWeight="700">7</text>
       </g>
 
@@ -291,77 +300,23 @@ const TrackIllustration = () => (
       </g>
     </g>
   </svg>
-);
+  );
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // STEP DATA
 // ─────────────────────────────────────────────────────────────────────────────
 
-type Step = {
+/** Copy lives in `how.steps`; only the artwork and palette stay here. */
+const stepVisuals: {
   number: string;
-  action: string;
-  title: string;
-  lead: string;
-  description: string;
-  detailsLabel: string;
-  details: string[];
   accent: string;
   accentSoft: string;
   Illustration: React.FC;
-};
-
-const steps: Step[] = [
-  {
-    number: '01',
-    action: 'Onboard',
-    title: 'Teach Qurelio your organization',
-    lead: 'Start where you are.',
-    description:
-      'Describe your company, products and markets, then bring your product folders and quality documents into one organised home. Qurelio builds a private compliance memory of your organization, so every answer is about your reality.',
-    detailsLabel: 'What happens here',
-    details: [
-      'Guided onboarding captures your activity, markets and quality context',
-      'Drag-and-drop bulk import of product folders and records',
-      'Private by default: your memory is yours alone, never shared',
-    ],
-    accent: '#7DAFD6',
-    accentSoft: '#EAF3FA',
-    Illustration: UploadIllustration,
-  },
-  {
-    number: '02',
-    action: 'Assess',
-    title: 'Upload a regulation, get your verdict',
-    lead: 'See the gaps clearly.',
-    description:
-      'Add any public law, decree or regulation that applies to you. Qurelio evaluates your products against it, clause by clause, and returns a compliance score and maturity level, with every gap explained in plain language.',
-    detailsLabel: 'What you receive',
-    details: [
-      'Clause-by-clause compliance and maturity assessment',
-      'Plain-language explanation of every gap',
-      'Suggested fixes, each with an owner and a date, pending your approval',
-    ],
-    accent: '#B89FE5',
-    accentSoft: '#F4EEFC',
-    Illustration: AnalyzeIllustration,
-  },
-  {
-    number: '03',
-    action: 'Monitor & improve',
-    title: 'Never be surprised by a regulation again',
-    lead: 'Keep the momentum.',
-    description:
-      'Qurelio keeps watching. When a regulation changes, or a relevant one you never mentioned appears, you get an alert that says exactly which products are affected and what to do. Every closed gap becomes a visible milestone.',
-    detailsLabel: 'What stays with you',
-    details: [
-      'Alerts when regulatory changes affect your compliance',
-      'Detection of applicable regulations you didn’t know about',
-      'Live KPIs and a one-click evidence trail, ready for any auditor',
-    ],
-    accent: '#82C9B0',
-    accentSoft: '#EAF8F2',
-    Illustration: TrackIllustration,
-  },
+}[] = [
+  { number: '01', accent: '#7DAFD6', accentSoft: '#EAF3FA', Illustration: UploadIllustration },
+  { number: '02', accent: '#B89FE5', accentSoft: '#F4EEFC', Illustration: AnalyzeIllustration },
+  { number: '03', accent: '#82C9B0', accentSoft: '#EAF8F2', Illustration: TrackIllustration },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -403,6 +358,8 @@ function useJourneyProgress(ref: React.RefObject<HTMLElement | null>) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function HowItWorks() {
+  const { t, tRich, m } = useI18n();
+  const steps = stepVisuals.map((v, i) => ({ ...v, ...m.how.steps[i] }));
   const sectionRef = useRef<HTMLElement | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
   const progress = useJourneyProgress(trackRef);
@@ -425,7 +382,7 @@ export function HowItWorks() {
   }, []);
 
   const stepThresholds = [0.1, 0.45, 0.8];
-  const activeStates = stepThresholds.map((t) => progress >= t);
+  const activeStates = stepThresholds.map((threshold) => progress >= threshold);
 
   return (
     <>
@@ -1154,17 +1111,12 @@ export function HowItWorks() {
         id="how-it-works"
         ref={sectionRef}
         className={`hiw-root${inView ? ' is-in-view' : ''}`}
-        aria-label="How Qurelio works"
+        aria-label={t('how.sectionLabel')}
       >
         <div className="hiw-inner">
-          <p className="hiw-eyebrow">How it works</p>
-          <h2 className="hiw-heading">
-            How it <em>works</em>
-          </h2>
-          <p className="hiw-sub">
-            Three calm steps. From the day you describe your organization to the daily rhythm of staying
-            compliant, Qurelio guides every move, and you approve every decision.
-          </p>
+          <p className="hiw-eyebrow">{t('how.eyebrow')}</p>
+          <h2 className="hiw-heading">{tRich('how.heading')}</h2>
+          <p className="hiw-sub">{t('how.sub')}</p>
 
           <div className="hiw-track" ref={trackRef}>
             <div className="hiw-grid">

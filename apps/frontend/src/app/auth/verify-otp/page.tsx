@@ -11,6 +11,7 @@ import { QurelioLogo } from '@/components/brand/qurelio-logo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/utils/cn';
+import { useI18n, Rich } from '@/i18n';
 
 /** Cooldown before "Resend code" is available again (matches OTP validity window). */
 const RESEND_COOLDOWN_SEC = 10 * 60;
@@ -21,21 +22,25 @@ function formatCooldown(seconds: number): string {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
+function AuthLoadingScreen() {
+  const { t } = useI18n();
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-[var(--page-bg)] text-[var(--muted)]">
+      {t('common.loading')}
+    </div>
+  );
+}
+
 export default function VerifyOtpPageWrapper() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-screen items-center justify-center bg-[var(--page-bg)] text-[var(--muted)]">
-          Loading…
-        </div>
-      }
-    >
+    <Suspense fallback={<AuthLoadingScreen />}>
       <VerifyOtpPage />
     </Suspense>
   );
 }
 
 function VerifyOtpPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const searchParams = useSearchParams();
   const emailFromUrl = searchParams.get('email') || '';
@@ -86,11 +91,11 @@ function VerifyOtpPage() {
   const handleVerify = async () => {
     const code = otp.join('');
     if (!effectiveEmail) {
-      toast.error('Enter the email you used to register');
+      toast.error(t('auth.verifyOtp.errorNoEmail'));
       return;
     }
     if (code.length < 6) {
-      toast.error('Please enter the complete 6-digit code');
+      toast.error(t('auth.verifyOtp.errorIncomplete'));
       return;
     }
     setLoading(true);
@@ -103,14 +108,14 @@ function VerifyOtpPage() {
       }
       toast.success(
         type === 'company'
-          ? 'Email verified. A super admin must still approve your company before you can log in.'
-          : 'Email verified. Your company admin must activate your account before you can log in.'
+          ? t('auth.verifyOtp.successCompany')
+          : t('auth.verifyOtp.successUser')
       );
       router.push('/auth/login');
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { message?: string | string[] } } })?.response?.data?.message;
       const joined = Array.isArray(msg) ? msg.join(' ') : msg;
-      toast.error(joined || 'Invalid or expired code');
+      toast.error(joined || t('auth.verifyOtp.errorInvalidCode'));
     } finally {
       setLoading(false);
     }
@@ -118,16 +123,16 @@ function VerifyOtpPage() {
 
   const handleResend = async () => {
     if (!effectiveEmail) {
-      toast.error('Enter your registration email first');
+      toast.error(t('auth.verifyOtp.errorResendNoEmail'));
       return;
     }
     try {
       await authApi.resendOtp(effectiveEmail);
-      toast.success('New code sent!');
+      toast.success(t('auth.verifyOtp.resendSuccess'));
       setResendTimer(RESEND_COOLDOWN_SEC);
       setOtp(Array(6).fill(''));
     } catch {
-      toast.error('Failed to resend code');
+      toast.error(t('auth.verifyOtp.errorResend'));
     }
   };
 
@@ -138,7 +143,7 @@ function VerifyOtpPage() {
           href={type === 'company' ? '/auth/register-company' : '/auth/register-user'}
           className="text-sm font-semibold text-[var(--muted)] hover:text-[var(--text-primary)]"
         >
-          ← Back
+          {t('auth.verifyOtp.back')}
         </Link>
         <div className="flex justify-end">
           <QurelioLogo height={28} />
@@ -157,15 +162,18 @@ function VerifyOtpPage() {
             <Mail className="h-8 w-8 text-[var(--brand-primary)]" />
           </div>
 
-          <h1 className="mb-2 text-2xl font-bold text-[var(--text-primary)]">Verify your email</h1>
+          <h1 className="mb-2 text-2xl font-bold text-[var(--text-primary)]">
+            {t('auth.verifyOtp.title')}
+          </h1>
           <p className="mb-4 text-left text-sm text-[var(--muted)]">
-            If you closed this page before, your account is still saved. Enter the same email you used to register, then the
-            code from your email (valid 10 minutes). Use <strong>Resend code</strong> if it expired.
+            <Rich k="auth.verifyOtp.intro" />
           </p>
 
           {!emailFromUrl ? (
             <div className="mb-4 text-left">
-              <label className="mb-1.5 block text-[13px] text-[var(--muted)]">Registration email</label>
+              <label className="mb-1.5 block text-[13px] text-[var(--muted)]">
+                {t('auth.verifyOtp.registrationEmailLabel')}
+              </label>
               <Input
                 type="email"
                 value={emailInput}
@@ -174,7 +182,7 @@ function VerifyOtpPage() {
             </div>
           ) : (
             <>
-              <p className="mb-1 text-sm text-[var(--muted)]">We&apos;ve sent a 6-digit code to</p>
+              <p className="mb-1 text-sm text-[var(--muted)]">{t('auth.verifyOtp.sentTo')}</p>
               <p className="mb-6 font-semibold text-[var(--brand-primary)]">{effectiveEmail}</p>
             </>
           )}
@@ -200,21 +208,23 @@ function VerifyOtpPage() {
           </div>
 
           <Button className="mb-4 w-full" onClick={handleVerify} disabled={loading}>
-            {loading ? 'Verifying…' : 'Verify email'}
+            {loading ? t('auth.verifyOtp.submitting') : t('auth.verifyOtp.submit')}
           </Button>
 
-          <p className="mb-1 text-sm text-[var(--muted)]">Didn&apos;t receive a code?</p>
+          <p className="mb-1 text-sm text-[var(--muted)]">{t('auth.verifyOtp.noCode')}</p>
           {resendTimer > 0 ? (
-            <p className="text-sm text-[#919eab]">Resend in {formatCooldown(resendTimer)}</p>
+            <p className="text-sm text-[#919eab]">
+              {t('auth.verifyOtp.resendIn', { time: formatCooldown(resendTimer) })}
+            </p>
           ) : (
             <button type="button" className="font-semibold text-[var(--brand-primary)] hover:underline" onClick={handleResend}>
-              Resend code
+              {t('auth.verifyOtp.resend')}
             </button>
           )}
 
           <div className="mt-6 border-t border-[var(--border)] pt-6">
             <Link href="/auth/login" className="text-sm text-[var(--muted)] hover:text-[var(--text-primary)]">
-              Change email address
+              {t('auth.verifyOtp.changeEmail')}
             </Link>
           </div>
         </motion.div>

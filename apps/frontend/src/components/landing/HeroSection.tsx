@@ -22,6 +22,7 @@ import {
   Sparkles,
   type LucideIcon,
 } from '@/components/icons';
+import { useI18n } from '@/i18n';
 
 /* ─── Constants ──────────────────────────────────────────────────────────── */
 type EaseTuple = [number, number, number, number];
@@ -180,6 +181,7 @@ function MagneticButton({
 
 /* ─── Hero ───────────────────────────────────────────────────────────────── */
 export function HeroSection() {
+  const { t } = useI18n();
   const sectionRef = useRef<HTMLElement>(null);
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -200,10 +202,10 @@ export function HeroSection() {
   const [eventIdx, setEventIdx] = useState(0);
   useEffect(() => {
     if (!mounted) return;
-    const t = setInterval(() => {
+    const timer = setInterval(() => {
       setEventIdx((i) => (i + 1) % LIVE_EVENTS.length);
     }, 3200);
-    return () => clearInterval(t);
+    return () => clearInterval(timer);
   }, [mounted]);
 
   return (
@@ -243,18 +245,21 @@ export function HeroSection() {
         {/* Headline */}
         <h1 className="relative mb-6 text-4xl font-semibold leading-[1.06] tracking-tight text-[var(--text-primary)] sm:text-5xl md:text-6xl">
           <AnimatedWords
-            text="Prove your"
+            key={`lead-${t('hero.titleLead')}`}
+            text={t('hero.titleLead')}
             className="text-[var(--muted)]"
             delayBase={0.15}
           />{' '}
           <AnimatedWords
-            text="compliance."
+            key={`hl-${t('hero.titleHighlight')}`}
+            text={t('hero.titleHighlight')}
             className="text-[var(--brand-primary)]"
             delayBase={0.3}
           />
           <br />
           <AnimatedWords
-            text="Every product, every market, every day."
+            key={`rest-${t('hero.titleRest')}`}
+            text={t('hero.titleRest')}
             className="text-[var(--text-primary)]"
             delayBase={0.5}
           />
@@ -267,9 +272,7 @@ export function HeroSection() {
           transition={{ duration: 0.7, delay: 1.0, ease: EASE_OUT }}
           className="mx-auto max-w-2xl text-base leading-relaxed text-[var(--muted)] sm:text-lg"
         >
-          One platform to show your products meet the laws and regulations of every
-          market you sell to. Documents, audits, non-conformities and evidence:
-          organised, scored, and audit-ready every day, not just at certification time.
+          {t('hero.subtitle')}
         </motion.p>
 
         {/* CTAs */}
@@ -294,7 +297,7 @@ export function HeroSection() {
                 backgroundSize: '200% 100%',
               }}
             />
-            <span className="relative">Book a demo</span>
+            <span className="relative">{t('hero.ctaDemo')}</span>
             <ArrowRight className="relative h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
           </MagneticButton>
 
@@ -320,7 +323,7 @@ export function HeroSection() {
               />
               <Play className="relative h-3 w-3 fill-current transition-transform duration-300 group-hover:translate-x-0.5" />
             </span>
-            Watch video
+            {t('hero.ctaVideo')}
           </MagneticButton>
         </motion.div>
 
@@ -351,7 +354,7 @@ export function HeroSection() {
                 letterSpacing: '-0.01em',
               }}
             >
-              Built with quality managers from Tunisia&apos;s export industry.
+              {t('hero.socialProof')}
             </span>
           </div>
         </motion.div>

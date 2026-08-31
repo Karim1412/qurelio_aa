@@ -2,118 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { ChevronDown } from '@/components/icons';
-
-type QA = { q: string; a: React.ReactNode };
-
-const faqs: QA[] = [
-  {
-    q: 'Is the regulatory content safe to use in a regulated environment?',
-    a: (
-      <p>
-        Qurelio ingests only <strong>public, freely reusable legal texts</strong>. Every regulation in
-        your workspace displays its source URL and its legal status, so you can verify it yourself at
-        any time. Licensed standards — ISO, IEC and equivalents — are automatically detected on upload
-        and are never stored, never embedded, and never sent to an AI model. That is enforced by the
-        platform&rsquo;s architecture, not by policy. Where a standard you need is licensed, Qurelio
-        tells you which one to acquire and lets you work from your own copy.
-      </p>
-    ),
-  },
-  {
-    q: 'How does Qurelio handle AI outputs in a regulated environment?',
-    a: (
-      <>
-        <p>
-          Every AI output carries a visible AI disclosure and is created in{' '}
-          <strong>Quarantine</strong>. Nothing an AI produces becomes executable until your Quality
-          Manager reviews it and accepts it — with edit, accept and reject controls and a full
-          transition history of who accepted what, and when. Qurelio never makes an autonomous
-          compliance decision, and every finding cites the passage of the source text it came from.
-        </p>
-        <p>
-          The AI helps you work faster. You remain responsible. That is exactly what your auditors
-          expect.
-        </p>
-      </>
-    ),
-  },
-  {
-    q: 'What happens to our compliance data?',
-    a: (
-      <p>
-        Your data is isolated in a dedicated tenant environment — no other Qurelio client can reach
-        your products, regulatory profiles, gap analyses or audit records. We sign a Data Processing
-        Agreement before any data enters the system, and the audit trail is append-only. Your
-        documents are never used to train a model.
-      </p>
-    ),
-  },
-  {
-    q: 'Why is the compliance engine included in every plan?',
-    a: (
-      <p>
-        Because it is the reason to use Qurelio. Plans differ by how much you run through it — how
-        many products, regulations and evaluation runs — not by whether you get it at all. A Starter
-        customer analyses two regulations against three products; an Enterprise customer runs an
-        entire multi-site portfolio. Same engine, same guardrails, same audit trail.
-      </p>
-    ),
-  },
-  {
-    q: 'Can I upgrade or downgrade my plan?',
-    a: (
-      <p>
-        Yes. Upgrade at any time — the difference is prorated from your current billing period.
-        Downgrades take effect at the next renewal date. Enterprise clients should speak to their
-        Customer Success Manager directly.
-      </p>
-    ),
-  },
-  {
-    q: 'Is there a free trial, and do you charge for onboarding?',
-    a: (
-      <>
-        <p>
-          Starter and Professional include a 14-day free trial, no credit card required. Enterprise
-          clients receive a 30-day proof of concept built around their own regulatory context and
-          product portfolio.
-        </p>
-        <p>
-          Onboarding is included in every plan at no extra charge — we assist every client personally,
-          regardless of plan. We do not charge implementation fees.
-        </p>
-      </>
-    ),
-  },
-  {
-    q: 'What is the Early Access Pilot programme?',
-    a: (
-      <p>
-        An early-access programme open worldwide — the first five manufacturers to join, from any
-        country. Pilot clients get the <strong>complete Professional plan</strong> at €6,000 / year,
-        with priority for adding their national regulatory sources to the monitored registry — each
-        source subject to legal clearance before it goes live. The interface is FR/EN today; Arabic is
-        on the roadmap. Standard Professional pricing applies from client 6 onward. After the pilot,
-        scope can be customised — users, modules, and regulations adapted to your exact quality
-        system. Write to contact@qurelio.com to apply.
-      </p>
-    ),
-  },
-  {
-    q: 'Can the plan be customised after the pilot?',
-    a: (
-      <p>
-        Yes — and that is the point of the pilot. After your onboarding period, Early Access clients
-        and Enterprise clients can adjust scope with us: the number of users, the modules active in
-        their workspace, the regulatory sources being monitored, and the add-on dimensions (products,
-        regulations, evaluation runs). We scope the arrangement to your actual quality system — not to
-        a fixed tier. Contact your onboarding contact or write to contact@qurelio.com to discuss.
-      </p>
-    ),
-  },
-];
+import { useI18n, Rich } from '@/i18n';
 
 export function PricingFAQ() {
+  const { t, tRich, m } = useI18n();
+  const faqs = m.faq.items;
   const sectionRef = useRef<HTMLElement | null>(null);
   const [inView, setInView] = useState(false);
   const [open, setOpen] = useState<number | null>(null);
@@ -285,14 +178,12 @@ export function PricingFAQ() {
       <section
         ref={sectionRef}
         className={`faq-root${inView ? ' is-in-view' : ''}`}
-        aria-label="Pricing questions"
+        aria-label={t('faq.sectionLabel')}
         id="pricing-faq"
       >
         <div className="faq-inner">
-          <p className="faq-eyebrow">Questions</p>
-          <h2 className="faq-heading">
-            What RA &amp; QA teams <em>ask us first</em>
-          </h2>
+          <p className="faq-eyebrow">{t('faq.eyebrow')}</p>
+          <h2 className="faq-heading">{tRich('faq.heading')}</h2>
 
           <div className="faq-list">
             {faqs.map((faq, i) => {
@@ -321,7 +212,13 @@ export function PricingFAQ() {
                     aria-labelledby={`faq-btn-${i}`}
                   >
                     <div className="faq-a-inner">
-                      <div>{faq.a}</div>
+                      <div>
+                        {faq.a.map((_, pi) => (
+                          <p key={pi}>
+                            <Rich k={`faq.items.${i}.a.${pi}`} />
+                          </p>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>

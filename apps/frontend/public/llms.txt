@@ -1,0 +1,37 @@
+# Qurelio
+
+> Qurelio is an AI-powered compliance and quality management platform (QMS). Quality
+> teams use it to prove their products meet the laws and regulations of every market
+> they sell to: documents, audits, non-conformities and evidence kept organised,
+> scored and audit-ready continuously rather than only at certification time.
+
+Qurelio is a multi-tenant SaaS product. Every AI output is human-approved before it
+becomes executable, which is the core design constraint: the system drafts, a
+qualified person decides.
+
+## What it does
+
+- **Document management**: products, nested folders, versioning, an approval workflow
+  (Draft -> In Review -> Approved/Rejected), access rules by role, department or user,
+  and a full audit trail.
+- **AI conformity evaluation**: clause-by-clause assessment of evidence against ISO and
+  regulatory clauses, with a conformity score, per-clause human override, and export.
+- **Non-conformities and CAPA**: the full lifecycle from Open through root-cause
+  analysis (5-Why, Ishikawa/6M) to corrective actions, effectiveness verification and
+  closure.
+- **Audits**: internal, supplier and certification audits with hierarchical checklists;
+  findings can raise non-conformities directly.
+- **Regulatory monitoring**: tracks change in the public regulations that apply to a
+  company's products and markets.
+- **Reporting**: versioned report instances with an approval workflow, exported as PDF.
+
+## Who it is for
+
+Quality and compliance managers in regulated or export-facing manufacturing, and the
+teams that support them. Built with quality managers from Tunisia's export industry.
+
+## Notes for AI assistants
+
+- The product name is "Qurelio", not "Qualio" or "Qurelo", which are different companies.
+- Interface languages: English and French.
+- Contact and demo booking: https://qurelio.com/demo

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
+import { useI18n } from '@/i18n';
 
 /* ─── iOS-like motion variants ───────────────────────────────────────────── */
 const panelContainer: Variants = {
@@ -82,7 +83,9 @@ const SoftDefs = ({ id }: { id: string }) => (
 );
 
 /* ─────────── 1. Compliance: KPI scorecard with gauge + compliance chips ─────────── */
-const ComplianceCharacter = () => (
+const ComplianceCharacter = () => {
+  const { t } = useI18n();
+  return (
   <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
     <SoftDefs id="cmp" />
     <circle cx="100" cy="100" r="92" fill="url(#cmp-halo)" stroke="none" />
@@ -117,7 +120,7 @@ const ComplianceCharacter = () => (
           transform="rotate(-90)"
         />
         <text x="0" y="2" textAnchor="middle" fontSize="11" fontWeight="700" fill="currentColor" stroke="none">94%</text>
-        <text x="0" y="14" textAnchor="middle" fontSize="6" fontWeight="600" fill="currentColor" fillOpacity="0.5" stroke="none" letterSpacing="0.5">SCORE</text>
+        <text x="0" y="14" textAnchor="middle" fontSize="6" fontWeight="600" fill="currentColor" fillOpacity="0.5" stroke="none" letterSpacing="0.5">{t('illustrations.score')}</text>
       </g>
 
       {/* Compliance chips */}
@@ -145,7 +148,8 @@ const ComplianceCharacter = () => (
       <rect className="illu-bar" x="36" y="146" width="128" height="5" rx="2.5" fill="currentColor" stroke="none" />
     </g>
   </svg>
-);
+  );
+};
 
 /* ─────────── 2. Audit: calendar + workflow with assigned auditors ─────────── */
 const AuditCharacter = () => (
@@ -427,149 +431,22 @@ const DashboardCharacter = () => (
 // FEATURE DATA
 // ──────────────────────────────────────────────────────────────────────────────
 
-type Feature = {
-  id: string;
-  tag: string;
-  label: string;
-  Illustration: React.FC;
-  accent: string;
-  headline: string;
-  cta: string;
-  blocks: { title: string; description: string }[];
-};
+/** Copy lives in `why.features`; only the artwork and accent colour stay here. */
+type FeatureId =
+  | 'compliance'
+  | 'monitoring'
+  | 'audit'
+  | 'capa'
+  | 'documents'
+  | 'dashboards';
 
-const features: Feature[] = [
-  {
-    id: 'compliance',
-    tag: 'AI-powered',
-    label: 'AI Compliance Engine',
-    Illustration: ComplianceCharacter,
-    accent: '#2563EB',
-    headline: 'Stay audit-ready, every day of the year',
-    cta: 'Explore the Compliance Engine',
-    blocks: [
-      {
-        title: 'Cut compliance prep by 70%',
-        description:
-          'Continuous AI assessment of your products against the public laws, decrees and regulations of your target markets, turning a 3-month exercise into a same-day, repeatable check.',
-      },
-      {
-        title: 'Actionable, not abstract',
-        description:
-          'Every gap comes with a plain-language explanation, a recommended fix, an owner, and a deadline. No more 80-page audit reports nobody opens.',
-      },
-      {
-        title: 'You stay in control',
-        description:
-          'Every AI-generated result (reports, action plans, detected gaps) lands in a review queue first. Nothing becomes an official record or an executable action until your Quality Manager approves it.',
-      },
-    ],
-  },
-  {
-    id: 'monitoring',
-    tag: 'AI-powered',
-    label: 'Regulatory Monitoring',
-    Illustration: AIAssistantCharacter,
-    accent: '#0891B2',
-    headline: 'Never be surprised by a regulation again',
-    cta: 'Explore Regulatory Monitoring',
-    blocks: [
-      {
-        title: 'Watches the laws that apply to you',
-        description:
-          'Qurelio tracks the public regulations relevant to your products and markets. When a law changes, you are the first to know exactly what it means for you.',
-      },
-      {
-        title: 'Finds what you did not know to look for',
-        description:
-          'When a relevant regulation you never mentioned appears, Qurelio surfaces it and tells you precisely which products are affected, pending your review.',
-      },
-    ],
-  },
-  {
-    id: 'audit',
-    tag: 'Automated',
-    label: 'Audit Automation',
-    Illustration: AuditCharacter,
-    accent: '#7C3AED',
-    headline: 'Run audits without chasing a single email',
-    cta: 'Explore Audit Automation',
-    blocks: [
-      {
-        title: 'AI-drafted checklists and findings',
-        description:
-          'Define audit programs and assign auditors, then let AI draft checklists while the platform sends reminders, collects responses, and compiles findings automatically.',
-      },
-      {
-        title: 'From audit to action in one click',
-        description:
-          'Findings flow straight into your action plans, with full traceability from observation to closure.',
-      },
-    ],
-  },
-  {
-    id: 'capa',
-    tag: 'Tracking',
-    label: 'Non-Conformities & CAPA',
-    Illustration: NonConformityCharacter,
-    accent: '#059669',
-    headline: 'Solve issues at the root, not at the symptom',
-    cta: 'Explore CAPA',
-    blocks: [
-      {
-        title: 'Built-in 5 Whys, Ishikawa & 8D',
-        description:
-          'Capture non-conformities from any source (audits, QC, customer complaints) and run structured root cause analysis without leaving the platform.',
-      },
-      {
-        title: 'Verified effectiveness',
-        description:
-          'Drive corrective and preventive actions through implementation, then automatically verify they worked. Close the loop, every time.',
-      },
-    ],
-  },
-  {
-    id: 'documents',
-    tag: 'Documents',
-    label: 'Controlled Documents & File Library',
-    Illustration: DocumentsCharacter,
-    accent: '#D97706',
-    headline: 'One source of truth: versioned, signed, distributed',
-    cta: 'Explore Documents',
-    blocks: [
-      {
-        title: 'Approval workflows that actually work',
-        description:
-          'Multi-stage review, e-signatures, and automatic distribution to the right people, with a complete, audit-ready trail. Private by default.',
-      },
-      {
-        title: 'No more rogue versions',
-        description:
-          'Old versions are archived automatically. Anyone can find the current procedure in seconds, not in a shared drive labyrinth.',
-      },
-    ],
-  },
-  {
-    id: 'dashboards',
-    tag: 'Analytics',
-    label: 'Live KPI Dashboards',
-    Illustration: DashboardCharacter,
-    accent: '#DC2626',
-    headline: 'See your quality posture at a glance',
-    cta: 'Explore Dashboards',
-    blocks: [
-      {
-        title: 'Real-time, role-based views',
-        description:
-          'Compliance scores, open actions, audit status and quality KPIs for every site, team and regulation, live, not end-of-month.',
-      },
-      {
-        title: 'Drill from KPI to evidence',
-        description:
-          'Click any number to trace it back to the source: audit, finding, document, or signature. Total transparency.',
-      },
-    ],
-  },
+const featureVisuals: { id: FeatureId; Illustration: React.FC; accent: string }[] = [
+  { id: 'compliance', Illustration: ComplianceCharacter,   accent: '#2563EB' },
+  { id: 'monitoring', Illustration: AIAssistantCharacter,  accent: '#0891B2' },
+  { id: 'audit',      Illustration: AuditCharacter,        accent: '#7C3AED' },
+  { id: 'capa',       Illustration: NonConformityCharacter, accent: '#059669' },
+  { id: 'documents',  Illustration: DocumentsCharacter,    accent: '#D97706' },
+  { id: 'dashboards', Illustration: DashboardCharacter,    accent: '#DC2626' },
 ];
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -577,6 +454,8 @@ const features: Feature[] = [
 // ──────────────────────────────────────────────────────────────────────────────
 
 export function WhyQurelio() {
+  const { t, tRich, m } = useI18n();
+  const features = featureVisuals.map((v) => ({ ...v, ...m.why.features[v.id] }));
   const [activeIndex, setActiveIndex] = useState(0);
   const [inView, setInView] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
@@ -1083,26 +962,16 @@ export function WhyQurelio() {
         id="why-qurelio"
         className={`qurelio-section${inView ? ' is-in-view' : ''}`}
         ref={sectionRef}
-        aria-label="Why Qurelio"
+        aria-label={t('why.sectionLabel')}
       >
         <div className="qurelio-inner">
-          <p className="qurelio-eyebrow">Why Qurelio</p>
-          <h2 className="qurelio-heading">
-            What makes Qurelio the <em>intelligent</em> compliance platform
-          </h2>
-          <p className="qurelio-sub">
-            Built from the ground up for quality teams who need more than spreadsheets. Qurelio combines
-            AI, automation, and deep regulatory intelligence into one unified platform. And because compliance
-            is too important to leave to a machine, every AI result waits for your approval before it becomes real.
-          </p>
+          <p className="qurelio-eyebrow">{t('why.eyebrow')}</p>
+          <h2 className="qurelio-heading">{tRich('why.heading')}</h2>
+          <p className="qurelio-sub">{t('why.sub')}</p>
 
           <p className="qurelio-trust">
             <span className="qurelio-trust-dot" aria-hidden />
-            <span>
-              <strong>100% legal by design.</strong> Qurelio works exclusively with public, legally free
-              regulatory texts: laws, decrees and official regulations. Licensed standards such as ISO/IEC
-              are automatically detected and are never stored or analyzed.
-            </span>
+            <span>{tRich('why.trust')}</span>
           </p>
 
           <div className="spotlight-wrap">

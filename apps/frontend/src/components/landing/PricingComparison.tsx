@@ -1,141 +1,17 @@
 'use client';
 
 import { Fragment, useEffect, useRef, useState } from 'react';
+import { useI18n } from '@/i18n';
 
 /** true → included · false → not included · string → a qualified value */
 type Cell = boolean | string;
 
-type Row = { label: string; cells: [Cell, Cell, Cell, Cell] };
-type Group = { title: string; rows: Row[] };
-
-const columns = [
-  { name: 'Early Access', price: '€6,000 / yr' },
-  { name: 'Starter', price: '€9,600 / yr' },
-  { name: 'Professional', price: '€24,000 / yr' },
-  { name: 'Enterprise', price: 'On request' },
-];
-
 /** index of the highlighted column (Professional) */
 const HL = 2;
 
-const groups: Group[] = [
-  {
-    title: 'Scope',
-    rows: [
-      { label: 'Users', cells: ['5 · worldwide', '3', '10', 'Unlimited'] },
-      { label: 'Products in registry', cells: ['25', '3', '25', 'Unlimited'] },
-      { label: 'Active regulations', cells: ['Unlimited', '2', 'Unlimited', 'Unlimited'] },
-      { label: 'AI evaluation runs / year', cells: ['Fair use', '4', 'Fair use', 'Unlimited'] },
-      { label: 'Sites / legal entities', cells: ['3', '1', '3', 'Unlimited'] },
-    ],
-  },
-  {
-    title: 'Pillar 1 — Context & Memory',
-    rows: [
-      { label: 'Onboarding wizard & organizational profile', cells: [true, true, true, true] },
-      { label: 'Product folder ingestion → Compliance Memory', cells: [true, true, true, true] },
-      { label: 'Product Registry & regulatory profile', cells: [true, true, true, true] },
-      { label: 'OCR & text extraction', cells: [true, true, true, true] },
-    ],
-  },
-  {
-    title: 'Pillar 2 — Compliance Engine',
-    rows: [
-      { label: 'Public-regulation upload & analysis', cells: [true, true, true, true] },
-      { label: 'Obligation extraction, cited to the source passage', cells: [true, true, true, true] },
-      { label: 'Obligations Register + liability acceptance', cells: [true, true, true, true] },
-      { label: 'Gap list & evidence mapping', cells: [true, true, true, true] },
-      { label: 'Compliance score (criticality-weighted)', cells: [true, true, true, 'Configurable'] },
-      { label: '5-level maturity model', cells: [true, true, true, 'Configurable'] },
-      { label: 'Confidence indicators on every AI output', cells: [true, true, true, true] },
-      {
-        label: 'Re-evaluation & score history',
-        cells: ['+ automatic', 'On demand', '+ automatic', '+ automatic'],
-      },
-      { label: 'AI-suggested NCs & CAPAs from gaps', cells: [true, true, true, true] },
-    ],
-  },
-  {
-    title: 'Pillar 3 — Regulatory Monitoring',
-    rows: [
-      { label: 'Monitored source registry', cells: [true, false, true, true] },
-      { label: 'Scheduled change detection (cosmetic changes filtered)', cells: [true, false, true, true] },
-      { label: 'Impact analysis on your obligations & scores', cells: [true, false, true, true] },
-      { label: 'Missing-regulation detection', cells: [true, false, true, true] },
-      { label: 'Severity-based alerts', cells: [true, false, true, true] },
-    ],
-  },
-  {
-    title: 'Pillar 4 — Quality Operations',
-    rows: [
-      { label: 'File Library — versioning, approval, ACL, search', cells: [true, true, true, true] },
-      { label: 'Non-Conformities', cells: [true, true, true, true] },
-      { label: 'CAPA lifecycle & effectiveness verification', cells: [true, true, true, true] },
-      { label: 'Internal audits, checklists, findings → NC', cells: [true, true, true, true] },
-      { label: 'Root-cause: 5-Whys · Ishikawa', cells: [true, true, true, true] },
-      { label: 'Root-cause: 8D', cells: [true, false, true, true] },
-      { label: 'Action Plan Center · Kanban · calendar', cells: [true, true, true, true] },
-      { label: 'Training portal & competency matrix', cells: [true, true, true, true] },
-      { label: 'Supplier Quality — AVL, scorecards, SCAR', cells: [false, false, false, true] },
-      { label: 'External Supplier Portal', cells: [false, false, false, true] },
-      {
-        label: 'Management Review · Change Control · Calibration · CSAT · HSE',
-        cells: [false, false, false, true],
-      },
-    ],
-  },
-  {
-    title: 'Pillar 5 — Intelligence & Control',
-    rows: [
-      { label: 'Legal Guardrail — pre-upload liability consent', cells: [true, true, true, true] },
-      { label: 'Legal Guardrail — licensed-standard detection & block', cells: [true, true, true, true] },
-      { label: 'HITL Quarantine on every AI output', cells: [true, true, true, true] },
-      { label: 'AI disclosure label on every AI output', cells: [true, true, true, true] },
-      { label: 'Quarantine inbox & transition history', cells: [true, true, true, true] },
-      { label: 'Qurelio AI Assistant (cited, tenant-scoped)', cells: [true, false, true, true] },
-      {
-        label: 'Dashboard & KPIs',
-        cells: ['Full + heatmap', 'Standard', 'Full + heatmap', 'Full + consolidated'],
-      },
-      { label: 'Audit-readiness score', cells: [true, false, true, true] },
-      { label: 'Drill-down & date filtering', cells: [true, false, true, true] },
-    ],
-  },
-  {
-    title: 'Reporting & export',
-    rows: [
-      { label: 'PDF scorecard', cells: [true, false, true, '+ branded'] },
-      { label: 'Excel / PowerPoint export', cells: [true, false, true, '+ branded'] },
-      { label: 'Audit-Readiness Dossier', cells: [true, false, true, true] },
-    ],
-  },
-  {
-    title: 'Platform & security',
-    rows: [
-      { label: 'Roles', cells: ['5', '3', '5', 'Custom'] },
-      { label: 'Scoped External Auditor access', cells: [false, false, false, true] },
-      { label: 'SSO — Google · Microsoft · SAML', cells: [false, false, false, true] },
-      { label: 'Tenant data isolation', cells: [true, true, true, true] },
-      { label: 'Append-only audit trail', cells: [true, true, true, true] },
-      { label: 'Audit-log export & retention configuration', cells: [false, false, false, true] },
-      { label: 'Public API & webhooks', cells: [false, false, false, true] },
-      { label: 'Interface languages', cells: ['FR · EN', 'FR · EN', 'FR · EN', 'FR · EN'] },
-    ],
-  },
-  {
-    title: 'Support & onboarding',
-    rows: [
-      {
-        label: 'Onboarding',
-        cells: ['Dedicated', 'Self-service', '2 sessions', 'Full programme'],
-      },
-      { label: 'Support', cells: ['Priority email', 'Email · 48h', 'Email + chat', 'CSM + SLA'] },
-      { label: 'Trial', cells: ['Negotiated', '14 days', '14 days', '30-day POC'] },
-    ],
-  },
-];
-
 export function PricingComparison() {
+  const { t, tRich, m } = useI18n();
+  const { columns, groups } = m.compare;
   const sectionRef = useRef<HTMLElement | null>(null);
   const [inView, setInView] = useState(false);
 
@@ -367,24 +243,20 @@ export function PricingComparison() {
       <section
         ref={sectionRef}
         className={`cmp-root${inView ? ' is-in-view' : ''}`}
-        aria-label="Plan comparison"
+        aria-label={t('compare.sectionLabel')}
         id="compare"
       >
         <div className="cmp-inner">
-          <p className="cmp-eyebrow">Compare</p>
-          <h2 className="cmp-heading">
-            Every feature, <em>every plan</em>
-          </h2>
-          <p className="cmp-sub">
-            Organised by the five pillars of the platform. Scroll horizontally on smaller screens.
-          </p>
+          <p className="cmp-eyebrow">{t('compare.eyebrow')}</p>
+          <h2 className="cmp-heading">{tRich('compare.heading')}</h2>
+          <p className="cmp-sub">{t('compare.sub')}</p>
 
           <div className="cmp-legend">
             <span>
-              <b className="yes">✓</b> included
+              <b className="yes">✓</b> {t('compare.legendIncluded')}
             </span>
             <span>
-              <b className="no">✗</b> not included
+              <b className="no">✗</b> {t('compare.legendNotIncluded')}
             </span>
           </div>
 
@@ -392,7 +264,7 @@ export function PricingComparison() {
             <table className="cmp-tbl">
               <thead>
                 <tr>
-                  <th scope="col">Feature</th>
+                  <th scope="col">{t('compare.featureColumn')}</th>
                   {columns.map((col, i) => (
                     <th key={col.name} scope="col" className={i === HL ? 'hl' : undefined}>
                       {col.name}
@@ -413,7 +285,11 @@ export function PricingComparison() {
                         {row.cells.map((cell, i) => (
                           <td key={i} className={cellClass(cell, i)}>
                             {typeof cell === 'boolean' ? (
-                              <span aria-label={cell ? 'included' : 'not included'}>
+                              <span
+                                aria-label={
+                                  cell ? t('compare.ariaIncluded') : t('compare.ariaNotIncluded')
+                                }
+                              >
                                 {cell ? '✓' : '✗'}
                               </span>
                             ) : (
@@ -428,7 +304,7 @@ export function PricingComparison() {
               </tbody>
             </table>
           </div>
-          <p className="cmp-scroll-hint">Scroll the table sideways to see every plan →</p>
+          <p className="cmp-scroll-hint">{t('compare.scrollHint')}</p>
         </div>
       </section>
     </>

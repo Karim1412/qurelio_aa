@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, KeyRound, Eye, EyeOff } from '@/components/icons';
@@ -14,25 +14,51 @@ import { authApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { zPasswordPolicy } from '@/lib/account-validation';
-import { toastFirstFieldError } from '@/lib/form-errors';
+import {
+  createPasswordPolicy,
+  type AccountValidationMessages,
+} from '@/lib/account-validation';
+import { createFieldErrorToast } from '@/lib/form-errors';
+import { useI18n } from '@/i18n';
 
-const schema = z
-  .object({
-    code: z.string().min(6, 'Enter the code from email'),
-    newPassword: zPasswordPolicy,
-    confirmPassword: z.string(),
-  })
-  .refine((d) => d.newPassword === d.confirmPassword, {
-    message: "Passwords don't match",
-    path: ['confirmPassword'],
-  });
-type FormData = z.infer<typeof schema>;
+interface SchemaMessages extends AccountValidationMessages {
+  code: string;
+  passwordMismatch: string;
+}
+
+function buildSchema(messages: SchemaMessages) {
+  return z
+    .object({
+      code: z.string().min(6, messages.code),
+      newPassword: createPasswordPolicy(messages),
+      confirmPassword: z.string(),
+    })
+    .refine((d) => d.newPassword === d.confirmPassword, {
+      message: messages.passwordMismatch,
+      path: ['confirmPassword'],
+    });
+}
+type FormData = z.infer<ReturnType<typeof buildSchema>>;
 
 export default function ResetPasswordPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const schema = useMemo(
+    () =>
+      buildSchema({
+        code: t('auth.resetPassword.errors.code'),
+        passwordMismatch: t('auth.resetPassword.errors.passwordMismatch'),
+        passwordMin: t('auth.validation.passwordMin'),
+        passwordMax: t('auth.validation.passwordMax'),
+        passwordComplexity: t('auth.validation.passwordComplexity'),
+        phoneRequired: t('auth.validation.phoneRequired'),
+        phoneInvalid: t('auth.validation.phoneInvalid'),
+      }),
+    [t],
+  );
 
   const {
     register,
@@ -48,12 +74,12 @@ export default function ResetPasswordPage() {
     setLoading(true);
     try {
       await authApi.resetPassword({ token: '', ...data });
-      toast.success('Password reset successfully!');
+      toast.success(t('auth.resetPassword.success'));
       router.push('/auth/login');
     } catch (err: unknown) {
       toast.error(
         (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-          'Reset failed. Please try again.'
+          t('auth.resetPassword.error')
       );
     } finally {
       setLoading(false);
@@ -68,7 +94,7 @@ export default function ResetPasswordPage() {
           className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--muted)] transition-hover hover:text-[var(--text-primary)]"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back
+          {t('auth.resetPassword.back')}
         </Link>
         <div className="flex justify-end">
           <QurelioLogo height={28} />
@@ -86,17 +112,22 @@ export default function ResetPasswordPage() {
             <KeyRound className="h-8 w-8 text-[var(--brand-primary)]" />
           </div>
 
-          <h1 className="mb-2 text-2xl font-bold text-[var(--text-primary)]">Set new password</h1>
-          <p className="mb-6 text-sm text-[var(--muted)]">Enter the code from your email and create a new password.</p>
+          <h1 className="mb-2 text-2xl font-bold text-[var(--text-primary)]">
+            {t('auth.resetPassword.title')}
+          </h1>
+          <p className="mb-6 text-sm text-[var(--muted)]">{t('auth.resetPassword.sub')}</p>
 
-          <form className="space-y-4 text-left" onSubmit={handleSubmit(onSubmit, toastFirstFieldError)}>
+          <form className="space-y-4 text-left" onSubmit={handleSubmit(
+              onSubmit,
+              createFieldErrorToast(t('auth.validation.fixHighlighted')),
+            )}>
             <div>
-              <Label htmlFor="code">Code from email</Label>
+              <Label htmlFor="code">{t('auth.resetPassword.codeLabel')}</Label>
               <Input id="code" {...register('code')} />
               {errors.code && <p className="mt-1 text-xs text-red-600">{errors.code.message}</p>}
             </div>
             <div>
-              <Label htmlFor="newPassword">New password</Label>
+              <Label htmlFor="newPassword">{t('auth.resetPassword.newPasswordLabel')}</Label>
               <div className="relative">
                 <Input
                   id="newPassword"
@@ -108,30 +139,30 @@ export default function ResetPasswordPage() {
                   type="button"
                   className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-[var(--muted)]"
                   onClick={() => setShowPwd(!showPwd)}
-                  aria-label="Toggle password"
+                  aria-label={t('auth.resetPassword.togglePassword')}
                 >
                   {showPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
               {errors.newPassword && <p className="mt-1 text-xs text-red-600">{errors.newPassword.message}</p>}
               <p className="mt-1 text-xs text-[var(--muted)]">
-                8–128 characters, with uppercase, lowercase, a number, and a special character.
+                {t('auth.resetPassword.passwordHint')}
               </p>
             </div>
             <div>
-              <Label htmlFor="confirmPassword">Confirm new password</Label>
+              <Label htmlFor="confirmPassword">{t('auth.resetPassword.confirmPasswordLabel')}</Label>
               <Input id="confirmPassword" type={showPwd ? 'text' : 'password'} {...register('confirmPassword')} />
               {errors.confirmPassword && (
                 <p className="mt-1 text-xs text-red-600">{errors.confirmPassword.message}</p>
               )}
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Resetting…' : 'Set new password'}
+              {loading ? t('auth.resetPassword.submitting') : t('auth.resetPassword.submit')}
             </Button>
           </form>
 
           <Link href="/auth/login" className="mt-6 inline-block text-sm text-[var(--muted)] hover:text-[var(--text-primary)]">
-            Return to sign in
+            {t('auth.resetPassword.returnToSignIn')}
           </Link>
         </motion.div>
       </div>

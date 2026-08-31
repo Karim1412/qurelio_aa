@@ -4,7 +4,8 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Check } from '@/components/icons';
-import { useTranslation, type Lang } from './TranslationProvider';
+import { useI18n } from '@/i18n';
+import type { Locale } from '@/i18n';
 
 function FlagGB({ className }: { className?: string }) {
   return (
@@ -36,28 +37,18 @@ function FlagFR({ className }: { className?: string }) {
   );
 }
 
-function FlagES({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 6 4" className={className} aria-hidden preserveAspectRatio="xMidYMid slice">
-      <rect width="6" height="4" fill="#AA151B" />
-      <rect width="6" height="2" y="1" fill="#F1BF00" />
-    </svg>
-  );
-}
-
 const LANGS: {
-  code: Lang;
-  label: string;
+  code: Locale;
+  labelKey: 'common.english' | 'common.french';
   short: string;
   Flag: React.ComponentType<{ className?: string }>;
 }[] = [
-  { code: 'en', label: 'English',  short: 'EN', Flag: FlagGB },
-  { code: 'fr', label: 'Français', short: 'FR', Flag: FlagFR },
-  { code: 'es', label: 'Español',  short: 'ES', Flag: FlagES },
+  { code: 'en', labelKey: 'common.english', short: 'EN', Flag: FlagGB },
+  { code: 'fr', labelKey: 'common.french',  short: 'FR', Flag: FlagFR },
 ];
 
 export function LanguageToggle({ compact = false }: { compact?: boolean }) {
-  const { lang, setLang, isTranslating } = useTranslation();
+  const { locale, setLocale, t } = useI18n();
   const [open, setOpen] = useState(false);
   // Tracks whether the dropdown is closing because the user picked an option
   // (→ iOS "tab close" exit) versus closing via outside-click / Esc (→ normal exit).
@@ -67,7 +58,7 @@ export function LanguageToggle({ compact = false }: { compact?: boolean }) {
   const menuRef = useRef<HTMLUListElement>(null);
   const [menuPos, setMenuPos] = useState<{ top: number; right: number } | null>(null);
 
-  const current = LANGS.find((l) => l.code === lang) ?? LANGS[0];
+  const current = LANGS.find((l) => l.code === locale) ?? LANGS[0];
 
   useEffect(() => setMounted(true), []);
 
@@ -122,8 +113,8 @@ export function LanguageToggle({ compact = false }: { compact?: boolean }) {
     };
   }, [open]);
 
-  const handleSelect = (code: Lang) => {
-    if (code !== lang) setLang(code);
+  const handleSelect = (code: Locale) => {
+    if (code !== locale) setLocale(code);
     setClosingViaSelect(true);
     setOpen(false);
   };
@@ -156,8 +147,7 @@ export function LanguageToggle({ compact = false }: { compact?: boolean }) {
         <motion.ul
           ref={menuRef}
           role="listbox"
-          aria-label="Language"
-          data-no-translate
+          aria-label={t('common.language')}
           initial={{ opacity: 0, scale: 0.86, y: -8, filter: 'blur(4px)' }}
           animate={{
             opacity: 1,
@@ -177,7 +167,7 @@ export function LanguageToggle({ compact = false }: { compact?: boolean }) {
           className="min-w-[180px] overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]/95 p-1 shadow-[0_18px_50px_-18px_rgba(15,23,42,0.28),0_2px_8px_-2px_rgba(15,23,42,0.08)] backdrop-blur-xl"
         >
           {LANGS.map((l, i) => {
-            const active = l.code === lang;
+            const active = l.code === locale;
             const Flag = l.Flag;
             return (
               <motion.li
@@ -197,20 +187,19 @@ export function LanguageToggle({ compact = false }: { compact?: boolean }) {
                   type="button"
                   role="option"
                   aria-selected={active}
-                  disabled={isTranslating && !active}
                   onClick={() => handleSelect(l.code)}
                   className={[
                     'flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-sm transition-colors',
                     active
                       ? 'bg-[var(--brand-primary)]/10 text-[var(--brand-primary)]'
                       : 'text-[var(--text-primary)] hover:bg-[var(--brand-primary)]/8',
-                    isTranslating && !active ? 'cursor-wait opacity-60' : 'cursor-pointer',
+                    'cursor-pointer',
                   ].join(' ')}
                 >
                   <span className="relative inline-flex h-5 w-5 shrink-0 items-center justify-center overflow-hidden rounded-full ring-1 ring-black/10">
                     <Flag className="absolute inset-0 h-full w-full" />
                   </span>
-                  <span className="flex-1 font-medium">{l.label}</span>
+                  <span className="flex-1 font-medium">{t(l.labelKey)}</span>
                   <AnimatePresence>
                     {active && (
                       <motion.span
@@ -235,13 +224,13 @@ export function LanguageToggle({ compact = false }: { compact?: boolean }) {
   );
 
   return (
-    <div data-no-translate className="relative inline-flex">
+    <div className="relative inline-flex">
       <button
         ref={triggerRef}
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label={`Language: ${current.label}`}
+        aria-label={`${t('common.language')}: ${t(current.labelKey)}`}
         onClick={() => {
           setClosingViaSelect(false);
           setOpen((o) => !o);
@@ -270,11 +259,6 @@ export function LanguageToggle({ compact = false }: { compact?: boolean }) {
         >
           <ChevronDown className="h-3 w-3 text-[var(--muted)]" />
         </motion.span>
-        {isTranslating && (
-          <span aria-hidden className="ml-0.5 inline-flex h-2.5 w-2.5">
-            <span className="h-2.5 w-2.5 animate-spin rounded-full border border-[var(--brand-primary)]/40 border-t-[var(--brand-primary)]" />
-          </span>
-        )}
       </button>
 
       {mounted && createPortal(menu, document.body)}

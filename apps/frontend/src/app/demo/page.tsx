@@ -8,6 +8,7 @@ import { demoApi, type DemoSlotPublic } from '@/lib/api';
 import { DemoBookingModal } from '@/components/demo/DemoBookingModal';
 import { EA_RESPONSE_HOURS as DEMO_RESPONSE_HOURS } from '@/components/demo/demo-form-options';
 import { cn } from '@/utils/cn';
+import { useI18n, Rich } from '@/i18n';
 
 /** Local calendar-day key (YYYY-MM-DD): slots are grouped in the visitor's timezone. */
 function dayKey(d: Date): string {
@@ -34,9 +35,9 @@ function monthGrid(month: Date): Date[] {
   });
 }
 
-const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
 export default function BookDemoPage() {
+  const { t, m, intlLocale } = useI18n();
+  const weekdays = m.demo.page.weekdays;
   const [slots, setSlots] = useState<DemoSlotPublic[]>([]);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
@@ -100,30 +101,27 @@ export default function BookDemoPage() {
           <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
             <Calendar className="h-7 w-7" />
           </div>
-          <h1 className="text-xl font-bold text-[var(--text-primary)]">Request sent</h1>
+          <h1 className="text-xl font-bold text-[var(--text-primary)]">{t('demo.page.sentTitle')}</h1>
           <p className="mt-2 text-sm text-[var(--muted)]">
-            We have your request for{' '}
-            <span className="font-semibold text-[var(--text-primary)]">
-              {new Date(booked.slot.startsAt).toLocaleString(undefined, {
-                weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit',
-              })}
-            </span>
-            . Our team will confirm by email within {DEMO_RESPONSE_HOURS} hours, and the slot is held
-            for you until then.
+            <Rich
+              k="demo.page.sentBody"
+              vars={{
+                slot: new Date(booked.slot.startsAt).toLocaleString(intlLocale, {
+                  weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit',
+                }),
+                hours: DEMO_RESPONSE_HOURS,
+              }}
+            />
           </p>
-          <p className="mt-3 text-[13px] text-[var(--muted)]">
-            Nothing to prepare in the meantime. The demo will be built on what you&apos;ve just told us.
-          </p>
+          <p className="mt-3 text-[13px] text-[var(--muted)]">{t('demo.page.sentNote')}</p>
 
           {booked.pilot && (
             <div className="mt-6 rounded-xl border border-[var(--brand-primary)]/25 bg-[var(--brand-primary)]/5 p-4 text-left">
               <p className="text-[13px] font-semibold text-[var(--text-primary)]">
-                About the pilot programme
+                {t('demo.page.pilotTitle')}
               </p>
               <p className="mt-1.5 text-[13px] leading-relaxed text-[var(--muted)]">
-                Participants get early access, a locked-in launch price, and a monthly session with
-                the product team. In return, we expect regular feedback on actual usage. We&apos;ll
-                tell you more when we talk.
+                {t('demo.page.pilotBody')}
               </p>
             </div>
           )}
@@ -131,11 +129,11 @@ export default function BookDemoPage() {
             <Link href="/">
               <Button variant="outline" className="w-full gap-2 sm:w-auto">
                 <ArrowLeft className="h-4 w-4" />
-                Back to home
+                {t('demo.page.backToHome')}
               </Button>
             </Link>
             <Button className="w-full sm:w-auto" onClick={() => { setBooked(null); setSelectedDay(null); }}>
-              Book another slot
+              {t('demo.page.bookAnother')}
             </Button>
           </div>
         </div>
@@ -150,10 +148,10 @@ export default function BookDemoPage() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-2 text-sm font-medium text-[var(--muted)] transition-colors hover:text-[var(--text-primary)]">
             <ArrowLeft className="h-4 w-4" />
-            Back to Qurelio
+            {t('demo.page.backToQurelio')}
           </Link>
           <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--brand-primary)]">
-            Book a demo
+            {t('demo.page.eyebrow')}
           </span>
         </div>
       </header>
@@ -161,34 +159,38 @@ export default function BookDemoPage() {
       <div className="mx-auto max-w-6xl px-6 py-10">
         <div className="mb-8 max-w-2xl">
           <h1 className="text-2xl font-bold tracking-tight text-[var(--text-primary)] sm:text-3xl">
-            Choose a time that suits you
+            {t('demo.page.title')}
           </h1>
           <p className="mt-2 text-sm text-[var(--muted)]">
-            Pick an available slot and tell us about your company. We confirm every request within{' '}
-            {DEMO_RESPONSE_HOURS} hours. All times are shown in your local timezone.
+            {t('demo.page.sub', { hours: DEMO_RESPONSE_HOURS })}
           </p>
         </div>
 
         {loading ? (
           <div className="flex items-center justify-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] py-24 text-sm text-[var(--muted)]">
             <Loader2 className="h-5 w-5 animate-spin text-[var(--brand-primary)]" />
-            Loading available times…
+            {t('demo.page.loading')}
           </div>
         ) : failed ? (
           <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-10 text-center">
-            <p className="text-sm font-medium text-[var(--text-primary)]">Could not load the calendar</p>
-            <p className="mt-1 text-[13px] text-[var(--muted)]">Please check your connection and try again.</p>
-            <Button className="mt-5" onClick={() => void load()}>Retry</Button>
+            <p className="text-sm font-medium text-[var(--text-primary)]">
+              {t('demo.page.loadFailedTitle')}
+            </p>
+            <p className="mt-1 text-[13px] text-[var(--muted)]">{t('demo.page.loadFailedBody')}</p>
+            <Button className="mt-5" onClick={() => void load()}>
+              {t('common.retry')}
+            </Button>
           </div>
         ) : slots.length === 0 ? (
           <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-12 text-center">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--nav-hover)]">
               <Calendar className="h-6 w-6 text-[var(--muted)]" />
             </div>
-            <p className="text-sm font-semibold text-[var(--text-primary)]">No times available right now</p>
+            <p className="text-sm font-semibold text-[var(--text-primary)]">
+              {t('demo.page.emptyTitle')}
+            </p>
             <p className="mx-auto mt-1 max-w-sm text-[13px] text-[var(--muted)]">
-              New slots are opened regularly. Please check back soon, or reach us from the contact
-              section on the home page.
+              {t('demo.page.emptyBody')}
             </p>
           </div>
         ) : (
@@ -197,12 +199,12 @@ export default function BookDemoPage() {
             <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-sm font-bold text-[var(--text-primary)]">
-                  {month.toLocaleString(undefined, { month: 'long', year: 'numeric' })}
+                  {month.toLocaleString(intlLocale, { month: 'long', year: 'numeric' })}
                 </h2>
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
-                    aria-label="Previous month"
+                    aria-label={t('demo.page.previousMonth')}
                     onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() - 1, 1))}
                     className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--nav-hover)] hover:text-[var(--text-primary)]"
                   >
@@ -210,7 +212,7 @@ export default function BookDemoPage() {
                   </button>
                   <button
                     type="button"
-                    aria-label="Next month"
+                    aria-label={t('demo.page.nextMonth')}
                     onClick={() => setMonth(new Date(month.getFullYear(), month.getMonth() + 1, 1))}
                     className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--nav-hover)] hover:text-[var(--text-primary)]"
                   >
@@ -220,7 +222,7 @@ export default function BookDemoPage() {
               </div>
 
               <div className="mb-2 grid grid-cols-7 gap-1">
-                {WEEKDAYS.map((d) => (
+                {weekdays.map((d) => (
                   <div key={d} className="py-1 text-center text-[11px] font-semibold uppercase tracking-wide text-[var(--muted)]">
                     {d}
                   </div>
@@ -267,7 +269,7 @@ export default function BookDemoPage() {
 
               <p className="mt-4 flex items-center gap-2 text-[11px] text-[var(--muted)]">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden />
-                Days with available times
+                {t('demo.page.legendAvailable')}
               </p>
             </section>
 
@@ -275,15 +277,18 @@ export default function BookDemoPage() {
             <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
               <h2 className="text-sm font-bold text-[var(--text-primary)]">
                 {selectedDay
-                  ? new Date(`${selectedDay}T00:00:00`).toLocaleDateString(undefined, {
+                  ? new Date(`${selectedDay}T00:00:00`).toLocaleDateString(intlLocale, {
                       weekday: 'long', day: 'numeric', month: 'long',
                     })
-                  : 'Select a day'}
+                  : t('demo.page.selectDay')}
               </h2>
               <p className="mt-1 text-[11px] text-[var(--muted)]">
                 {daySlots.length > 0
-                  ? `${daySlots.length} time${daySlots.length > 1 ? 's' : ''} available`
-                  : 'Pick a highlighted day on the calendar'}
+                  ? t(
+                      daySlots.length > 1 ? 'demo.page.timesAvailable' : 'demo.page.timeAvailable',
+                      { count: daySlots.length },
+                    )
+                  : t('demo.page.pickHighlighted')}
               </p>
 
               <div className="mt-4 grid grid-cols-2 gap-2">
@@ -294,9 +299,9 @@ export default function BookDemoPage() {
                     onClick={() => setActiveSlot(s)}
                     className="rounded-xl border border-[var(--input-border)] bg-[var(--surface)] px-3 py-3 text-sm font-semibold text-[var(--text-primary)] transition-all duration-150 hover:-translate-y-0.5 hover:border-[var(--brand-primary)] hover:bg-[var(--brand-primary)]/5 hover:text-[var(--brand-primary)]"
                   >
-                    {new Date(s.startsAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
+                    {new Date(s.startsAt).toLocaleTimeString(intlLocale, { hour: '2-digit', minute: '2-digit' })}
                     <span className="mt-0.5 block text-[10px] font-normal text-[var(--muted)]">
-                      {s.durationMinutes} min
+                      {s.durationMinutes} {t('demo.page.minutesShort')}
                     </span>
                   </button>
                 ))}
