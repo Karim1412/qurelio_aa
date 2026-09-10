@@ -87,10 +87,6 @@ export function Navbar() {
     };
   }, []);
 
-  // Navbar shrinks and "floats" as a pill when scrolled
-  const navWidth  = scrolled ? '92%'  : '100%';
-  const navTop    = scrolled ? '14px' : '12px';
-  const navRadius = scrolled ? '999px': '0px';
 
   return (
     <>
@@ -108,18 +104,8 @@ export function Navbar() {
         
       </motion.div>
 
-      <div className="fixed inset-x-0 top-0 z-50 flex justify-center pointer-events-none">
-        <motion.header
-          initial={false}
-          animate={{
-            width: navWidth,
-            top: scrolled ? 14 : 12,
-            borderRadius: scrolled ? 999 : 0,
-          }}
-          transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="pointer-events-auto relative overflow-hidden"
-          style={{ position: 'fixed' }}
-        >
+      <div className="fixed inset-x-0 top-0 z-50 pointer-events-none">
+        <header className="pointer-events-auto relative w-full overflow-hidden rounded-none">
           {/* ── Background layer ── */}
           <motion.div
             aria-hidden
@@ -139,7 +125,7 @@ export function Navbar() {
                 '0 8px 40px -12px rgba(15, 23, 42, 0.18)',
                 '0 2px 8px -2px rgba(15, 23, 42, 0.08)',
               ].join(', '),
-              border: '1px solid color-mix(in srgb, var(--border) 60%, transparent)',
+              borderBottom: '1px solid color-mix(in srgb, var(--border) 60%, transparent)',
             }}
           />
 
@@ -164,7 +150,7 @@ export function Navbar() {
               paddingBottom: 0,
             }}
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="relative flex w-full items-center justify-between gap-4 px-6 sm:px-8 lg:px-10"
+            className="relative flex w-full items-center justify-between gap-3 px-4 sm:px-6 sm:gap-4 lg:px-10"
           >
             {/* ── Logo: fills the row height, no overflow ── */}
             <Link
@@ -188,7 +174,7 @@ export function Navbar() {
                   height={80}
                   fetchPriority="high"
                   decoding="async"
-                  className="block h-[80px] w-auto max-w-none select-none object-contain"
+                  className="block h-[52px] w-auto max-w-none select-none object-contain sm:h-[64px] md:h-[76px]"
                   draggable={false}
                 />
               </motion.div>
@@ -196,7 +182,7 @@ export function Navbar() {
 
             {/* ── Nav links ── */}
             <nav
-              className="relative hidden flex-1 items-center justify-center md:flex"
+              className="relative hidden flex-1 items-center justify-center lg:flex"
               onMouseLeave={() => setHovered(null)}
             >
               <div className="flex items-center gap-0.5">
@@ -210,7 +196,7 @@ export function Navbar() {
                       onMouseEnter={() => setHovered(link.href)}
                       onClick={() => setActiveLink(link.href)}
                       className={cn(
-                        'relative px-4 py-2 text-sm font-medium transition-colors duration-200 rounded-full',
+                        'relative whitespace-nowrap rounded-full px-3 py-2.5 text-sm font-medium transition-colors duration-200 xl:px-4',
                         isHovered || isActive
                           ? 'text-[var(--brand-primary)]'
                           : 'text-[var(--muted)] hover:text-[var(--text-primary)]'
@@ -240,7 +226,7 @@ export function Navbar() {
             </nav>
 
             {/* ── Right: Search + Language + CTA ── */}
-            <div className="hidden shrink-0 items-center gap-2.5 md:flex">
+            <div className="hidden shrink-0 items-center gap-2.5 lg:flex">
               {/* Language toggle */}
               <LanguageToggle />
 
@@ -249,7 +235,7 @@ export function Navbar() {
                 animate={{ width: searchFocused ? 192 : 140 }}
                 transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                 className={cn(
-                  'relative flex items-center overflow-hidden rounded-full border transition-all duration-300',
+                  'relative hidden items-center overflow-hidden rounded-full border transition-all duration-300 xl:flex',
                   searchFocused
                     ? 'border-[var(--brand-primary)]/50 bg-[var(--surface)] shadow-[0_0_0_3px_color-mix(in_srgb,var(--brand-primary)_10%,transparent)]'
                     : 'border-[var(--border)] bg-[var(--surface)]/60'
@@ -298,7 +284,7 @@ export function Navbar() {
               type="button"
               onClick={() => setDrawerOpen((v) => !v)}
               aria-label={drawerOpen ? t('nav.closeMenu') : t('nav.openMenu')}
-              className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)]/70 text-[var(--text-primary)] transition-colors hover:bg-[var(--surface)] md:hidden"
+              className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)]/70 text-[var(--text-primary)] transition-colors hover:bg-[var(--surface)] lg:hidden"
             >
               <AnimatePresence mode="wait" initial={false}>
                 {drawerOpen ? (
@@ -313,7 +299,7 @@ export function Navbar() {
               </AnimatePresence>
             </button>
           </motion.div>
-        </motion.header>
+        </header>
       </div>
 
       {/* ── Mobile drawer ── */}
@@ -325,7 +311,7 @@ export function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 bg-[var(--page-bg)]/60 backdrop-blur-sm md:hidden"
+              className="fixed inset-0 z-40 bg-[var(--page-bg)]/60 backdrop-blur-sm lg:hidden"
               onClick={() => setDrawerOpen(false)}
             />
             <motion.div
@@ -333,7 +319,7 @@ export function Navbar() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.97 }}
               transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-              className="fixed inset-x-4 top-20 z-50 rounded-3xl border border-[var(--border)] bg-[var(--surface)]/95 p-4 shadow-[0_24px_60px_-20px_rgba(15,23,42,0.25)] backdrop-blur-xl md:hidden"
+              className="fixed inset-x-3 top-[76px] z-50 max-h-[calc(100dvh-92px)] overflow-y-auto overscroll-contain rounded-3xl border border-[var(--border)] bg-[var(--surface)]/95 p-4 shadow-[0_24px_60px_-20px_rgba(15,23,42,0.25)] backdrop-blur-xl sm:inset-x-4 sm:top-20 lg:hidden"
             >
               {/* Mobile search */}
               <div className="mb-3 flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5">

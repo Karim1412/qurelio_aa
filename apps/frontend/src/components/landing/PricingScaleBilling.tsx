@@ -105,6 +105,9 @@ export function PricingScaleBilling() {
           gap: 22px;
           align-items: start;
         }
+        @media (max-width: 1100px) {
+          .sb-root { padding: 88px 28px 100px; }
+        }
         @media (max-width: 900px) {
           .sb-root { padding: 80px 20px 92px; }
           .sb-grid { grid-template-columns: 1fr; }
@@ -202,7 +205,14 @@ export function PricingScaleBilling() {
         .sb-dl dd strong { color: #1C1917; font-weight: 700; }
 
         @media (max-width: 520px) {
+          .sb-root { padding: 64px 14px 76px; }
+          .sb-panel { padding: 24px 18px 20px; border-radius: 18px; }
           .sb-dl-row { grid-template-columns: 1fr; gap: 4px; }
+          /* Four columns need less room than 440px once the type steps down,
+             which keeps the sideways scroll to a nudge rather than a swipe. */
+          .sb-tbl { min-width: 380px; font-size: 12px; }
+          .sb-tbl th { padding: 0 8px 10px; }
+          .sb-tbl td { padding: 11px 8px; font-size: 12px; }
         }
 
         @media (prefers-reduced-motion: reduce) {

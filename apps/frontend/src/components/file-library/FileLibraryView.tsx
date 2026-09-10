@@ -57,6 +57,12 @@ import {
 import { UploadDocumentDialog } from '@/components/dashboard/UploadDocumentDialog';
 import { ProductWizard } from '@/components/products/ProductWizard';
 import { documentApi, productApi } from '@/lib/api';
+import {
+  scanPdfForIsoStandard,
+  isoContentAlertTitle,
+  isoContentAlertMessage,
+  type IsoContentFinding,
+} from '@/lib/iso-standard-content';
 import { useAuthStore } from '@/lib/auth-store';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -3748,6 +3754,19 @@ function UploadDialog({
   const [ocrPollIds, setOcrPollIds] = useState<string[] | null>(
     resumeIds && resumeIds.length > 0 ? resumeIds : null,
   );
+  /**
+   * Copyright gate for standard uploads: the picked PDF is read in the browser
+   * and refused before it ever reaches the server when it turns out to be the
+   * published ISO standard itself. See `lib/iso-standard-content.ts`.
+   */
+  const [isoScan, setIsoScan] = useState<
+    | { status: 'scanning'; fileName: string }
+    | { status: 'blocked'; fileName: string; finding: IsoContentFinding }
+    | { status: 'unreadable'; fileName: string }
+    | null
+  >(null);
+  /** Guards against a slow scan of a file the user has already replaced. */
+  const isoScanToken = useRef(0);
 
   // When the dialog is (re)opened with resumeIds, jump straight to extracting phase
   useEffect(() => {
@@ -3782,6 +3801,8 @@ function UploadDialog({
     setStatuses({});
     setIsDragOver(false);
     setOcrPollIds(null);
+    isoScanToken.current += 1;
+    setIsoScan(null);
   };
 
   const handleClose = () => {
@@ -3797,6 +3818,9 @@ function UploadDialog({
     onClose();
   };
 
+  const uploadType: 'PRODUCT_DOC' | 'ISO_NORM' =
+    preset === 'standard' ? 'ISO_NORM' : preset === 'product' ? 'PRODUCT_DOC' : docType;
+
   const addFiles = (files: File[]) => {
     const maxBytes = 50 * 1024 * 1024;
 
@@ -3808,7 +3832,32 @@ function UploadDialog({
         toast.error('Standard uploads must be a single PDF (max 50 MB).');
         return;
       }
-      setQueuedFiles([pdf]);
+      // Queue nothing yet: the file is only accepted once the copyright scan
+      // clears it, so a published ISO standard is never sitting in the queue
+      // waiting for a mis-click on Upload.
+      setQueuedFiles([]);
+      const token = ++isoScanToken.current;
+      setIsoScan({ status: 'scanning', fileName: pdf.name });
+      void (async () => {
+        try {
+          const finding = await scanPdfForIsoStandard(pdf);
+          if (token !== isoScanToken.current) return;
+          if (finding?.isIsoStandard) {
+            setIsoScan({ status: 'blocked', fileName: pdf.name, finding });
+            toast.error(isoContentAlertTitle(finding));
+            return;
+          }
+          // No text layer means a scanned PDF we cannot read: say so, but let
+          // the upload through rather than blocking on a guess.
+          setIsoScan(finding ? null : { status: 'unreadable', fileName: pdf.name });
+          setQueuedFiles([pdf]);
+        } catch {
+          // A parser failure must never block a legitimate upload.
+          if (token !== isoScanToken.current) return;
+          setIsoScan(null);
+          setQueuedFiles([pdf]);
+        }
+      })();
       return;
     }
 
@@ -3852,14 +3901,20 @@ function UploadDialog({
       return;
     }
     addFiles(all);
-  }, []);
-
-  const uploadType: 'PRODUCT_DOC' | 'ISO_NORM' =
-    preset === 'standard' ? 'ISO_NORM' : preset === 'product' ? 'PRODUCT_DOC' : docType;
+    // uploadType must be in the deps: without it the callback keeps the
+    // first-render `addFiles`, so switching to "ISO Standard" and then
+    // *dragging* a PDF would take the product branch and skip the ISO scan.
+  }, [uploadType]);
 
   const handleUpload = async () => {
     if (uploadType === 'ISO_NORM' && !canUploadStandard) {
       return toast.error('Only Quality Manager or Company Admin can upload standard (ISO) documents.');
+    }
+    if (uploadType === 'ISO_NORM' && isoScan?.status === 'blocked') {
+      return toast.error(isoContentAlertTitle(isoScan.finding));
+    }
+    if (uploadType === 'ISO_NORM' && isoScan?.status === 'scanning') {
+      return toast.error('Still checking the PDF — one moment.');
     }
     if (queuedFiles.length === 0) return toast.error('Add at least one file');
     if (uploadType === 'PRODUCT_DOC' && !productName.trim()) return toast.error('Product name is required');
@@ -4085,6 +4140,75 @@ function UploadDialog({
             </div>
           )}
 
+          {uploadType === 'ISO_NORM' && isoScan?.status === 'scanning' && (
+            <div className="flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-3 py-2.5 text-sm text-[var(--muted)]">
+              <Loader2 className="h-4 w-4 shrink-0 animate-spin text-[var(--brand-primary)]" />
+              <span className="min-w-0 truncate">
+                Checking <span className="font-medium">{isoScan.fileName}</span> for ISO copyright…
+              </span>
+            </div>
+          )}
+
+          {uploadType === 'ISO_NORM' && isoScan?.status === 'blocked' && (
+            <div
+              role="alert"
+              className="rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-3"
+            >
+              <div className="flex items-start gap-2.5">
+                <CircleAlert className="mt-0.5 h-4 w-4 shrink-0 text-destructive" aria-hidden />
+                <div className="min-w-0 space-y-2">
+                  <p className="text-sm font-semibold text-destructive">
+                    {isoContentAlertTitle(isoScan.finding)}
+                  </p>
+                  <p className="text-xs leading-relaxed text-[var(--text-primary)]">
+                    {isoContentAlertMessage(isoScan.finding)}
+                  </p>
+                  <ul className="space-y-1">
+                    {isoScan.finding.signals.slice(0, 4).map((sig) => (
+                      <li
+                        key={sig.category + sig.evidence}
+                        className="flex items-start gap-1.5 text-[11px] text-[var(--muted)]"
+                      >
+                        <Shield className="mt-[3px] h-3 w-3 shrink-0" aria-hidden />
+                        <span className="min-w-0">
+                          {sig.category}: <span className="italic">“{sig.evidence}”</span>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="text-[11px] text-[var(--muted)]">
+                    <span className="font-medium">{isoScan.fileName}</span> was not uploaded.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="mt-0.5"
+                    onClick={() => {
+                      isoScanToken.current += 1;
+                      setIsoScan(null);
+                    }}
+                  >
+                    Choose a different file
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {uploadType === 'ISO_NORM' && isoScan?.status === 'unreadable' && (
+            <div
+              role="status"
+              className="flex items-start gap-2.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2.5"
+            >
+              <Info className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" aria-hidden />
+              <p className="text-xs leading-relaxed text-[var(--text-primary)]">
+                This PDF has no readable text, so the ISO copyright check could not run. Make sure
+                you hold the right to use this copy before uploading it.
+              </p>
+            </div>
+          )}
+
           <LibraryUploadDropSurface
             isDragOver={isDragOver}
             disabled={isUploading}
@@ -4222,6 +4346,10 @@ function UploadDialog({
             const disabledReason: string | null =
               uploadType === 'ISO_NORM' && !canUploadStandard
                 ? 'Only Quality Manager or Company Admin can upload standard (ISO) documents.'
+                : uploadType === 'ISO_NORM' && isoScan?.status === 'blocked'
+                ? isoContentAlertTitle(isoScan.finding)
+                : uploadType === 'ISO_NORM' && isoScan?.status === 'scanning'
+                ? 'Checking the PDF for ISO copyright…'
                 : queuedFiles.length === 0
                   ? 'Add at least one file before uploading.'
                   : uploadType === 'PRODUCT_DOC' && !productName.trim()
