@@ -21,6 +21,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Sparkles,
   Lightbulb,
@@ -142,13 +143,22 @@ export function EmptyMetricState({
   href,
   onClick,
   color,
+  insideLink = false,
 }: {
   message: string;
   cta?: string;
   href?: string;
   onClick?: () => void;
   color: string;
+  /**
+   * True when the caller has already wrapped the whole card in a <Link>. A
+   * nested <a> is invalid HTML and breaks hydration, so the CTA navigates
+   * imperatively instead. The CTA keeps its own `href`, which is often not the
+   * card's: the Reports card links to /docs while its CTA opens /evaluations.
+   */
+  insideLink?: boolean;
 }) {
+  const router = useRouter();
   const ctaInner = cta && (
     <span
       className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10.5px] font-semibold transition-colors"
@@ -169,9 +179,25 @@ export function EmptyMetricState({
       {cta && (
         <div className="mt-2.5">
           {href ? (
-            <Link href={href} className="inline-flex">
-              {ctaInner}
-            </Link>
+            insideLink ? (
+              <button
+                type="button"
+                onClick={(e) => {
+                  // Stop the card's own link from swallowing the click and
+                  // sending the user to the card href instead of the CTA's.
+                  e.preventDefault();
+                  e.stopPropagation();
+                  router.push(href);
+                }}
+                className="inline-flex"
+              >
+                {ctaInner}
+              </button>
+            ) : (
+              <Link href={href} className="inline-flex">
+                {ctaInner}
+              </Link>
+            )
           ) : onClick ? (
             <button
               type="button"

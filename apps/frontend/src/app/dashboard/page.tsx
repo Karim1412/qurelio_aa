@@ -1552,6 +1552,7 @@ export default function DashboardPage() {
                           cta={stat.emptyHint.cta}
                           href={stat.emptyHint.href}
                           color={stat.color}
+                          insideLink={!!href}
                         />
                       ) : (
                         <p className="mt-1.5 text-[11px] text-[var(--muted)]">{stat.change}</p>
