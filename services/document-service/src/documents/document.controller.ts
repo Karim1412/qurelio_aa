@@ -79,6 +79,23 @@ export class DocumentController {
     return this.svc.completeProductOnboarding(productId, req.user.companyId);
   }
 
+  /** Product wizard: add standards detected in the product's documents to the Standards & Regulations Portal. */
+  @Post('standards/from-product')
+  @Roles('DIRECTOR', 'QUALITY_MANAGER')
+  @HttpCode(HttpStatus.OK)
+  async createStandardsFromProduct(
+    @Body() body: { productId: string; standards: Array<{ reference: string; title?: string }> },
+    @Req() req: any,
+  ): Promise<any> {
+    if (!body?.productId) throw new BadRequestException('productId is required');
+    return this.svc.createStandardsFromProduct(
+      req.user.companyId,
+      req.user.id,
+      body.productId,
+      body.standards,
+    );
+  }
+
   // ── File Manager: nestable folder tree ──────────────────────
 
   @Get('folders')

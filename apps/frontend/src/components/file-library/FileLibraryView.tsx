@@ -3209,12 +3209,13 @@ function DocSection({
           </h2>
           <div className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)]/60">
             <div className="max-w-full overflow-x-auto">
-              <Table className="w-full min-w-[820px]">
+              <Table className="w-full min-w-[980px]">
                 <TableHeader>
                   <TableRow className="border-b border-[var(--border)] bg-[var(--page-bg)]/40 hover:bg-[var(--page-bg)]/40">
                     <TableHead className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">Reference</TableHead>
                     <TableHead className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">Title</TableHead>
                     <TableHead className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">Category</TableHead>
+                    <TableHead className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">Product management</TableHead>
                     <TableHead className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">Effective date</TableHead>
                     <TableHead className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">Status</TableHead>
                     <TableHead className="w-[120px] text-right text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">Actions</TableHead>
@@ -3237,6 +3238,19 @@ function DocSection({
                       </TableCell>
                       <TableCell className="max-w-[180px] truncate text-sm text-[var(--muted)]" title={getExtractedCategory(doc)}>
                         {getExtractedCategory(doc)}
+                      </TableCell>
+                      <TableCell className="max-w-[200px] text-sm">
+                        {doc.sourceProduct?.name ? (
+                          <span
+                            className="inline-flex max-w-full items-center gap-1.5 font-medium text-[var(--text-primary)]"
+                            title={`Generated from the documents of ${doc.sourceProduct.name}`}
+                          >
+                            <Package className="h-3.5 w-3.5 shrink-0 text-[var(--brand-primary)]" />
+                            <span className="truncate">{doc.sourceProduct.name}</span>
+                          </span>
+                        ) : (
+                          <span className="text-[var(--muted)]">-</span>
+                        )}
                       </TableCell>
                       <TableCell className="text-sm text-[var(--muted)]">
                         {doc.effectiveDate

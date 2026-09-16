@@ -171,6 +171,8 @@ export class DocumentService {
     /** Hard-delete: physical storage + versions + ACL + DB rows for every doc in the folder, then the product row.
      *  Done in one shot whether or not the product was archived first, caller has already confirmed via destructive UI.
      */
+    await this.releaseGeneratedStandards(product, companyId);
+
     const docs = await this.docRepo.find({ where: { productId } });
     for (const doc of docs) {
       try { await this.storage.delete(doc.storageKey); } catch {}
@@ -192,6 +194,114 @@ export class DocumentService {
     await this.productRepo.delete(productId);
     this.logger.log(`Product deleted: ${productId} (${docs.length} doc(s))`);
     return { message: 'Product deleted' };
+  }
+
+  /**
+   * Standards generated from a product outlive it, they belong to the portal. The
+   * exception is a discarded wizard draft: the product never existed, so the
+   * file-less entries it generated go with it (a PDF attached since is kept).
+   */
+  private async releaseGeneratedStandards(product: Product, companyId: string) {
+    const generated = await this.docRepo.find({ where: { sourceProductId: product.id, companyId } });
+    for (const doc of generated) {
+      if (product.onboardingStatus === PRODUCT_DRAFT_STATUS && !doc.storageKey) {
+        await this.accessRuleRepo.delete({ documentId: doc.id });
+        await this.docRepo.delete(doc.id);
+      } else {
+        await this.docRepo.update(doc.id, { sourceProductId: null });
+      }
+    }
+  }
+
+  /**
+   * Product wizard: register the standards & regulations detected in a product's
+   * documents in the Standards & Regulations Portal.
+   *
+   * Only the reference is known, never the standard's text, so each entry is
+   * created without a file and stays "Pending activation" until a PDF is attached
+   * as a new version, extracted and activated like any other standard. References
+   * already in the portal are skipped rather than duplicated.
+   */
+  async createStandardsFromProduct(
+    companyId: string,
+    userId: string,
+    productId: string,
+    items: Array<{ reference?: string; title?: string }>,
+  ) {
+    const product = await this.productRepo.findOne({ where: { id: productId, companyId } });
+    if (!product) throw new NotFoundException('Product not found');
+    if (!Array.isArray(items) || items.length === 0) {
+      throw new BadRequestException('Select at least one standard');
+    }
+    if (items.length > 50) throw new BadRequestException('Too many standards (max 50)');
+
+    /**
+     * Comparison key for "is this standard already in the portal?".
+     *
+     * The edition year is dropped so "ISO 13485:2016" and "ISO 13485" are one
+     * entry: a document cites the dated form while a user types the short one.
+     * Everything else is kept, so EN 60601-1 and EN 60601-1-2 stay distinct
+     * standards rather than collapsing into each other.
+     */
+    const refKey = (v?: string | null) =>
+      (v ?? '').toLowerCase().replace(/:\s*\d{4}\s*$/, '').replace(/[^a-z0-9]+/g, '');
+    const existing = await this.docRepo.find({
+      where: { companyId, type: DocumentType.ISO_NORM, archivedAt: IsNull() },
+      select: ['id', 'name', 'isoStandard'],
+    });
+    const known = new Map<string, string>();
+    for (const doc of existing) {
+      for (const key of [refKey(doc.isoStandard), refKey(doc.name)]) {
+        if (key) known.set(key, doc.id);
+      }
+    }
+
+    const created: Array<{ id: string; reference: string }> = [];
+    const skipped: Array<{ reference: string; existingId: string }> = [];
+
+    for (const item of items) {
+      const reference = String(item?.reference ?? '').trim().replace(/\s+/g, ' ').slice(0, 200);
+      const key = refKey(reference);
+      if (!key) continue;
+      const existingId = known.get(key);
+      if (existingId) {
+        skipped.push({ reference, existingId });
+        continue;
+      }
+      const title = String(item?.title ?? '').trim().slice(0, 255) || reference;
+      const doc = this.docRepo.create({
+        name: title,
+        // No file yet: the row is a reference until a PDF is uploaded as a version.
+        mimeType: 'application/pdf',
+        sizeBytes: 0,
+        storageKey: '',
+        type: DocumentType.ISO_NORM,
+        status: DocumentStatus.UPLOADED,
+        libraryStatus: StandardLibraryStatus.PROCESSING,
+        approvalStatus: null,
+        companyId,
+        uploadedBy: userId,
+        isoStandard: reference,
+        tags: [/^EN\b/i.test(reference) ? 'EN' : 'ISO_NORM'],
+        effectiveDate: new Date(),
+        description: `Detected in the documents of product "${product.name}"`,
+        sourceProductId: product.id,
+      });
+      await this.docRepo.save(doc);
+      known.set(key, doc.id);
+      await this.audit.log(companyId, doc.id, userId, 'UPLOAD', {
+        name: doc.name,
+        type: doc.type,
+        source: 'product_documents',
+        productId: product.id,
+      });
+      created.push({ id: doc.id, reference });
+    }
+
+    this.logger.log(
+      `Standards from product ${product.id}: ${created.length} created, ${skipped.length} already in portal`,
+    );
+    return { created, skipped };
   }
 
   /** Update product profile fields (onboarding wizard step save). */
@@ -1023,6 +1133,8 @@ export class DocumentService {
     const qb = this.docRepo
       .createQueryBuilder('d')
       .leftJoinAndSelect('d.product', 'product')
+      // Standards portal "Product management" column: product a standard was generated from.
+      .leftJoinAndMapOne('d.sourceProduct', Product, 'sourceProduct', 'sourceProduct.id = d.sourceProductId')
       .where('d.companyId = :companyId', { companyId });
 
     /**
@@ -1135,6 +1247,11 @@ export class DocumentService {
     const rules = await this.accessRuleRepo.find({ where: { documentId: id } });
     if (!this.acl.isAllowed(doc, user, rules, { includeArchivedAccess: !!doc.archivedAt }))
       throw new ForbiddenException('Access denied');
+    if (!doc.storageKey) {
+      throw new NotFoundException(
+        'No file is attached to this standard yet. Upload the PDF as a new version to add it.',
+      );
+    }
     await this.audit.log(companyId, id, userId, 'DOWNLOAD', {});
     const stream = await this.storage.getObjectStream(doc.storageKey);
     const filename = doc.name?.trim() || 'document';

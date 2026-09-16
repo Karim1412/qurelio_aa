@@ -24,6 +24,11 @@ import {
   applyPrefill, buildPrefill, diffPrefill,
   type ExtractedStructure, type PrefillSuggestion,
 } from '@/components/products/product-prefill';
+import { DetectedStandardsDialog, type DetectedStandard } from '@/components/products/DetectedStandardsDialog';
+import {
+  collectProductStandards, extractStandardRefsFromText, standardDedupeKey, standardMatchesRef,
+  type ProductStandardRef,
+} from '@/lib/product-standards';
 import { productApi, documentApi } from '@/lib/api';
 import toast from 'react-hot-toast';
 
@@ -217,6 +222,19 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
   const [analysisMadeNoChange, setAnalysisMadeNoChange] = useState(false);
   /** Same count as `suggestions`, readable synchronously right after an analysis run. */
   const suggestionsPendingRef = useRef(0);
+
+  /** Standards & regulations the documents cite, offered for the Standards & Regulations Portal. */
+  const [detectedStandards, setDetectedStandards] = useState<DetectedStandard[]>([]);
+  const [standardsDialogOpen, setStandardsDialogOpen] = useState(false);
+  /** What to resume once the dialog closes: the Documents step, or the save that opened it. */
+  const [standardsContext, setStandardsContext] = useState<'documents' | 'complete'>('documents');
+  const [isCreatingStandards, setIsCreatingStandards] = useState(false);
+  /** Portal entries created from this product, mentioned when discarding the draft. */
+  const [generatedStandardsCount, setGeneratedStandardsCount] = useState(0);
+  /** Readable synchronously right after an analysis run, like `suggestionsPendingRef`. */
+  const standardsPendingRef = useRef(0);
+  /** References already offered once, so re-analysing never asks about them again. */
+  const offeredStandardKeysRef = useRef<Set<string>>(new Set());
 
   /**
    * Each step is a full page of fields, so arriving mid-scroll hides the heading and
@@ -425,8 +443,12 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
    * Returns what was extracted plus the ids still running, which are handed to the
    * global extraction tracker so the user can leave the wizard.
    */
-  const waitForExtractions = async (ids: string[]): Promise<{ structures: ExtractedStructure[]; stillRunning: string[] }> => {
+  const waitForExtractions = async (
+    ids: string[],
+  ): Promise<{ structures: ExtractedStructure[]; texts: string[]; stillRunning: string[] }> => {
     const structures = new Map<string, ExtractedStructure | null>();
+    /** Raw text of each file, scanned for standards the structuring step did not list. */
+    const texts = new Map<string, string>();
     const pending = new Set(ids);
     const deadline = Date.now() + EXTRACTION_TIMEOUT_MS;
     // Uploads already consumed the first half of the bar; reading fills the second.
@@ -449,6 +471,8 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
           const status = res.data?.status as string | undefined;
           if (status === 'READY') {
             structures.set(docId, (res.data?.extractedStructured ?? null) as ExtractedStructure | null);
+            const text = res.data?.manualTextOverride ?? res.data?.extractedText;
+            if (typeof text === 'string' && text.trim()) texts.set(docId, text);
             pending.delete(docId);
             setDocuments((prev) => ({
               files: prev.files.map((f) => (f.documentId === docId ? { ...f, status: 'done' } : f)),
@@ -482,9 +506,85 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
 
     return {
       structures: [...structures.values()].filter((s): s is ExtractedStructure => !!s),
+      texts: [...texts.values()],
       stillRunning: [...pending],
     };
   };
+
+  /**
+   * De-duplicate references and flag the ones the portal already holds, so the
+   * dialog can show them as present instead of offering them again.
+   */
+  const resolveStandards = async (
+    candidates: ProductStandardRef[],
+    opts: { skipOffered: boolean },
+  ): Promise<DetectedStandard[]> => {
+    const refs: ProductStandardRef[] = [];
+    const seen = new Set<string>();
+    for (const ref of candidates) {
+      // Edition-insensitive: "ISO 13485:2016" from a document and "ISO 13485"
+      // typed in the form are the same standard and must be offered once.
+      const key = standardDedupeKey(ref.value);
+      if (!key || seen.has(key)) continue;
+      if (opts.skipOffered && offeredStandardKeysRef.current.has(key)) continue;
+      seen.add(key);
+      refs.push(ref);
+    }
+    if (refs.length === 0) return [];
+
+    let portal: Array<{ isoStandard?: string | null; name?: string | null }> = [];
+    try {
+      portal = (await documentApi.list({ type: 'ISO_NORM' })).data ?? [];
+    } catch { /* unknown portal state: offer everything, the server skips duplicates */ }
+
+    return refs.map((r) => ({
+      ...r,
+      existingInPortal: portal.some((norm) => standardMatchesRef(norm, r.value)),
+    }));
+  };
+
+  /**
+   * Standards & regulations cited by the documents that were not offered yet, each
+   * flagged when the portal already holds a matching standard.
+   */
+  const detectStandards = async (
+    prefill: ReturnType<typeof buildPrefill> | null,
+    texts: string[],
+  ): Promise<DetectedStandard[]> => {
+    const declared: ProductStandardRef[] = prefill
+      ? collectProductStandards({
+          requiredCertifications: prefill.markets.requiredCertifications,
+          applicableRegulations: prefill.markets.applicableRegulations,
+          productCertifications: prefill.certifications.productCertifications,
+        })
+      : [];
+    // A file can cite a standard in a sentence without the AI listing it as one.
+    const cited: ProductStandardRef[] = extractStandardRefsFromText(texts.join('\n')).map((value) => ({
+      value,
+      source: 'documentText',
+      sourceLabel: 'Cited in the document',
+    }));
+
+    return resolveStandards([...declared, ...cited], { skipOffered: true });
+  };
+
+  /**
+   * Everything the finished form declares, offered when the product is saved.
+   *
+   * This is the case where the documents said nothing: the user typed the
+   * standards into Markets or Certifications themselves, so saving is the only
+   * moment they can reach the portal. Previously-skipped references are offered
+   * again here; ones already created come back flagged as in the portal.
+   */
+  const detectStandardsFromForm = async (): Promise<DetectedStandard[]> =>
+    resolveStandards(
+      collectProductStandards({
+        requiredCertifications: markets.requiredCertifications,
+        applicableRegulations: markets.applicableRegulations,
+        productCertifications: certifications.productCertifications,
+      }),
+      { skipOffered: false },
+    );
 
   /**
    * Documents step → upload, wait for extraction, and pre-fill the remaining steps.
@@ -501,12 +601,18 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
       return null;
     }
 
-    const { structures, stillRunning } = await waitForExtractions(ids);
+    const { structures, texts, stillRunning } = await waitForExtractions(ids);
     // Anything that outran the wait keeps going in the global extraction tracker.
     if (stillRunning.length > 0) onExtractionStarted?.(stillRunning);
 
     if (structures.length === 0) {
-      toast.error('No usable content was extracted. Fill the form manually');
+      // Nothing to pre-fill from, but the raw text may still cite standards.
+      const cited = await detectStandards(null, texts);
+      setDetectedStandards(cited);
+      standardsPendingRef.current = cited.filter((s) => !s.existingInPortal).length;
+      if (standardsPendingRef.current === 0) {
+        toast.error('No usable content was extracted. Fill the form manually');
+      }
       return 0;
     }
 
@@ -559,6 +665,10 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
     setSuggestions(nextSuggestions);
     suggestionsPendingRef.current = nextSuggestions.length;
 
+    const standards = await detectStandards(prefill, texts);
+    setDetectedStandards(standards);
+    standardsPendingRef.current = standards.filter((s) => !s.existingInPortal).length;
+
     if (!identity.name.trim() && identityMerge.next.name?.trim()) {
       setDraftName(identityMerge.next.name.trim());
     }
@@ -602,19 +712,73 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
       if (count === null) return;
       if (count > 0) {
         toast.success(`${count} field${count > 1 ? 's' : ''} pre-filled. Please verify them`);
-      }
-      // Disagreements need a decision here; advancing would bury them.
-      if (suggestionsPendingRef.current > 0) {
-        toast(`${suggestionsPendingRef.current} suggested change${suggestionsPendingRef.current > 1 ? 's' : ''} to review below`);
-        return;
-      }
-      if (count === 0) {
+      } else if (suggestionsPendingRef.current === 0) {
         toast.success('Document read and added to this product');
       }
+      // Standards the documents cite are offered first; closing the dialog resumes here.
+      if (standardsPendingRef.current > 0) {
+        setStandardsDialogOpen(true);
+        return;
+      }
+      finishDocumentsStep();
+      return;
     }
 
     setCompletedSteps((prev) => [...new Set([...prev, step])]);
     setStep((p) => Math.min(p + 1, STEPS.length - 1));
+  };
+
+  /** Leave the Documents step after an analysis, unless suggested changes still need a decision. */
+  const finishDocumentsStep = () => {
+    // Disagreements need a decision here; advancing would bury them.
+    if (suggestionsPendingRef.current > 0) {
+      toast(`${suggestionsPendingRef.current} suggested change${suggestionsPendingRef.current > 1 ? 's' : ''} to review below`);
+      return;
+    }
+    setCompletedSteps((prev) => [...new Set([...prev, STEP_DOCUMENTS])]);
+    setStep(STEP_IDENTITY);
+  };
+
+  const closeStandardsDialog = () => {
+    detectedStandards.forEach((s) => offeredStandardKeysRef.current.add(standardDedupeKey(s.value)));
+    standardsPendingRef.current = 0;
+    setStandardsDialogOpen(false);
+    // Opened by "Save & activate": the save was waiting on this answer.
+    if (standardsContext === 'complete') {
+      void finalizeComplete();
+      return;
+    }
+    finishDocumentsStep();
+  };
+
+  /** Create the selected standards in the Standards & Regulations Portal, linked to this product. */
+  const confirmStandards = async (references: string[]) => {
+    if (!productId || references.length === 0) return;
+    setIsCreatingStandards(true);
+    try {
+      const res = await documentApi.createStandardsFromProduct(
+        productId,
+        references.map((reference) => ({ reference })),
+      );
+      const { created, skipped } = res.data;
+      setGeneratedStandardsCount((n) => n + created.length);
+      if (created.length > 0) {
+        toast.success(
+          `${created.length} standard${created.length > 1 ? 's' : ''} added to the Standards & Regulations Portal`,
+        );
+      }
+      if (skipped.length > 0) {
+        toast(`${skipped.length} already in the portal, not duplicated`);
+      }
+      onCreated?.();
+    } catch (e: any) {
+      const raw = e?.response?.data?.message ?? 'Could not add the standards to the portal';
+      toast.error(Array.isArray(raw) ? raw.join(', ') : String(raw));
+      return;
+    } finally {
+      setIsCreatingStandards(false);
+    }
+    closeStandardsDialog();
   };
 
   const handleBack = () => {
@@ -719,8 +883,39 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
     toast.success('Draft deleted');
   };
 
+  /**
+   * Saving is the last chance to register what the product declares: the standards
+   * may have been typed by hand rather than found in a document. The dialog answers
+   * first, then `finalizeComplete` commits.
+   */
   const handleComplete = async () => {
     if (!validateStep(step)) return;
+
+    setIsSaving(true);
+    let declared: DetectedStandard[] = [];
+    try {
+      // The portal entries link to the product, so it has to exist before they are offered.
+      await ensureProduct();
+      declared = await detectStandardsFromForm();
+    } catch {
+      /* Offering is best-effort: a failure here must never block saving. */
+    } finally {
+      setIsSaving(false);
+    }
+
+    const pending = declared.filter((s) => !s.existingInPortal).length;
+    if (pending > 0) {
+      setDetectedStandards(declared);
+      standardsPendingRef.current = pending;
+      setStandardsContext('complete');
+      setStandardsDialogOpen(true);
+      return;
+    }
+
+    await finalizeComplete();
+  };
+
+  const finalizeComplete = async () => {
     setIsSaving(true);
     try {
       const { id, name } = await ensureProduct();
@@ -779,6 +974,12 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
     setSuggestions([]);
     suggestionsPendingRef.current = 0;
     setAnalysisMadeNoChange(false);
+    setDetectedStandards([]);
+    setStandardsDialogOpen(false);
+    setStandardsContext('documents');
+    setGeneratedStandardsCount(0);
+    standardsPendingRef.current = 0;
+    offeredStandardKeysRef.current = new Set();
     setView('wizard');
     onClose();
   };
@@ -950,7 +1151,7 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
 
   return (
     <>
-    <Dialog open={open && !pendingDiscard} onOpenChange={(v) => !v && handleClose()}>
+    <Dialog open={open && !pendingDiscard && !standardsDialogOpen} onOpenChange={(v) => !v && handleClose()}>
       <DialogContent className="flex h-[90vh] max-w-5xl flex-col overflow-hidden p-0"
         onPointerDownOutside={(e) => e.preventDefault()}
         onInteractOutside={(e) => e.preventDefault()}
@@ -1058,6 +1259,15 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
       </DialogContent>
     </Dialog>
 
+      <DetectedStandardsDialog
+        open={open && standardsDialogOpen}
+        standards={detectedStandards}
+        productName={identity.name.trim() || serverProductName}
+        isSubmitting={isCreatingStandards}
+        onConfirm={(refs) => void confirmStandards(refs)}
+        onSkip={closeStandardsDialog}
+      />
+
       {/* Closing before activation: the hidden draft folder must not survive silently. */}
       <Dialog open={!!pendingDiscard} onOpenChange={(v) => !v && setPendingDiscard(null)}>
         <DialogContent className="max-w-md">
@@ -1068,7 +1278,11 @@ export function ProductWizard({ open, onClose, onCreated, onExtractionStarted, c
               deletes it and {uploadedDocCount > 0
                 ? `the ${uploadedDocCount} uploaded file${uploadedDocCount > 1 ? 's' : ''}`
                 : 'anything uploaded'}{' '}
-              for good.
+              for good
+              {generatedStandardsCount > 0
+                ? `, along with the ${generatedStandardsCount} standard${generatedStandardsCount > 1 ? 's' : ''} it added to the Standards & Regulations Portal`
+                : ''}
+              .
             </DialogDescription>
           </DialogHeader>
           <div className="mt-2 flex flex-col gap-2">

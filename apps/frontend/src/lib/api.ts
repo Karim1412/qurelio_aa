@@ -294,6 +294,12 @@ export const documentApi = {
   /** STD-004/006: QM activates standard after review; indexes clauses for evaluation */
   activateStandard: (id: string)      => api.patch(`/api/documents/${id}/activate`),
   restore:     (id: string)            => api.patch(`/api/documents/${id}/restore`),
+  /** Product wizard: register standards detected in a product's documents in the Standards & Regulations Portal. */
+  createStandardsFromProduct: (productId: string, standards: Array<{ reference: string; title?: string }>) =>
+    api.post<{
+      created: Array<{ id: string; reference: string }>;
+      skipped: Array<{ reference: string; existingId: string }>;
+    }>('/api/documents/standards/from-product', { productId, standards }),
   setOwner:    (id: string, userId: string) => api.patch(`/api/documents/${id}/owner`, { userId }),
   setApproval: (id: string, status: string) => api.patch(`/api/documents/${id}/approval`, { status }),
   submitReview:(id: string)            => api.post(`/api/documents/${id}/submit-review`),
