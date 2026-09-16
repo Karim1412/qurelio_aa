@@ -25,11 +25,28 @@
 /** Weight bands. A single decisive hit is enough on its own. */
 const DECISIVE = 100;
 const STRONG = 40;
+/** Enough that an ISO number alongside it reaches the threshold. */
+const SKELETON = 60;
 const MEDIUM = 15;
 const WEAK = 5;
 
-/** Total weight at which a document is treated as a published ISO standard. */
-export const ISO_CONTENT_THRESHOLD = 100;
+/**
+ * A document is refused on one of two grounds, never on accumulated weight:
+ *
+ *  1. A DECISIVE signal — the file asserts ISO's *own identity*: an ISO
+ *     copyright notice, an ISO reference number, or an "INTERNATIONAL STANDARD
+ *     ISO nnnn" cover heading.
+ *  2. The clause SKELETON together with an ISO number — the standard's own
+ *     numbered table of contents, which survives a reprint that has had the
+ *     ISO branding stripped off.
+ *
+ * Summing weights to a threshold was tried and abandoned: a document *about*
+ * standards — a regulatory-watch bulletin, a standards register — is naturally
+ * dense in committee references, edition statements and deliverable words, and
+ * piled them up past any threshold that still caught real standards. Those
+ * medium signals now only explain a verdict; they never cause one.
+ */
+export const ISO_BLOCK_GROUNDS = ['decisive-identity', 'clause-skeleton'] as const;
 
 /** Pages treated as front matter: cover, copyright page, contents, foreword. */
 export const ISO_FRONT_MATTER_PAGES = 6;
@@ -48,7 +65,12 @@ export interface IsoContentSignal {
 export interface IsoContentFinding {
   /** True when the file should be refused. */
   isIsoStandard: boolean;
-  /** Summed weight of every distinct signal. */
+  /** Why it was refused, or null when it was not. */
+  ground: (typeof ISO_BLOCK_GROUNDS)[number] | null;
+  /**
+   * Summed weight of the matched signals. Explanatory only — it ranks the
+   * evidence shown to the user and does NOT decide the verdict.
+   */
   score: number;
   /** Whether a decisive signal (copyright notice, reference number…) matched. */
   decisive: boolean;
@@ -78,7 +100,7 @@ interface Rule {
  * office" — never produced by a manual that only cites a standard.
  */
 const ISO_OWNERSHIP =
-  /©\s*ISO\b|\bISO\s+copyright\b|\bfrom\s+(?:either\s+)?ISO\b|\bISO\s+at\s+the\s+address\b|\bISO\s+\d{4}\b|\bPublished\s+in\s+Switzerland\b|\bInternational\s+Organization\s+for\s+Standardization\b/i;
+  /©\s*ISO\b|\bISO\s+copyright\b|\bfrom\s+(?:either\s+)?ISO\b|\bISO\s+at\s+the\s+address\b|\bISO\s+\d{4}\b|\bPublished\s+in\s+Switzerland\b|\bInternational\s+Organization\s+for\s+Standardization\b|\bOrganisation\s+internationale\s+de\s+normalisation\b|\bOrganizaci[oó]n\s+Internacional\s+de\s+Normalizaci[oó]n\b/i;
 
 /**
  * ISO standard number, e.g. "ISO 9001:2015", "ISO/IEC 27001", "ISO 13485-1".
@@ -93,19 +115,20 @@ const RULES: Rule[] = [
     category: 'ISO copyright notice',
     weight: DECISIVE,
     scope: 'document',
-    pattern: /©\s*ISO(?:\s*\/\s*IEC)?\b|\bCopyright\s+ISO\b|\bCopyright\s+International\s+Organization\s+for\s+Standardization\b|\bCopyright\s+International\s+Electrotechnical\s+Commission\b|\bISO\s+copyright\s+office\b|\bISO\s+copyright\b/i,
+    pattern: /©\s*ISO(?:\s*\/\s*IEC)?\b|\bCopyright\s+ISO\b|\bCopyright\s+International\s+Organization\s+for\s+Standardization\b|\bCopyright\s+International\s+Electrotechnical\s+Commission\b|\bISO\s+copyright\s+office\b|\bISO\s+copyright\b|\bDroits\s+de\s+reproduction\s+r[eé]serv[eé]s\b/i,
   },
   {
     category: 'ISO reference number',
     weight: DECISIVE,
     scope: 'document',
-    pattern: /\b(?:Reference|Document)\s+number\s*:?\s*ISO\b/i,
+    pattern: /\b(?:Reference|Document)\s+number\s*:?\s*ISO\b|\bNum[eé]ro\s+de\s+r[eé]f[eé]rence\s*:?\s*ISO\b|\bN[uú]mero\s+de\s+referencia\s*:?\s*ISO\b/i,
   },
   {
     category: 'ISO standard cover heading',
     weight: DECISIVE,
     scope: 'document',
-    pattern: /\b(?:INTERNATIONAL\s+STANDARD|TECHNICAL\s+SPECIFICATION|TECHNICAL\s+REPORT|PUBLICLY\s+AVAILABLE\s+SPECIFICATION|(?:FINAL\s+)?DRAFT\s+INTERNATIONAL\s+STANDARD)\s+ISO\b/i,
+    pattern:
+      /\b(?:INTERNATIONAL\s+STANDARD|TECHNICAL\s+SPECIFICATION|TECHNICAL\s+REPORT|PUBLICLY\s+AVAILABLE\s+SPECIFICATION|(?:FINAL\s+)?DRAFT\s+INTERNATIONAL\s+STANDARD|NORME\s+INTERNATIONALE|SP[EÉ]CIFICATION\s+TECHNIQUE|RAPPORT\s+TECHNIQUE|NORMA\s+INTERNACIONAL)\s+ISO\b/i,
   },
   {
     // Deliberately NOT triggered by "All rights reserved" or by the reproduction
@@ -126,16 +149,55 @@ const RULES: Rule[] = [
     pattern: new RegExp(ISO_NUMBER_PATTERN.source, 'i'),
   },
   {
+    // ISO/IEC Directives Part 2 fixes the opening clause order of every ISO
+    // standard: 1 Scope, 2 Normative references, 3 Terms and definitions. Seen
+    // *numbered and in sequence* this is the standard's own table of contents,
+    // which survives even when a reseller strips the ISO branding off a reprint.
+    //
+    // The numbering is what carries the signal. A training deck that lists
+    // "Scope, Normative references, Terms and definitions" as an agenda has the
+    // same words with no clause numbers, and is left alone — that is why the
+    // looser 'ISO clause structure' rule below stays at MEDIUM.
+    //
+    // Weighted so it blocks only in company with an ISO number (60 + 40 = 100).
+    // On its own it stays under the threshold.
+    category: 'ISO clause skeleton',
+    weight: SKELETON,
+    scope: 'frontMatter',
+    pattern:
+      /\b1\s+Scope\b[\s\S]{0,600}?\b2\s+Normative\s+references\b|\b2\s+Normative\s+references\b[\s\S]{0,600}?\b3\s+Terms\s+and\s+definitions\b/i,
+  },
+  {
+    // ISO's own name written out. A manual normally says "ISO 9001"; printing
+    // the full corporate name is a publisher's habit, not a citer's. Weighted
+    // so it still needs company to reach the threshold.
+    category: 'ISO organization name',
+    weight: STRONG,
+    scope: 'frontMatter',
+    pattern:
+      /\bInternational\s+Organization\s+for\s+Standardization\b|\bOrganisation\s+internationale\s+de\s+normalisation\b|\bOrganizaci[oó]n\s+Internacional\s+de\s+Normalizaci[oó]n\b/i,
+  },
+  {
+    // Bare deliverable prefixes with no number attached: ISO/IEC, ISO/ASTM…
+    // Low weight because they are also how people abbreviate a citation.
+    category: 'ISO deliverable prefix',
+    weight: MEDIUM,
+    scope: 'frontMatter',
+    pattern: /\bISO\s*\/\s*(?:IEC|ASTM|IEEE|CIE)\b/i,
+  },
+  {
     category: 'ISO technical committee',
     weight: STRONG,
     scope: 'frontMatter',
-    pattern: /\bISO\s*\/\s*(?:TC\s*\d{1,4}(?:\s*\/\s*SC\s*\d{1,3})?|IEC\s+JTC\s*\d)\b/i,
+    pattern:
+      /\bISO\s*\/\s*(?:TC\s*\d{0,4}(?:\s*\/\s*SC\s*\d{1,3})?|IEC\s+JTC\s*\d?)\b/i,
   },
   {
     category: 'ISO deliverable type',
     weight: STRONG,
     scope: 'frontMatter',
-    pattern: /\bISO\s*\/\s*(?:TS|TR|PAS|FDIS|DIS|NP|CD|WD|PRF)\b|\bInternational\s+Standard\b|\b(?:Final\s+)?Draft\s+International\s+Standard\b|\bPublicly\s+Available\s+Specification\b|\bTechnical\s+Specification\b|\bTechnical\s+Report\b|\bCommittee\s+Draft\b/i,
+    pattern:
+      /\bISO\s*\/\s*(?:TS|TR|PAS|FDIS|DIS|NP|CD|WD|PRF)\b|\bInternational\s+Standards?\b|\b(?:Final\s+)?Draft\s+International\s+Standard\b|\bPublicly\s+Available\s+Specification\b|\bTechnical\s+(?:Specification|Report)\b|\b(?:Committee|Working)\s+Draft\b|\bISO\s+(?:International\s+)?Standard\b|\bISO\s+Draft\s+Standard\b|\bISO\s+(?:FDIS|DIS|PAS|TS|TR)\b/i,
   },
   {
     category: 'Reproduction restrictions',
@@ -173,7 +235,8 @@ const RULES: Rule[] = [
     category: 'Peer standards bodies',
     weight: MEDIUM,
     scope: 'frontMatter',
-    pattern: /\bInternational\s+Electrotechnical\s+Commission\b|\bCENELEC\b|\bAFNOR\b|\bASTM\b|\bCEN\b(?![A-Z])/i,
+    pattern:
+      /\bInternational\s+Electrotechnical\s+Commission\b|\bCENELEC\b|\bAFNOR\b|\bASTM\b|\bIEEE\b|\bANSI\b|\bDIN\b|\bJIS\b|\bSAE\b|\bITU\b|\bIETF\b|\bCEN\b(?![A-Z])/i,
   },
 
   // ── Weak: vocabulary any standard-shaped text shares ──────────────────────
@@ -239,8 +302,16 @@ export function detectIsoStandardContent(frontMatter: string, fullText: string):
   const score = signals.reduce((sum, s) => sum + s.weight, 0);
   signals.sort((a, b) => b.weight - a.weight);
 
+  const has = (category: string) => signals.some((sig) => sig.category === category);
+  // The stripped-reprint case: ISO's numbered clause order next to an ISO
+  // number. Neither half is enough alone — a generic in-house template reuses
+  // the clause order, and half the quality documents in the world cite a number.
+  const skeleton = has('ISO clause skeleton') && has('ISO standard number');
+  const ground = decisive ? 'decisive-identity' : skeleton ? 'clause-skeleton' : null;
+
   return {
-    isIsoStandard: decisive || score >= ISO_CONTENT_THRESHOLD,
+    isIsoStandard: ground !== null,
+    ground,
     score,
     decisive,
     signals,
