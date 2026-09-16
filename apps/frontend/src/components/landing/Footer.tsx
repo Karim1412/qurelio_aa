@@ -158,9 +158,9 @@ export function Footer() {
         />
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-6 pt-14 sm:px-10 lg:pt-16">
+      <div className="relative mx-auto max-w-7xl px-4 pt-12 sm:px-10 sm:pt-14 lg:pt-16">
         {/* ── Main row: Brand + Newsletter | Nav ── */}
-        <div className="mb-10 grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-16">
+        <div className="mb-10 grid grid-cols-1 gap-10 sm:gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-16">
           {/* Left: Logo + tagline + newsletter + trust */}
           <motion.div
             variants={fadeUp}
@@ -169,7 +169,7 @@ export function Footer() {
             transition={{ duration: 0.8, ease: SOFT }}
             className="flex flex-col gap-7"
           >
-            <div className="flex items-start gap-5">
+            <div className="flex items-start gap-4 sm:gap-5">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/brand/querlio-mini.png"
@@ -179,8 +179,8 @@ export function Footer() {
                 height={88}
                 loading="lazy"
                 decoding="async"
-                style={{ height: 88, width: 'auto' }}
-                className="block shrink-0 select-none drop-shadow-[0_8px_24px_rgba(27,27,245,0.10)]"
+                style={{ width: 'auto' }}
+                className="block h-16 shrink-0 select-none drop-shadow-[0_8px_24px_rgba(27,27,245,0.10)] sm:h-[88px]"
                 draggable={false}
               />
               <div className="flex flex-col gap-3">
@@ -233,7 +233,7 @@ export function Footer() {
                 <motion.button
                   type="submit"
                   whileTap={{ scale: 0.96 }}
-                  className="group/btn relative m-1 inline-flex shrink-0 items-center gap-1.5 overflow-hidden rounded-full bg-[var(--brand-primary)] px-5 py-2.5 text-xs font-semibold text-white transition-colors duration-500 hover:bg-[var(--brand-primary)]/92"
+                  className="group/btn relative m-1 inline-flex shrink-0 items-center gap-1.5 overflow-hidden rounded-full bg-[var(--brand-primary)] px-4 py-3 text-xs font-semibold text-white transition-colors duration-500 hover:bg-[var(--brand-primary)]/92 sm:px-5 sm:py-2.5"
                 >
                   <span
                     aria-hidden
@@ -274,7 +274,7 @@ export function Footer() {
           </motion.div>
 
           {/* Right: Nav columns */}
-          <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 sm:gap-12 lg:justify-items-end">
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 sm:gap-12 lg:justify-items-end">
             {navColumns.map((col, colIdx) => (
               <motion.div
                 key={col.heading}
@@ -291,7 +291,7 @@ export function Footer() {
                 <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--brand-accent)]">
                   {col.heading}
                 </p>
-                <ul className="flex flex-col gap-2.5">
+                <ul className="flex flex-col gap-0.5 sm:gap-2.5">
                   {col.links.map((link, linkIdx) => (
                     <motion.li
                       key={link.label}
@@ -305,7 +305,7 @@ export function Footer() {
                     >
                       <a
                         href={link.href}
-                        className="group relative inline-flex items-center text-sm text-[var(--text-primary)]/75 transition-colors duration-300 hover:text-[var(--brand-primary)]"
+                        className="group relative inline-flex items-center py-2.5 text-sm text-[var(--text-primary)]/75 transition-colors duration-300 hover:text-[var(--brand-primary)] sm:py-0"
                       >
                         <span
                           aria-hidden
@@ -368,7 +368,7 @@ export function Footer() {
       </div>
 
       {/* ── Bottom bar ── */}
-      <div className="relative mx-auto max-w-7xl px-6 pb-8 sm:px-10">
+      <div className="relative mx-auto max-w-7xl px-4 pb-8 sm:px-10">
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
@@ -384,19 +384,19 @@ export function Footer() {
             className="absolute inset-x-0 top-0 h-px origin-center bg-gradient-to-r from-transparent via-[var(--border)] to-transparent"
           />
 
-          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-[var(--muted)] sm:justify-start">
+          <div className="flex flex-wrap items-center justify-center gap-x-3 text-xs text-[var(--muted)] sm:justify-start">
             <p>{t('footer.copyright', { year: new Date().getFullYear() })}</p>
             <span aria-hidden className="hidden h-3 w-px bg-[var(--border)]/60 sm:inline" />
             <a
               href="/terms"
-              className="relative transition-colors duration-300 hover:text-[var(--brand-primary)]"
+              className="relative inline-flex items-center py-2 transition-colors duration-300 hover:text-[var(--brand-primary)] sm:py-0"
             >
               {t('footer.terms')}
             </a>
             <span aria-hidden className="hidden h-3 w-px bg-[var(--border)]/60 sm:inline" />
             <a
               href="/privacy"
-              className="relative transition-colors duration-300 hover:text-[var(--brand-primary)]"
+              className="relative inline-flex items-center py-2 transition-colors duration-300 hover:text-[var(--brand-primary)] sm:py-0"
             >
               {t('footer.privacy')}
             </a>
@@ -421,7 +421,7 @@ export function Footer() {
                   transition={{ duration: 0.5, delay: 1.05 + i * 0.08, ease: SOFT }}
                   whileHover={prefersReducedMotion ? undefined : { y: -2 }}
                   whileTap={{ scale: 0.94 }}
-                  className="group relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-[var(--border)]/60 bg-white/70 text-[var(--muted)] transition-all duration-500 hover:border-[var(--brand-primary)]/40 hover:text-[var(--brand-primary)] hover:shadow-[0_10px_24px_-12px_rgba(27,27,245,0.45)]"
+                  className="group relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-[var(--border)]/60 sm:h-9 sm:w-9 bg-white/70 text-[var(--muted)] transition-all duration-500 hover:border-[var(--brand-primary)]/40 hover:text-[var(--brand-primary)] hover:shadow-[0_10px_24px_-12px_rgba(27,27,245,0.45)]"
                 >
                   <span
                     aria-hidden

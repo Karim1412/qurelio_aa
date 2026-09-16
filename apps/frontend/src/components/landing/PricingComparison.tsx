@@ -223,9 +223,40 @@ export function PricingComparison() {
           color: #A8A29E;
         }
 
+        @media (max-width: 1100px) {
+          .cmp-root { padding: 88px 28px 100px; }
+        }
+
         @media (max-width: 900px) {
           .cmp-root { padding: 80px 20px 92px; }
           .cmp-scroll-hint { display: block; }
+
+          /* Once the table scrolls sideways the feature name has to travel with
+             it, otherwise a ✓ three columns over belongs to nothing. Sticky needs
+             an opaque backdrop: the row/group tints are translucent and would let
+             the scrolled-under cells bleed through. */
+          .cmp-tbl thead th:first-child,
+          .cmp-tbl tbody td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 2;
+            background: #FFFFFF;
+            box-shadow: 1px 0 0 rgba(231, 229, 224, 0.9);
+          }
+          .cmp-tbl .cmp-grp td:first-child { background: #F8F6F2; }
+          .cmp-tbl tbody tr:not(.cmp-grp):hover td:first-child { background: #F8F6F2; }
+        }
+
+        @media (max-width: 600px) {
+          .cmp-root { padding: 64px 14px 76px; }
+          .cmp-legend { gap: 16px; margin-bottom: 22px; }
+          /* Narrower measure = less sideways travel to reach the last plan. */
+          .cmp-tbl { min-width: 620px; font-size: 12px; }
+          .cmp-tbl thead th:first-child { min-width: 168px; padding-left: 14px; }
+          .cmp-tbl thead th { padding: 16px 8px 14px; font-size: 12.5px; }
+          .cmp-tbl tbody td { padding: 11px 8px; }
+          .cmp-tbl tbody td:first-child { padding-left: 14px; }
+          .cmp-grp td { padding: 14px 14px 8px; }
         }
 
         @media (prefers-reduced-motion: reduce) {

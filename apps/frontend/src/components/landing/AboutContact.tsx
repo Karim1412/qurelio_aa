@@ -131,13 +131,13 @@ function StatCard({ stat, index }: { stat: Stat; index: number }) {
     <motion.div
       variants={fadeInUp}
       custom={index}
-      className="text-center p-4 rounded-2xl bg-gradient-to-b from-[var(--surface)] to-transparent border border-[var(--border)]"
+      className="text-center p-3 sm:p-4 rounded-2xl bg-gradient-to-b from-[var(--surface)] to-transparent border border-[var(--border)]"
     >
-      <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[var(--brand-primary)]/10 text-[var(--brand-primary)] mb-3">
+      <div className="inline-flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-[var(--brand-primary)]/10 text-[var(--brand-primary)] mb-2 sm:mb-3">
         {stat.icon}
       </div>
-      <div className="text-2xl font-bold text-[var(--text-primary)]">{stat.value}</div>
-      <div className="text-sm text-[var(--muted)] mt-1">{stat.label}</div>
+      <div className="text-xl sm:text-2xl font-bold text-[var(--text-primary)]">{stat.value}</div>
+      <div className="text-xs sm:text-sm text-[var(--muted)] mt-1 leading-snug">{stat.label}</div>
     </motion.div>
   );
 }
@@ -147,7 +147,7 @@ function BenefitCard({ benefit, index }: { benefit: Benefit; index: number }) {
     <motion.div
       variants={fadeInUp}
       custom={index}
-      className="group relative p-6 rounded-2xl bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--brand-primary)]/30 transition-all duration-300 hover:shadow-lg hover:shadow-[var(--brand-primary)]/5"
+      className="group relative p-5 sm:p-6 rounded-2xl bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--brand-primary)]/30 transition-all duration-300 hover:shadow-lg hover:shadow-[var(--brand-primary)]/5"
     >
       <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--brand-primary)]/10 to-[var(--brand-primary)]/5 text-[var(--brand-primary)] mb-4 group-hover:scale-110 transition-transform duration-300">
         {benefit.icon}
@@ -522,7 +522,7 @@ export function AboutSection() {
   return (
     <section id="about" className="relative border-t border-[var(--border)] bg-blue-200">
       <div className="absolute inset-0 bg-gradient-to-b from-[var(--brand-primary)]/[0.02] to-transparent pointer-events-none" />
-      <div className="relative mx-auto max-w-6xl px-6 py-24 lg:py-32">
+      <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24 lg:py-32">
 
         {/* Hero text + stats */}
         <motion.div
@@ -555,7 +555,7 @@ export function AboutSection() {
 
           <motion.div
             variants={fadeInUp}
-            className="mt-12 grid grid-cols-3 gap-4 max-w-lg mx-auto"
+            className="mt-10 grid grid-cols-3 gap-2.5 max-w-lg mx-auto sm:mt-12 sm:gap-4"
           >
             {stats.map((stat, i) => (
               <StatCard key={i} stat={stat} index={i} />
@@ -569,7 +569,7 @@ export function AboutSection() {
           whileInView="visible"
           viewport={{ once: true, margin: '-100px' }}
           variants={stagger}
-          className="mt-20 grid gap-6 md:grid-cols-3"
+          className="mt-14 grid gap-5 sm:gap-6 sm:mt-20 md:grid-cols-3"
         >
           {benefits.map((benefit, i) => (
             <BenefitCard key={i} benefit={benefit} index={i} />
@@ -598,8 +598,8 @@ export function ContactSection() {
         ].join(', '),
       }}
     >
-      <div className="relative mx-auto max-w-7xl px-6 py-24 lg:py-32">
-        <div className="grid gap-14 lg:grid-cols-2 lg:gap-20">
+      <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:py-32">
+        <div className="grid gap-10 sm:gap-14 lg:grid-cols-2 lg:gap-20">
 
           {/* Left column */}
           <motion.div
@@ -632,17 +632,17 @@ export function ContactSection() {
 
             <motion.div
               variants={fadeInUp}
-              className="mt-6 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs text-neutral-500"
+              className="mt-5 flex flex-wrap items-center justify-center gap-x-2 text-xs text-neutral-500 sm:mt-6"
             >
-              <a href={`mailto:${CONTACT_EMAIL_PRIMARY}`} className="transition-colors hover:text-neutral-800">
+              <a href={`mailto:${CONTACT_EMAIL_PRIMARY}`} className="inline-flex items-center py-2 transition-colors hover:text-neutral-800 sm:py-0">
                 {CONTACT_EMAIL_PRIMARY}
               </a>
               <span aria-hidden="true" className="text-neutral-300">•</span>
-              <a href={`tel:${CONTACT_PHONE.replace(/\s/g, '')}`} className="transition-colors hover:text-neutral-800">
+              <a href={`tel:${CONTACT_PHONE.replace(/\s/g, '')}`} className="inline-flex items-center py-2 transition-colors hover:text-neutral-800 sm:py-0">
                 {CONTACT_PHONE}
               </a>
               <span aria-hidden="true" className="text-neutral-300">•</span>
-              <a href={`mailto:${CONTACT_EMAIL_SUPPORT}`} className="transition-colors hover:text-neutral-800">
+              <a href={`mailto:${CONTACT_EMAIL_SUPPORT}`} className="inline-flex items-center py-2 transition-colors hover:text-neutral-800 sm:py-0">
                 {CONTACT_EMAIL_SUPPORT}
               </a>
             </motion.div>
@@ -658,7 +658,7 @@ export function ContactSection() {
             variants={fadeInUp}
           >
             <div
-              className="relative overflow-hidden rounded-3xl border border-neutral-200/70 bg-white/70 p-8 lg:p-10"
+              className="relative overflow-hidden rounded-3xl border border-neutral-200/70 bg-white/70 p-5 sm:p-8 lg:p-10"
               style={{
                 backgroundImage: `
                   linear-gradient(to right, rgb(229 231 235 / 0.40) 1px, transparent 1px),

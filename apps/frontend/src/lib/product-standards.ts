@@ -12,7 +12,8 @@ export type ProductStandardSource =
   | 'requiredCertification'
   | 'applicableRegulation'
   | 'industryLabel'
-  | 'certificate';
+  | 'certificate'
+  | 'documentText';
 
 export interface ProductStandardRef {
   /** Display value, e.g. "ISO 13485" or "Regulation (EU) 2017/745". */
@@ -27,7 +28,53 @@ const SOURCE_LABELS: Record<ProductStandardSource, string> = {
   applicableRegulation: 'Applicable regulation',
   industryLabel: 'Industry label',
   certificate: 'Product certificate',
+  documentText: 'Cited in the document',
 };
+
+/**
+ * Standard and regulation references written in the body of a document.
+ *
+ * The AI fills `certifications` / `applicableRegulations` only when a document
+ * states them as such; a specification that merely writes "tested per IEC 62471"
+ * in a sentence leaves those fields empty. Scanning the extracted text catches
+ * those citations, so the wizard can still offer them for the portal.
+ *
+ * Each pattern demands a number: bare body names ("ISO", "ASTM") match any
+ * quality manual that mentions standards in passing and are not references.
+ */
+const STANDARD_TEXT_PATTERNS: RegExp[] = [
+  /\b(?:EN\s+)?ISO(?:\/[A-Z]{2,4})?[\s-]?\d{3,5}(?:-\d{1,3})?(?::\d{4})?\b/gi,
+  /\b(?:EN\s+)?IEC[\s-]?\d{4,5}(?:-\d{1,3})?(?::\d{4})?\b/gi,
+  /\bEN[\s-]?\d{3,5}(?:-\d{1,3})?(?::\d{4})?\b/gi,
+  /\bASTM[\s-]?[A-Z]\d{2,4}(?:-\d{2})?\b/gi,
+  /\bUL[\s-]?\d{2,4}\b/gi,
+  /\bRegulation\s*\(\s*(?:EU|EC)\s*\)\s*(?:No\.?\s*)?\d{1,4}\/\d{2,4}\b/gi,
+  /\bDirective\s+\d{4}\/\d{1,3}\/(?:EC|EU|EEC)\b/gi,
+  /\b21\s*CFR\s*(?:Part\s*)?\d{1,4}(?:\.\d+)?\b/gi,
+];
+
+/** References cited in document text, de-duplicated, in the order they appear. */
+export function extractStandardRefsFromText(text: string | null | undefined, limit = 30): string[] {
+  const haystack = (text ?? '').replace(/\s+/g, ' ');
+  if (!haystack) return [];
+
+  const hits: Array<{ index: number; value: string }> = [];
+  const seen = new Set<string>();
+  for (const pattern of STANDARD_TEXT_PATTERNS) {
+    // Shared state: `lastIndex` survives between calls on a /g regex.
+    pattern.lastIndex = 0;
+    let match: RegExpExecArray | null;
+    while ((match = pattern.exec(haystack)) !== null) {
+      const value = match[0].trim().replace(/\s+/g, ' ');
+      const key = normalizeRef(value);
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      hits.push({ index: match.index, value });
+    }
+  }
+
+  return hits.sort((a, b) => a.index - b.index).slice(0, limit).map((h) => h.value);
+}
 
 interface ProductLike {
   requiredCertifications?: string[] | null;
@@ -65,6 +112,18 @@ export function normalizeRef(value: string): string {
 }
 
 /**
+ * Key that treats the same standard cited with and without its edition year as
+ * one entry ("ISO 13485:2016" and "ISO 13485"): a document states the dated
+ * form while a user types the short one, and the portal must not hold both.
+ *
+ * Only a trailing year is dropped, so EN 60601-1 and EN 60601-1-2 remain the
+ * different standards they are. Mirrors `refKey` in document.service.ts.
+ */
+export function standardDedupeKey(value: string): string {
+  return normalizeRef(value.replace(/:\s*\d{4}\s*$/, ''));
+}
+
+/**
  * Does a library standard document satisfy a declared reference?
  *
  * Declarations are written by hand ("ISO 13485") while documents carry a full
@@ -84,7 +143,12 @@ export function standardMatchesRef(
   if (haystacks.length === 0) return false;
 
   return haystacks.some((h) => {
-    if (key.length < 4) return h === key;
+    /**
+     * Containment needs length on BOTH sides. A library document titled "u" or
+     * "CE" would otherwise be contained in almost every reference ("Regulation
+     * (EU) 2017/745" contains "u"), marking every standard as already held.
+     */
+    if (key.length < 4 || h.length < 4) return h === key;
     return h.includes(key) || key.includes(h);
   });
 }

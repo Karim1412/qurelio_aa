@@ -160,8 +160,18 @@ export function PricingFAQ() {
         .faq-a p:last-child { margin-bottom: 0; }
         .faq-a strong { color: #1C1917; font-weight: 600; }
 
+        @media (max-width: 1100px) {
+          .faq-root { padding: 88px 28px 100px; }
+        }
+
         @media (max-width: 900px) {
           .faq-root { padding: 80px 20px 92px; }
+        }
+
+        @media (max-width: 480px) {
+          .faq-root { padding: 64px 16px 76px; }
+          .faq-q { padding: 17px 16px; font-size: 14px; gap: 12px; }
+          .faq-a-inner > div { padding: 0 16px 18px; }
         }
 
         @media (prefers-reduced-motion: reduce) {

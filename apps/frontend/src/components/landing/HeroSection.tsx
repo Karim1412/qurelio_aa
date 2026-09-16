@@ -136,11 +136,14 @@ function NumberTicker({
 function MagneticButton({
   children,
   className,
+  wrapClassName,
   href,
   strength = 14,
 }: {
   children: React.ReactNode;
   className?: string;
+  /** Applied to the motion wrapper: the element the CTA row actually lays out. */
+  wrapClassName?: string;
   href: string;
   strength?: number;
 }) {
@@ -165,7 +168,10 @@ function MagneticButton({
   };
 
   return (
-    <motion.span style={{ x: sx, y: sy, display: 'inline-flex' }} className="will-change-transform">
+    <motion.span
+      style={{ x: sx, y: sy, display: 'inline-flex' }}
+      className={`will-change-transform${wrapClassName ? ` ${wrapClassName}` : ''}`}
+    >
       <Link
         ref={ref}
         href={href}
@@ -212,7 +218,7 @@ export function HeroSection() {
     <section
       id="home"
       ref={sectionRef}
-      className="relative overflow-hidden bg-[var(--page-bg)] pb-32 pt-28 sm:pt-32"
+      className="relative overflow-hidden bg-[var(--page-bg)] pb-20 pt-24 sm:pb-28 sm:pt-32 lg:pb-32"
     >
       {/* ── Thin grid ────────────────────────────────────────────────────── */}
       <div
@@ -280,11 +286,12 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 1.12, ease: EASE_OUT }}
-          className="mt-10 flex flex-wrap items-center justify-center gap-4"
+          className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4"
         >
           <MagneticButton
             href="/demo"
-            className="group relative inline-flex min-w-[180px] cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-xl bg-[var(--brand-primary)] px-6 py-3.5 text-sm font-semibold tracking-wide text-white shadow-[0_10px_30px_-10px_color-mix(in_srgb,var(--brand-primary)_70%,transparent)] transition-shadow duration-300 hover:shadow-[0_18px_46px_-12px_color-mix(in_srgb,var(--brand-primary)_85%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--page-bg)]"
+            wrapClassName="w-full sm:w-auto"
+            className="group relative inline-flex w-full cursor-pointer sm:w-auto sm:min-w-[180px] items-center justify-center gap-2 overflow-hidden rounded-xl bg-[var(--brand-primary)] px-6 py-3.5 text-sm font-semibold tracking-wide text-white shadow-[0_10px_30px_-10px_color-mix(in_srgb,var(--brand-primary)_70%,transparent)] transition-shadow duration-300 hover:shadow-[0_18px_46px_-12px_color-mix(in_srgb,var(--brand-primary)_85%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--page-bg)]"
           >
             <motion.span
               aria-hidden
@@ -304,7 +311,8 @@ export function HeroSection() {
           <MagneticButton
             href="#video"
             strength={10}
-            className="group inline-flex min-w-[180px] cursor-pointer items-center justify-center gap-2.5 rounded-xl border border-[color-mix(in_srgb,var(--brand-primary)_45%,transparent)] bg-[color-mix(in_srgb,var(--surface)_70%,transparent)] px-6 py-3.5 text-sm font-semibold tracking-wide text-[var(--text-primary)] backdrop-blur-sm transition-all duration-300 hover:border-[var(--brand-primary)] hover:bg-[var(--surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--page-bg)]"
+            wrapClassName="w-full sm:w-auto"
+            className="group inline-flex w-full cursor-pointer sm:w-auto sm:min-w-[180px] items-center justify-center gap-2.5 rounded-xl border border-[color-mix(in_srgb,var(--brand-primary)_45%,transparent)] bg-[color-mix(in_srgb,var(--surface)_70%,transparent)] px-6 py-3.5 text-sm font-semibold tracking-wide text-[var(--text-primary)] backdrop-blur-sm transition-all duration-300 hover:border-[var(--brand-primary)] hover:bg-[var(--surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-primary)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--page-bg)]"
           >
             <span
               className="relative flex h-7 w-7 items-center justify-center rounded-full transition-all duration-300 group-hover:scale-110"

@@ -244,6 +244,15 @@ export class Document {
   @JoinColumn({ name: 'product_id' })
   product?: Product;
 
+  /**
+   * Standards generated from a product's documents (product wizard): the product
+   * the standard was detected in. Kept apart from `productId`, which files the
+   * document inside the product folder; a generated standard lives in the
+   * Standards & Regulations Portal and only references its source product.
+   */
+  @Column({ name: 'source_product_id', type: 'uuid', nullable: true })
+  sourceProductId?: string | null;
+
   /** File Manager folder this document is organised into (optional). */
   @Column({ name: 'folder_id', type: 'uuid', nullable: true })
   folderId?: string | null;

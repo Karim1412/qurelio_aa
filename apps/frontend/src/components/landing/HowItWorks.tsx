@@ -921,8 +921,21 @@ export function HowItWorks() {
         .hiw-text-col.active .hiw-text-divider,
         .hiw-text-col:hover .hiw-text-divider  { opacity: 1; transform: none; filter: blur(0); transition-delay: 0.42s; }
 
+        /* ─── Tablet: keep the 3-up timeline but reclaim the gutters ─── */
+        @media (max-width: 1024px) {
+          .hiw-root { padding: 96px 28px 110px; }
+          .hiw-grid { column-gap: 18px; grid-template-rows: auto 76px auto; }
+          .hiw-sub  { margin-bottom: 72px; }
+          .hiw-illu { padding: 16px; border-radius: 18px; }
+          .hiw-text-card { padding: 22px 18px 20px; }
+          .hiw-orb { width: 38px; height: 38px; font-size: 12px; }
+          .hiw-orb-ring { width: 48px; height: 48px; }
+        }
+
         /* ─── Mobile (stack vertically, hide wave) ─── */
         @media (max-width: 820px) {
+          .hiw-root { padding: 84px 20px 96px; }
+          .hiw-sub  { margin-bottom: 56px; }
           .hiw-grid {
             grid-template-columns: 1fr;
             grid-template-rows: none;
@@ -941,12 +954,29 @@ export function HowItWorks() {
           .hiw-text-col {
             order: calc(var(--col) * 3);
             margin-bottom: 36px;
+            /* Stacked, the text card should track the illustration width above it
+               instead of staying pinned to the 320px column measure. */
+            max-width: none;
           }
           .hiw-wave { display: none; }
           .hiw-illu {
             aspect-ratio: 4 / 3;
             max-width: none;
+            padding: 18px;
           }
+          /* Touch has no hover: every step reads at full strength once stacked. */
+          .hiw-illu-col,
+          .hiw-text-col { opacity: 1; transform: none; }
+        }
+
+        /* ─── Small phones ─── */
+        @media (max-width: 480px) {
+          .hiw-root { padding: 68px 16px 80px; }
+          .hiw-sub  { margin-bottom: 44px; }
+          .hiw-grid { row-gap: 18px; }
+          .hiw-text-col { margin-bottom: 26px; }
+          .hiw-illu { padding: 14px; border-radius: 16px; }
+          .hiw-text-card { padding: 20px 16px 18px; border-radius: 16px; }
         }
 
         /* ─── Animations ─── */

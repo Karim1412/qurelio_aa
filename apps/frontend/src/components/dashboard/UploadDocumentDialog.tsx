@@ -22,6 +22,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { detectLicensedStandard, licensedStandardWarning, type LicensedStandardFinding } from '@/lib/licensed-standards';
+import {
+  scanPdfForIsoStandard,
+  isoContentAlertTitle,
+  isoContentAlertMessage,
+  type IsoContentFinding,
+} from '@/lib/iso-standard-content';
 import { documentApi } from '@/lib/api';
 import { usePermissions } from '@/hooks/usePermissions';
 import {
@@ -153,6 +159,18 @@ export function UploadDocumentDialog({
   const [uploading, setUploading] = useState(false);
   /** Copyright guardrail: the acknowledgement the server requires for licensed standards. */
   const [copyrightAccepted, setCopyrightAccepted] = useState(false);
+  /**
+   * Content-level copyright gate. `copyrightFinding` above reads the title the
+   * user typed and can be acknowledged; this one reads the PDF itself and is a
+   * hard refusal — a published ISO standard is never stored.
+   */
+  const [isoScan, setIsoScan] = useState<
+    | { status: 'scanning'; fileName: string }
+    | { status: 'blocked'; fileName: string; finding: IsoContentFinding }
+    | { status: 'unreadable'; fileName: string }
+    | null
+  >(null);
+  const isoScanToken = useRef(0);
   const [phase, setPhase] = useState<UploadPhase>('configure');
   const [docStatuses, setDocStatuses] = useState<DocStatusItem[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -179,6 +197,8 @@ export function UploadDocumentDialog({
     setProductName('');
     setStandardTitle('');
     setCopyrightAccepted(false);
+    isoScanToken.current += 1;
+    setIsoScan(null);
     setSelectedFiles([]);
     setDragOver(false);
     setWorkspaceCatPreset('Report');
@@ -208,7 +228,29 @@ export function UploadDocumentDialog({
         toast.error('Standard (ISO library) uploads must be PDF.');
         return;
       }
-      setSelectedFiles([f]);
+      // Hold the file back until the copyright scan clears it, so a published
+      // ISO standard never sits in the form waiting to be uploaded.
+      setSelectedFiles([]);
+      const token = ++isoScanToken.current;
+      setIsoScan({ status: 'scanning', fileName: f.name });
+      void (async () => {
+        try {
+          const finding = await scanPdfForIsoStandard(f);
+          if (token !== isoScanToken.current) return;
+          if (finding?.isIsoStandard) {
+            setIsoScan({ status: 'blocked', fileName: f.name, finding });
+            toast.error(isoContentAlertTitle(finding));
+            return;
+          }
+          setIsoScan(finding ? null : { status: 'unreadable', fileName: f.name });
+          setSelectedFiles([f]);
+        } catch {
+          // A parser failure must never block a legitimate upload.
+          if (token !== isoScanToken.current) return;
+          setIsoScan(null);
+          setSelectedFiles([f]);
+        }
+      })();
       return;
     }
     if (!allowsMultiple) {
@@ -327,6 +369,8 @@ export function UploadDocumentDialog({
       if (!canUploadStandard) return toast.error('Only Company Admin or Quality Manager can upload standards');
       if (!standardTitle.trim()) return toast.error('Title is required for a standard document');
       if (!isPdfFile(primaryFile)) return toast.error('Standard documents must be PDF');
+      if (isoScan?.status === 'blocked') return toast.error(isoContentAlertTitle(isoScan.finding));
+      if (isoScan?.status === 'scanning') return toast.error('Still checking the PDF — one moment.');
 
       // The server refuses this upload without an acknowledgement; the notice and
       // its checkbox are already visible in the form, so just point at them.
@@ -550,6 +594,59 @@ export function UploadDocumentDialog({
                       publisher&apos;s copyright.
                     </p>
                   </div>
+
+                  {/* Content gate: the PDF itself was read and refused. */}
+                  {isoScan?.status === 'scanning' && (
+                    <div className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2.5 text-[12px] text-[var(--muted)]">
+                      <span className="h-3.5 w-3.5 shrink-0 animate-spin rounded-full border-2 border-[var(--brand-primary)] border-t-transparent" />
+                      <span className="min-w-0 truncate">
+                        Checking <span className="font-medium">{isoScan.fileName}</span> for ISO
+                        copyright…
+                      </span>
+                    </div>
+                  )}
+
+                  {isoScan?.status === 'blocked' && (
+                    <div role="alert" className="rounded-xl border border-red-300 bg-red-50 p-3.5">
+                      <p className="flex items-center gap-2 text-[13px] font-semibold text-red-900">
+                        <CircleAlert className="h-4 w-4 shrink-0" />
+                        {isoContentAlertTitle(isoScan.finding)}
+                      </p>
+                      <p className="mt-1.5 text-[12px] leading-relaxed text-red-900">
+                        {isoContentAlertMessage(isoScan.finding)}
+                      </p>
+                      <ul className="mt-2 space-y-1">
+                        {isoScan.finding.signals.slice(0, 4).map((sig) => (
+                          <li key={sig.category + sig.evidence} className="text-[11px] text-red-800">
+                            • {sig.category}: <span className="italic">&ldquo;{sig.evidence}&rdquo;</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <p className="mt-2 text-[11px] text-red-800">
+                        <span className="font-medium">{isoScan.fileName}</span> was not uploaded.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          isoScanToken.current += 1;
+                          setIsoScan(null);
+                        }}
+                        className="mt-2.5 rounded-lg border border-red-300 bg-white/70 px-3 py-1.5 text-[12px] font-semibold text-red-900"
+                      >
+                        Choose a different file
+                      </button>
+                    </div>
+                  )}
+
+                  {isoScan?.status === 'unreadable' && (
+                    <div
+                      role="status"
+                      className="rounded-xl border border-amber-300 bg-amber-50 px-3.5 py-2.5 text-[12px] leading-relaxed text-amber-900"
+                    >
+                      This PDF has no readable text, so the ISO copyright check could not run. Make
+                      sure you hold the right to use this copy before uploading it.
+                    </div>
+                  )}
 
                   {/* Live alert: appears as soon as the ID names a licensed body. */}
                   {copyrightFinding && (

@@ -221,12 +221,24 @@ export function PricingSection() {
         @media (max-width: 1180px) {
           .pricing-grid    { grid-template-columns: repeat(2, 1fr); }
           .pricing-divider { display: none; }
+          .pricing-root    { padding: 96px 28px 112px; }
+          .pricing-card    { padding: 38px 20px 30px; }
         }
 
         @media (max-width: 760px) {
           .pricing-frame   { padding: 12px; border-radius: 22px; }
           .pricing-grid    { grid-template-columns: 1fr; gap: 0; }
           .pricing-root    { padding: 90px 22px 110px; }
+        }
+
+        @media (max-width: 480px) {
+          .pricing-root    { padding: 68px 16px 84px; }
+          .pricing-frame   { padding: 8px; border-radius: 20px; }
+          .pricing-card    { padding: 36px 18px 28px; }
+          .pricing-context { margin-top: 32px; }
+          /* Two pills at 13px/20px overflow a 320px viewport; wrap them instead. */
+          .pricing-billing { flex-wrap: wrap; justify-content: center; margin-bottom: 32px; }
+          .pricing-billing button { padding: 13px 14px; font-size: 12.5px; }
         }
 
         /* Vertical separators */

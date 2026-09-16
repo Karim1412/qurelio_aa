@@ -644,16 +644,27 @@ export function WhyQurelio() {
             0 1px 2px rgba(15, 23, 42, 0.04),
             0 14px 48px -18px color-mix(in srgb, var(--brand-primary) 22%, transparent);
         }
-        @media (max-width: 1100px) { .cards-row { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 1100px) {
+          .cards-row { grid-template-columns: repeat(3, 1fr); }
+          .qurelio-section { padding: 72px 28px 88px; }
+        }
         @media (max-width: 680px) {
           .cards-row { grid-template-columns: repeat(2, 1fr); }
           .qurelio-section { padding: 72px 20px 96px; }
+        }
+        @media (max-width: 480px) {
+          .qurelio-section { padding: 60px 16px 76px; }
+          .cards-row { gap: 10px; padding: 6px; border-radius: 22px; }
+          .qurelio-trust { padding: 12px 14px; font-size: 12.5px; margin-bottom: 36px; }
         }
 
         /* iOS-natural cubic: smooth deceleration without bounce overshoot */
         .feature-card {
           position: relative;
           aspect-ratio: 4 / 5;
+          /* Tap targets: the card is the control, so it must stay comfortably
+             thumb-sized once the row drops to two columns. */
+          min-height: 132px;
           background: color-mix(in srgb, var(--surface) 92%, transparent);
           border: 1px solid transparent;
           border-radius: 20px;
@@ -708,7 +719,7 @@ export function WhyQurelio() {
           position: relative;
           z-index: 3;
           flex-shrink: 0;
-          font-size: 14px;
+          font-size: clamp(12.5px, 1.1vw, 14px);
           font-weight: 600;
           color: color-mix(in srgb, var(--muted) 70%, transparent);
           letter-spacing: -0.01em;
@@ -752,6 +763,7 @@ export function WhyQurelio() {
           grid-template-columns: 1fr 1fr;
           gap: 60px;
         }
+        @media (max-width: 1100px) { .content-panel { gap: 40px; } }
         @media (max-width: 900px) { .content-panel { grid-template-columns: 1fr; gap: 32px; } }
         .content-left { display: flex; flex-direction: column; }
         .content-eyebrow {
